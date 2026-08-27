@@ -1,12 +1,5 @@
 # Git Strategy
 
-## 1. Purpose
-
-Git will be used to maintain stable development checkpoints, track changes, collaborate safely, and provide rollback capability.
-
-The Git repository is the primary source of truth for the project.
-
----
 
 ## 2. Branch Strategy
 
