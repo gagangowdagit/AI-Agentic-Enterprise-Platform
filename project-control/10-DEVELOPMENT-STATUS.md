@@ -4,10 +4,10 @@
 
 ```text
 Overall Status: FOUNDATION STABLE
-Overall Progress: 22%
+Overall Progress: 28%
 Current Main Part: 2. Spring Boot Backend
-Current Task: 2.1 Create Spring Boot Application
-Current Subtask: 2.1.5 Create health-check API
+Current Task: 2.2 Layered Architecture
+Current Subtask: 2.2.6 Create Mapper layer
 Status: COMPLETED
 ```
 
@@ -22,17 +22,17 @@ Status: COMPLETED
 ✓ Application properties configured
 ✓ Basic Spring Boot app bootstrap created
 ✓ Health-check endpoint exposed at /api/health
-✓ Application context test fixed and passing
+✓ Controller, service, repository, model, DTO, and mapper layers created
+✓ Backend tests passing and verified with Maven
 ```
 
 ## Active Next Steps
 
 ```text
-1. Define layered architecture packages
-2. Add DTO/entity/repository/service/controller skeletons
-3. Add global exception handling and validation standards
-4. Standardize API response contract and OpenAPI setup
-5. Prepare for PostgreSQL and JPA integration
+1. Add global exception handling and validation standards
+2. Standardize API response structure and HTTP conventions
+3. Add OpenAPI/Swagger baseline for backend APIs
+4. Prepare PostgreSQL and JPA integration
 ```
 
 ## Progress Tracking

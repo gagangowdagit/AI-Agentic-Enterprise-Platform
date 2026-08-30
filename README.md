@@ -4,7 +4,7 @@ AI-powered enterprise platform for project management, document intelligence, ag
 
 ## Status
 
-Foundation is in progress. The repository is initialized and the backend skeleton is active, with the main work now moving into layered architecture and API standards.
+Foundation is stable. The repository is initialized and the layered Spring Boot backend foundation is in place, including controller, service, repository, model, DTO, and mapper flow. The next focus is global error handling and API standards.
 
 ## Structure
 
