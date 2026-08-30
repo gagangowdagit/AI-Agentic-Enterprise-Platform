@@ -1,55 +1,22 @@
 # Changelog
 
-All important project changes will be recorded here.
-
-The changelog should contain major features, architecture changes, important fixes, and significant project milestones.
-
----
-
-## Format
-
-```text
-## [Version] - YYYY-MM-DD
-
-### Added
-- 
-
-### Changed
-- 
-
-### Fixed
-- 
-
-### Security
-- 
-
-### Infrastructure
-- 
-```
-
----
+This file records only meaningful milestones and material project changes.
 
 ## [Unreleased]
 
 ### Added
 
-* Project repository initialized.
-* Project-control documentation structure created.
-* Project overview defined.
-* Technology stack defined.
-* Development plan defined.
-* Requirements defined.
-* System architecture defined.
-* Database strategy defined.
-* API structure defined.
-* AI/RAG/Agent architecture defined.
-* Git strategy defined.
-* Development status tracking defined.
-* Technical decision tracking defined.
+* Repository initialized with project structure and starter documentation.
+* Project-control tracking set up for planning, architecture, requirements, and status updates.
+* Spring Boot backend scaffold created under rag-backend.
+* Java 21 + Spring Boot 4 foundation configured with Maven.
+* Basic application bootstrap and health endpoint implemented.
+* Initial Spring Boot context test added for startup validation.
 
 ### Changed
 
-* None.
+* Development status updated from placeholder initialization to the current implementation snapshot.
+* Status tracking condensed to a compact, readable format to reduce repeated reading overhead.
 
 ### Fixed
 
@@ -57,19 +24,8 @@ The changelog should contain major features, architecture changes, important fix
 
 ### Security
 
-* Security requirements established.
+* Security requirements documented for future authentication and authorization work.
 
 ### Infrastructure
 
-* Initial project structure created.
-
----
-
-## Changelog Rules
-
-* Record significant changes only.
-* Keep entries concise.
-* Do not record every minor code modification.
-* Update the changelog after meaningful milestones.
-* Use the actual date of the change.
-* Keep historical entries unchanged.
+* Initial backend project skeleton and .gitignore configuration established.

@@ -1,4 +1,4 @@
-package com.rag.rag_backend;
+package com.rag.ragbackend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

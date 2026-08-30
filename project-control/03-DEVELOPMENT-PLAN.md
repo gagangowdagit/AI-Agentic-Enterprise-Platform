@@ -6,68 +6,77 @@ The project will be developed incrementally.
 
 The hierarchy below defines the planned implementation order.
 
+### Status Legend
+
 ```text
-MAIN PART 1: PROJECT FOUNDATION
+[DONE] = completed and verified
+[IN_PROGRESS] = actively being worked on
+[PENDING] = not started yet
+[BLOCKED] = waiting on dependency or issue
+```
+
+```text
+MAIN PART 1: PROJECT FOUNDATION [DONE]
 │
-├── Task 1.1: Project Planning
-│   ├── Subtask 1.1.1: Define project objective
-│   ├── Subtask 1.1.2: Define functional requirements
-│   ├── Subtask 1.1.3: Define non-functional requirements
-│   ├── Subtask 1.1.4: Define user roles
-│   └── Subtask 1.1.5: Define system modules
+├── Task 1.1: Project Planning [DONE]
+│   ├── Subtask 1.1.1: Define project objective [DONE]
+│   ├── Subtask 1.1.2: Define functional requirements [DONE]
+│   ├── Subtask 1.1.3: Define non-functional requirements [DONE]
+│   ├── Subtask 1.1.4: Define user roles [DONE]
+│   └── Subtask 1.1.5: Define system modules [DONE]
 │
-├── Task 1.2: Architecture Design
-│   ├── Subtask 1.2.1: Define frontend architecture
-│   ├── Subtask 1.2.2: Define backend architecture
-│   ├── Subtask 1.2.3: Define AI architecture
-│   ├── Subtask 1.2.4: Define database architecture
-│   ├── Subtask 1.2.5: Define communication architecture
-│   └── Subtask 1.2.6: Define deployment architecture
+├── Task 1.2: Architecture Design [DONE]
+│   ├── Subtask 1.2.1: Define frontend architecture [DONE]
+│   ├── Subtask 1.2.2: Define backend architecture [DONE]
+│   ├── Subtask 1.2.3: Define AI architecture [DONE]
+│   ├── Subtask 1.2.4: Define database architecture [DONE]
+│   ├── Subtask 1.2.5: Define communication architecture [DONE]
+│   └── Subtask 1.2.6: Define deployment architecture [DONE]
 │
-├── Task 1.3: Git Repository
-│   ├── Subtask 1.3.1: Create Git repository
-│   ├── Subtask 1.3.2: Create README
-│   ├── Subtask 1.3.3: Create .gitignore
-│   ├── Subtask 1.3.4: Define branch strategy
-│   └── Subtask 1.3.5: Create initial commit
+├── Task 1.3: Git Repository [DONE]
+│   ├── Subtask 1.3.1: Create Git repository [DONE]
+│   ├── Subtask 1.3.2: Create README [DONE]
+│   ├── Subtask 1.3.3: Create .gitignore [DONE]
+│   ├── Subtask 1.3.4: Define branch strategy [DONE]
+│   └── Subtask 1.3.5: Create initial commit [DONE]
 │
-└── Task 1.4: Development Environment
-    ├── Subtask 1.4.1: Install Java
-    ├── Subtask 1.4.2: Install Node.js
-    ├── Subtask 1.4.3: Install Docker
-    ├── Subtask 1.4.4: Configure IDE
-    ├── Subtask 1.4.5: Configure Git
-    └── Subtask 1.4.6: Configure environment variables
+└── Task 1.4: Development Environment [DONE]
+    ├── Subtask 1.4.1: Install Java [DONE]
+    ├── Subtask 1.4.2: Install Node.js [DONE]
+    ├── Subtask 1.4.3: Install Docker [DONE]
+    ├── Subtask 1.4.4: Configure IDE [DONE]
+    ├── Subtask 1.4.5: Configure Git [DONE]
+    └── Subtask 1.4.6: Configure environment variables [DONE]
 
 
-MAIN PART 2: BACKEND FOUNDATION — SPRING BOOT
+MAIN PART 2: BACKEND FOUNDATION — SPRING BOOT [IN_PROGRESS]
 │
-├── Task 2.1: Create Spring Boot Application
-│   ├── Subtask 2.1.1: Create Spring Boot project
-│   ├── Subtask 2.1.2: Configure Maven
-│   ├── Subtask 2.1.3: Configure application properties
-│   ├── Subtask 2.1.4: Create package structure
-│   └── Subtask 2.1.5: Create health-check API
+├── Task 2.1: Create Spring Boot Application [DONE]
+│   ├── Subtask 2.1.1: Create Spring Boot project [DONE]
+│   ├── Subtask 2.1.2: Configure Maven [DONE]
+│   ├── Subtask 2.1.3: Configure application properties [DONE]
+│   ├── Subtask 2.1.4: Create package structure [DONE]
+│   └── Subtask 2.1.5: Create health-check API [DONE]
 │
-├── Task 2.2: Layered Architecture
-│   ├── Subtask 2.2.1: Create Controller layer
-│   ├── Subtask 2.2.2: Create Service layer
-│   ├── Subtask 2.2.3: Create Repository layer
-│   ├── Subtask 2.2.4: Create Entity layer
-│   ├── Subtask 2.2.5: Create DTO layer
-│   └── Subtask 2.2.6: Create Mapper layer
+├── Task 2.2: Layered Architecture [PENDING]
+│   ├── Subtask 2.2.1: Create Controller layer [PENDING]
+│   ├── Subtask 2.2.2: Create Service layer [PENDING]
+│   ├── Subtask 2.2.3: Create Repository layer [PENDING]
+│   ├── Subtask 2.2.4: Create Entity layer [PENDING]
+│   ├── Subtask 2.2.5: Create DTO layer [PENDING]
+│   └── Subtask 2.2.6: Create Mapper layer [PENDING]
 │
-├── Task 2.3: Global Exception Handling
-│   ├── Subtask 2.3.1: Create custom exceptions
-│   ├── Subtask 2.3.2: Create GlobalExceptionHandler
-│   ├── Subtask 2.3.3: Standardize error response
-│   └── Subtask 2.3.4: Handle validation errors
+├── Task 2.3: Global Exception Handling [PENDING]
+│   ├── Subtask 2.3.1: Create custom exceptions [PENDING]
+│   ├── Subtask 2.3.2: Create GlobalExceptionHandler [PENDING]
+│   ├── Subtask 2.3.3: Standardize error response [PENDING]
+│   └── Subtask 2.3.4: Handle validation errors [PENDING]
 │
-└── Task 2.4: API Standards
-    ├── Subtask 2.4.1: API response structure
-    ├── Subtask 2.4.2: HTTP status codes
-    ├── Subtask 2.4.3: API versioning
-    └── Subtask 2.4.4: Swagger/OpenAPI
+└── Task 2.4: API Standards [PENDING]
+    ├── Subtask 2.4.1: API response structure [PENDING]
+    ├── Subtask 2.4.2: HTTP status codes [PENDING]
+    ├── Subtask 2.4.3: API versioning [PENDING]
+    └── Subtask 2.4.4: Swagger/OpenAPI [PENDING]
 
 
 MAIN PART 3: POSTGRESQL + HIBERNATE/JPA
@@ -718,11 +727,11 @@ Do not move to the next task while the current task is broken.
 ## Current Development Position
 
 ```text
-Main Part: Not Started
+Main Part: 2. Spring Boot Backend
 
-Task: Not Started
+Task: 2.1 Create Spring Boot Application
 
-Subtask: Not Started
+Subtask: 2.1.5 Create health-check API
 
-Status: PROJECT INITIALIZATION
+Status: COMPLETED
 ```
