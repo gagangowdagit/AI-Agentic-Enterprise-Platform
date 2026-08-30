@@ -8,7 +8,7 @@ import com.rag.ragbackend.dto.SystemStatusResponse;
 import com.rag.ragbackend.service.SystemStatusService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping({"/api", "/api/v1"})
 public class SystemController {
 
     private final SystemStatusService systemStatusService;

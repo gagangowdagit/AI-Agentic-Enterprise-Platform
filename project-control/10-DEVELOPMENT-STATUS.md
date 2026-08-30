@@ -4,10 +4,10 @@
 
 ```text
 Overall Status: FOUNDATION STABLE
-Overall Progress: 28%
+Overall Progress: 36%
 Current Main Part: 2. Spring Boot Backend
-Current Task: 2.2 Layered Architecture
-Current Subtask: 2.2.6 Create Mapper layer
+Current Task: 2.4 API Standards
+Current Subtask: 2.4.4 Swagger/OpenAPI
 Status: COMPLETED
 ```
 
@@ -21,18 +21,20 @@ Status: COMPLETED
 ✓ Maven configuration added for Java 21 and Spring Boot 4
 ✓ Application properties configured
 ✓ Basic Spring Boot app bootstrap created
-✓ Health-check endpoint exposed at /api/health
-✓ Controller, service, repository, model, DTO, and mapper layers created
+✓ Health-check endpoint exposed and versioned
+✓ Controller, service, repository, model, DTO, mapper, and exception layers created
+✓ API response contract, validation, and global error handler implemented
+✓ OpenAPI/Swagger baseline added and verified
 ✓ Backend tests passing and verified with Maven
 ```
 
 ## Active Next Steps
 
 ```text
-1. Add global exception handling and validation standards
-2. Standardize API response structure and HTTP conventions
-3. Add OpenAPI/Swagger baseline for backend APIs
-4. Prepare PostgreSQL and JPA integration
+1. Prepare PostgreSQL and JPA integration
+2. Create first database domain model and repository
+3. Add user/project/task domain foundation
+4. Add persistence and integration testing
 ```
 
 ## Progress Tracking

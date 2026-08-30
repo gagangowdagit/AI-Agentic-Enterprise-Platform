@@ -66,17 +66,17 @@ MAIN PART 2: BACKEND FOUNDATION — SPRING BOOT [IN_PROGRESS]
 │   ├── Subtask 2.2.5: Create DTO layer [DONE]
 │   └── Subtask 2.2.6: Create Mapper layer [DONE]
 │
-├── Task 2.3: Global Exception Handling [PENDING]
-│   ├── Subtask 2.3.1: Create custom exceptions [PENDING]
-│   ├── Subtask 2.3.2: Create GlobalExceptionHandler [PENDING]
-│   ├── Subtask 2.3.3: Standardize error response [PENDING]
-│   └── Subtask 2.3.4: Handle validation errors [PENDING]
+├── Task 2.3: Global Exception Handling [DONE]
+│   ├── Subtask 2.3.1: Create custom exceptions [DONE]
+│   ├── Subtask 2.3.2: Create GlobalExceptionHandler [DONE]
+│   ├── Subtask 2.3.3: Standardize error response [DONE]
+│   └── Subtask 2.3.4: Handle validation errors [DONE]
 │
-└── Task 2.4: API Standards [PENDING]
-    ├── Subtask 2.4.1: API response structure [PENDING]
-    ├── Subtask 2.4.2: HTTP status codes [PENDING]
-    ├── Subtask 2.4.3: API versioning [PENDING]
-    └── Subtask 2.4.4: Swagger/OpenAPI [PENDING]
+└── Task 2.4: API Standards [DONE]
+    ├── Subtask 2.4.1: API response structure [DONE]
+    ├── Subtask 2.4.2: HTTP status codes [DONE]
+    ├── Subtask 2.4.3: API versioning [DONE]
+    └── Subtask 2.4.4: Swagger/OpenAPI [DONE]
 
 
 MAIN PART 3: POSTGRESQL + HIBERNATE/JPA
@@ -729,9 +729,9 @@ Do not move to the next task while the current task is broken.
 ```text
 Main Part: 2. Spring Boot Backend
 
-Task: 2.1 Create Spring Boot Application
+Task: 2.4 API Standards
 
-Subtask: 2.1.5 Create health-check API
+Subtask: 2.4.4 Swagger/OpenAPI
 
 Status: COMPLETED
 ```

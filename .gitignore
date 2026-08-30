@@ -6,8 +6,12 @@ node_modules/
 **/target/
 *.class
 .mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/*.jar
 .gradle/
 **/.gradle/
+**/.classpath
+**/.project
+**/.settings/
 
 # Frontend build output
 .next/
