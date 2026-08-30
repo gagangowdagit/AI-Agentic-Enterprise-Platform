@@ -14,6 +14,7 @@ Foundation is stable. The repository is initialized and the layered Spring Boot 
 - ai/: AI agents and prompt logic
 - docs/: product and design documents
 - infrastructure/: deployment and environment resources
+- devops/: future DevOps, CI/CD, deployment, and infrastructure planning
 - tests/: validation and QA assets
 
 ## Key Active Stack
