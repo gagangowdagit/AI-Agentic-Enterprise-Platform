@@ -29,3 +29,7 @@ Foundation is stable. The repository is initialized and the layered Spring Boot 
 ## Read Me
 
 For detailed implementation planning and status history, use the files in project-control/. The status files are kept intentionally compact so they stay easy to scan and low-cost to read repeatedly.
+
+
+TO run backend -- .\mvnw.cmd spring-boot:run -- 8080
+To run frontend -- npm run dev -- 5173

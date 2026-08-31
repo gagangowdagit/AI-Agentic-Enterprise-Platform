@@ -25,6 +25,20 @@ out/
 dist/
 build/
 coverage/
+.vite/
+*.tsbuildinfo
+frontend/.vite/
+
+# Local frontend runtime files
+*.local
+.env.local
+.env.development.local
+.env.production.local
+
+# Local backend/runtime artifacts
+*.pid
+*.lock
+hs_err_pid*
 
 # Python
 __pycache__/
