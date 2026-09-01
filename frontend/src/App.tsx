@@ -2,14 +2,19 @@ import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import HomePage from './pages/HomePage';
+import ProjectsPage from './pages/ProjectsPage';
+import DocumentsPage from './pages/DocumentsPage';
+import TeamsPage from './pages/TeamsPage';
+import NovaAIPage from './pages/NovaAIPage';
 
 function App() {
   const location = useLocation();
   const isHomePage = location.pathname === '/home';
+  const isDetailPage = ['/projects', '/documents', '/teams', '/nova-ai'].includes(location.pathname);
 
   return (
     <div>
-      {!isHomePage && (
+      {!isHomePage && !isDetailPage && (
         <nav style={{ marginBottom: '20px', paddingBottom: '10px', borderBottom: '1px solid #ccc' }}>
           <Link
             to="/login"
@@ -37,10 +42,30 @@ function App() {
         </nav>
       )}
 
+      {(isHomePage || isDetailPage) && (
+        <nav style={{ marginBottom: '20px', paddingBottom: '10px', borderBottom: '1px solid #ccc' }}>
+          <Link
+            to="/home"
+            style={{
+              fontWeight: location.pathname === '/home' ? 'bold' : 'normal',
+              textDecoration: 'none',
+              cursor: 'pointer',
+              color: 'blue',
+            }}
+          >
+            Back to Home
+          </Link>
+        </nav>
+      )}
+
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/home" element={<HomePage />} />
+        <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/documents" element={<DocumentsPage />} />
+        <Route path="/teams" element={<TeamsPage />} />
+        <Route path="/nova-ai" element={<NovaAIPage />} />
         <Route path="/" element={<LoginPage />} />
       </Routes>
     </div>
