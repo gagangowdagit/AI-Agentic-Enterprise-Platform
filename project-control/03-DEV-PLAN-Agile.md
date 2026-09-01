@@ -29,8 +29,8 @@ MAIN PART 1: USER MANAGEMENT
 │
 MAIN PART 2: AUTHENTICATION & AUTHORIZATION
 │
-├── Task 2.1: Authentication & Authorization [PENDING]
-│   ├── Subtask 2.1.1: Implement login [PENDING]
+├── Task 2.1: Authentication & Authorization [In-Progress]
+│   ├── Subtask 2.1.1: Implement login [Done]
 │   ├── Subtask 2.1.2: Implement password hashing [PENDING]
 │   ├── Subtask 2.1.3: Generate JWT [PENDING]
 │   ├── Subtask 2.1.4: Validate JWT [PENDING]

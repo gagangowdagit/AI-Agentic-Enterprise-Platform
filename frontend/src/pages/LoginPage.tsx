@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { login } from '../services/authApi';
+import { useNavigate } from 'react-router-dom';
 
 function LoginPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -17,6 +19,9 @@ function LoginPage() {
       setMessage(`Login successful! Welcome, ${result.name}`);
       setEmail('');
       setPassword('');
+      setTimeout(() => {
+        navigate('/home');
+      }, 1500);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Login failed';
       setMessage(errorMessage);
