@@ -34,6 +34,9 @@ public class Document {
     @Column(name = "uploaded_at")
     private LocalDateTime uploadedAt;
 
+    @Column(name = "extracted_text", columnDefinition = "TEXT")
+    private String extractedText;
+
     public Document() {
     }
 
@@ -100,5 +103,13 @@ public class Document {
 
     public void setUploadedAt(LocalDateTime uploadedAt) {
         this.uploadedAt = uploadedAt;
+    }
+
+    public String getExtractedText() {
+        return extractedText;
+    }
+
+    public void setExtractedText(String extractedText) {
+        this.extractedText = extractedText;
     }
 }
