@@ -3,6 +3,7 @@ package com.rag.ragbackend.processing;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rag.ragbackend.entity.DocumentChunk;
+import com.rag.ragbackend.memory.Memory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -34,14 +35,29 @@ public class OllamaLlmService implements LlmService {
 
     @Override
     public LlmResponse generateAnswer(String query, List<DocumentChunk> contextChunks) {
+        return generateAnswer(query, contextChunks, null);
+    }
+
+    @Override
+    public LlmResponse generateAnswer(String query, List<DocumentChunk> contextChunks, Object toolResult) {
+        return generateAnswer(query, contextChunks, toolResult, List.of());
+    }
+
+    @Override
+    public LlmResponse generateAnswer(
+            String query,
+            List<DocumentChunk> contextChunks,
+            Object toolResult,
+            List<Memory> memories) {
         if (query == null || query.isBlank()) {
             throw new IllegalArgumentException("Query is required.");
         }
 
         List<DocumentChunk> context = contextChunks == null ? List.of() : List.copyOf(contextChunks);
+        List<Memory> memoryContext = memories == null ? List.of() : List.copyOf(memories);
         Map<String, Object> request = new HashMap<>();
         request.put("model", model);
-        request.put("prompt", buildPrompt(query, context));
+        request.put("prompt", buildPrompt(query, context, toolResult, memoryContext));
         request.put("stream", false);
 
         String response = restClient.post()
@@ -54,7 +70,11 @@ public class OllamaLlmService implements LlmService {
         return new LlmResponse(query, readAnswer(response), context);
     }
 
-    private String buildPrompt(String query, List<DocumentChunk> contextChunks) {
+        private String buildPrompt(
+            String query,
+            List<DocumentChunk> contextChunks,
+            Object toolResult,
+            List<Memory> memories) {
         StringBuilder prompt = new StringBuilder(
             "You are answering a question about the user's documents. Use only the retrieved context below. "
                 + "Do not use outside knowledge, guess, or invent facts. "
@@ -65,8 +85,27 @@ public class OllamaLlmService implements LlmService {
             prompt.append("[Chunk ").append(index + 1).append("]\n")
                     .append(contextChunks.get(index).getContent()).append("\n");
         }
+        if (toolResult != null) {
+            prompt.append("\nTool result:\n").append(serializeToolResult(toolResult)).append("\n");
+        }
+        if (!memories.isEmpty()) {
+            prompt.append("\nRelevant project memories:\n");
+            memories.forEach(memory -> prompt.append("[Memory ")
+                    .append(memory.getMemoryType())
+                    .append("] ")
+                    .append(memory.getContent())
+                    .append("\n"));
+        }
         return prompt.append("\nQuestion:\n").append(query)
             .append("\n\nAnswer using only the retrieved context.").toString();
+    }
+
+    private String serializeToolResult(Object toolResult) {
+        try {
+            return objectMapper.writeValueAsString(toolResult);
+        } catch (Exception exception) {
+            return String.valueOf(toolResult);
+        }
     }
 
     private String readAnswer(String serializedResponse) {
