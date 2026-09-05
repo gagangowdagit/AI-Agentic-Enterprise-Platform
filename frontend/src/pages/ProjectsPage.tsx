@@ -1,17 +1,24 @@
 import { useState, useEffect } from 'react';
 import { getProjects, createProject } from '../services/projectApi';
-
-interface Project {
-  id: string;
-  name: string;
-  status?: string;
-}
+import type { Project, ProjectPriority } from '../services/projectApi';
 
 interface FormData {
-  projectId: string;
-  projectName: string;
+  name: string;
+  description: string;
   status: 'Active' | 'Pending' | 'Completed';
+  startDate: string;
+  endDate: string;
+  priority: ProjectPriority;
 }
+
+const initialFormData: FormData = {
+  name: '',
+  description: '',
+  status: 'Active',
+  startDate: '',
+  endDate: '',
+  priority: 'MEDIUM',
+};
 
 function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -19,12 +26,8 @@ function ProjectsPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
-    projectId: '',
-    projectName: '',
-    status: 'Active',
-  });
-  const [submittedData, setSubmittedData] = useState<FormData | null>(null);
+  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [submittedData, setSubmittedData] = useState<Project | null>(null);
   const [createLoading, setCreateLoading] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
 
@@ -54,12 +57,12 @@ function ProjectsPage() {
 
   const handleCancel = () => {
     setShowForm(false);
-    setFormData({ projectId: '', projectName: '', status: 'Active' });
+    setFormData(initialFormData);
     setSubmittedData(null);
     setCreateError(null);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -74,15 +77,18 @@ function ProjectsPage() {
 
     try {
       const newProject = await createProject({
-        id: formData.projectId,
-        name: formData.projectName,
+        name: formData.name,
+        description: formData.description || undefined,
         status: formData.status,
+        startDate: formData.startDate || undefined,
+        endDate: formData.endDate || undefined,
+        priority: formData.priority,
       });
 
-      setSubmittedData(formData);
-      setProjects([...projects, newProject]);
+      setSubmittedData(newProject);
+      setProjects((currentProjects) => [...currentProjects, newProject]);
       setShowForm(false);
-      setFormData({ projectId: '', projectName: '', status: 'Active' });
+      setFormData(initialFormData);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create project';
       setCreateError(errorMessage);
@@ -140,14 +146,14 @@ function ProjectsPage() {
           )}
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: '15px' }}>
-              <label htmlFor="projectId" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                Project ID:
+              <label htmlFor="name" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                Project Name:
               </label>
               <input
                 type="text"
-                id="projectId"
-                name="projectId"
-                value={formData.projectId}
+                id="name"
+                name="name"
+                value={formData.name}
                 onChange={handleInputChange}
                 required
                 style={{
@@ -162,16 +168,15 @@ function ProjectsPage() {
             </div>
 
             <div style={{ marginBottom: '15px' }}>
-              <label htmlFor="projectName" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                Project Name:
+              <label htmlFor="description" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                Description:
               </label>
-              <input
-                type="text"
-                id="projectName"
-                name="projectName"
-                value={formData.projectName}
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
                 onChange={handleInputChange}
-                required
+                rows={4}
                 style={{
                   width: '100%',
                   padding: '8px',
@@ -179,6 +184,7 @@ function ProjectsPage() {
                   borderRadius: '4px',
                   fontSize: '14px',
                   boxSizing: 'border-box',
+                  resize: 'vertical',
                 }}
               />
             </div>
@@ -205,6 +211,74 @@ function ProjectsPage() {
                 <option value="Pending">Pending</option>
                 <option value="Completed">Completed</option>
               </select>
+            </div>
+
+            <div style={{ marginBottom: '15px' }}>
+              <label htmlFor="priority" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                Priority:
+              </label>
+              <select
+                id="priority"
+                name="priority"
+                value={formData.priority}
+                onChange={handleInputChange}
+                required
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  fontSize: '14px',
+                  boxSizing: 'border-box',
+                }}
+              >
+                <option value="LOW">Low</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HIGH">High</option>
+              </select>
+            </div>
+
+            <div style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
+              <div style={{ flex: 1 }}>
+                <label htmlFor="startDate" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                  Start Date:
+                </label>
+                <input
+                  type="date"
+                  id="startDate"
+                  name="startDate"
+                  value={formData.startDate}
+                  onChange={handleInputChange}
+                  style={{
+                    width: '100%',
+                    padding: '8px',
+                    border: '1px solid #ccc',
+                    borderRadius: '4px',
+                    fontSize: '14px',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label htmlFor="endDate" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                  End Date:
+                </label>
+                <input
+                  type="date"
+                  id="endDate"
+                  name="endDate"
+                  value={formData.endDate}
+                  onChange={handleInputChange}
+                  style={{
+                    width: '100%',
+                    padding: '8px',
+                    border: '1px solid #ccc',
+                    borderRadius: '4px',
+                    fontSize: '14px',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
             </div>
 
             <div style={{ display: 'flex', gap: '10px' }}>
@@ -248,9 +322,9 @@ function ProjectsPage() {
       {submittedData && (
         <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#c8e6c9', border: '1px solid #4CAF50', borderRadius: '4px' }}>
           <h3>Project Created Successfully!</h3>
-          <p><strong>Project ID:</strong> {submittedData.projectId}</p>
-          <p><strong>Project Name:</strong> {submittedData.projectName}</p>
+          <p><strong>Project Name:</strong> {submittedData.name}</p>
           <p><strong>Status:</strong> {submittedData.status}</p>
+          <p><strong>Priority:</strong> {submittedData.priority}</p>
         </div>
       )}
 
@@ -277,10 +351,25 @@ function ProjectsPage() {
               e.currentTarget.style.boxShadow = 'none';
             }}
           >
-            <h3>{`${project.id.toUpperCase()} - ${project.name}`}</h3>
+            <h3>{`${project.id} - ${project.name}`}</h3>
             {project.status && (
               <p style={{ color: '#666', marginTop: '10px' }}>
                 <strong>Status:</strong> {project.status}
+              </p>
+            )}
+            {project.priority && (
+              <p style={{ color: '#666', marginTop: '10px' }}>
+                <strong>Priority:</strong> {project.priority}
+              </p>
+            )}
+            {project.description && (
+              <p style={{ color: '#666', marginTop: '10px', whiteSpace: 'pre-wrap' }}>
+                {project.description}
+              </p>
+            )}
+            {(project.startDate || project.endDate) && (
+              <p style={{ color: '#666', marginTop: '10px' }}>
+                <strong>Dates:</strong> {project.startDate || 'Not set'} - {project.endDate || 'Not set'}
               </p>
             )}
           </div>

@@ -33,7 +33,7 @@ function NovaAIPage() {
         const projectList = await getProjects();
         setProjects(projectList);
         if (projectList.length > 0) {
-          setSelectedProjectId(projectList[0].id);
+          setSelectedProjectId(String(projectList[0].id));
         }
       } catch (loadError) {
         setError(loadError instanceof Error ? loadError.message : 'Failed to load projects.');

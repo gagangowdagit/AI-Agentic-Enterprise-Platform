@@ -47,7 +47,7 @@ function DocumentsPage() {
         const projectList = await getProjects();
         setProjects(projectList);
         if (projectList.length > 0 && !selectedProjectId) {
-          setSelectedProjectId(projectList[0].id);
+          setSelectedProjectId(String(projectList[0].id));
         }
       } catch (error) {
         console.error('Failed to fetch projects:', error);
@@ -167,25 +167,25 @@ function DocumentsPage() {
             projects.map((project) => (
               <button
                 key={project.id}
-                onClick={() => setSelectedProjectId(project.id)}
+                onClick={() => setSelectedProjectId(String(project.id))}
                 style={{
                   padding: '10px 16px',
-                  backgroundColor: selectedProjectId === project.id ? '#2196F3' : '#e0e0e0',
-                  color: selectedProjectId === project.id ? 'white' : '#333',
+                  backgroundColor: selectedProjectId === String(project.id) ? '#2196F3' : '#e0e0e0',
+                  color: selectedProjectId === String(project.id) ? 'white' : '#333',
                   border: 'none',
                   borderRadius: '4px',
                   cursor: 'pointer',
                   fontSize: '14px',
-                  fontWeight: selectedProjectId === project.id ? '600' : '500',
+                  fontWeight: selectedProjectId === String(project.id) ? '600' : '500',
                   transition: 'background-color 0.3s',
                 }}
                 onMouseEnter={(e) => {
-                  if (selectedProjectId !== project.id) {
+                  if (selectedProjectId !== String(project.id)) {
                     e.currentTarget.style.backgroundColor = '#d0d0d0';
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (selectedProjectId !== project.id) {
+                  if (selectedProjectId !== String(project.id)) {
                     e.currentTarget.style.backgroundColor = '#e0e0e0';
                   }
                 }}
