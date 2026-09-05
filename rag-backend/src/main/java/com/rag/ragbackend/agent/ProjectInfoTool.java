@@ -40,13 +40,20 @@ public class ProjectInfoTool implements Tool {
             throw new IllegalArgumentException("Project ID is required for project-info tool.");
         }
 
-        Optional<Project> project = projectRepository.findById(projectId);
+        Object repositoryId;
+        try {
+            repositoryId = Long.valueOf(projectId);
+        } catch (NumberFormatException exception) {
+            repositoryId = projectId;
+        }
+        Optional<Project> project = projectRepository.findById(repositoryId);
         if (project.isPresent()) {
             return project.get();
         }
 
         return projectService.getAllProjects().stream()
-                .filter(item -> item.getId() != null && item.getId().equals(projectId))
+                .filter(item -> (item.getId() != null && item.getId().toString().equals(projectId))
+                    || projectId.equals(item.getLegacyId()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Project not found: " + projectId));
     }

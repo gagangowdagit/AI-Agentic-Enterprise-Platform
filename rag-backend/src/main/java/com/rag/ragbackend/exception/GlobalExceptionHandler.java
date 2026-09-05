@@ -9,6 +9,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.rag.ragbackend.dto.ApiResponse;
@@ -46,6 +47,12 @@ public class GlobalExceptionHandler {
         String message = errors.values().stream().findFirst().orElse("Validation failed");
         ApiResponse<Void> response = ApiResponse.error("Validation failed", "VALIDATION_ERROR", message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUnreadableMessage(HttpMessageNotReadableException ex) {
+        ApiResponse<Void> response = ApiResponse.error("Invalid request body", "VALIDATION_ERROR", "Request body contains an invalid value");
+        return ResponseEntity.badRequest().body(response);
     }
 
     @ExceptionHandler(Exception.class)

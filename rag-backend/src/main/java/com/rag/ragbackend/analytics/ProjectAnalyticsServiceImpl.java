@@ -36,7 +36,8 @@ public class ProjectAnalyticsServiceImpl implements ProjectAnalyticsService {
         requireValue(projectId, "Project ID");
 
         Project project = projectService.getAllProjects().stream()
-                .filter(item -> projectId.equals(item.getId()))
+                .filter(item -> (item.getId() != null && projectId.equals(item.getId().toString()))
+                    || projectId.equals(item.getLegacyId()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Project not found: " + projectId));
         List<Task> tasks = taskService.getTasksByProjectId(projectId);

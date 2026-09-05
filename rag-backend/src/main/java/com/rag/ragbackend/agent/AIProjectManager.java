@@ -153,7 +153,8 @@ public class AIProjectManager {
 
     private Project findProject(String projectId) {
         return projectService.getAllProjects().stream()
-                .filter(project -> projectId.equals(project.getId()))
+            .filter(project -> (project.getId() != null && projectId.equals(project.getId().toString()))
+                || projectId.equals(project.getLegacyId()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Project not found: " + projectId));
     }

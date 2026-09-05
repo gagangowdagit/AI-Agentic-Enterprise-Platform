@@ -5,6 +5,7 @@ import com.rag.ragbackend.service.ProjectService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -24,9 +25,31 @@ public class ProjectController {
         return ResponseEntity.status(HttpStatus.OK).body(projects);
     }
 
+    @GetMapping("/{projectId}")
+    public ResponseEntity<Project> getProject(@PathVariable String projectId) {
+        return ResponseEntity.ok(projectService.getProject(projectId));
+    }
+
+    @GetMapping("/{projectId}/details")
+    public ResponseEntity<Project> getProjectDetails(@PathVariable String projectId) {
+        return ResponseEntity.ok(projectService.getProjectDetails(projectId));
+    }
+
     @PostMapping
-    public ResponseEntity<Project> createProject(@RequestBody Project project) {
+    public ResponseEntity<Project> createProject(@Valid @RequestBody Project project) {
         Project createdProject = projectService.createProject(project);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProject);
+    }
+
+    @PutMapping("/{projectId}")
+    public ResponseEntity<Project> updateProject(@PathVariable String projectId,
+                                                 @Valid @RequestBody Project project) {
+        return ResponseEntity.ok(projectService.updateProject(projectId, project));
+    }
+
+    @DeleteMapping("/{projectId}")
+    public ResponseEntity<Void> deleteProject(@PathVariable String projectId) {
+        projectService.deleteProject(projectId);
+        return ResponseEntity.noContent().build();
     }
 }

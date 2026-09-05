@@ -1,11 +1,13 @@
 package com.rag.ragbackend.service;
 
+import com.rag.ragbackend.dto.ProjectTaskSummary;
 import com.rag.ragbackend.entity.Task;
 import com.rag.ragbackend.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -75,6 +77,39 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<Task> getTasksByProjectId(String projectId) {
         return taskRepository.findByProjectId(projectId);
+    }
+
+    @Override
+    public ProjectTaskSummary getTaskSummaryByProjectId(String projectId) {
+        List<Task> tasks = getTasksByProjectId(projectId);
+        int completedTasks = (int) tasks.stream().filter(this::isCompleted).count();
+        int inProgressTasks = (int) tasks.stream().filter(this::isInProgress).count();
+        int pendingTasks = tasks.size() - completedTasks - inProgressTasks;
+        double completionPercentage = tasks.isEmpty() ? 0.0 : completedTasks * 100.0 / tasks.size();
+
+        return new ProjectTaskSummary(
+                tasks.size(),
+                completedTasks,
+                inProgressTasks,
+                pendingTasks,
+                List.of(),
+                completionPercentage,
+                false);
+    }
+
+    private boolean isCompleted(Task task) {
+        String status = normalizeStatus(task.getStatus());
+        return status.equals("completed") || status.equals("done") || status.equals("closed");
+    }
+
+    private boolean isInProgress(Task task) {
+        String status = normalizeStatus(task.getStatus());
+        return status.equals("in_progress") || status.equals("in-progress")
+                || status.equals("in progress") || status.equals("working") || status.equals("active");
+    }
+
+    private String normalizeStatus(String status) {
+        return status == null ? "" : status.toLowerCase(Locale.ROOT).trim();
     }
 
     private void notifySafely(Long userId, String type, String title, String message) {

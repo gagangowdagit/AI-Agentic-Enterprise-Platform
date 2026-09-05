@@ -1,9 +1,11 @@
 package com.rag.ragbackend.service;
 
+import com.rag.ragbackend.dto.ProjectTaskSummary;
 import com.rag.ragbackend.entity.Task;
 import com.rag.ragbackend.repository.TaskRepository;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -57,5 +59,29 @@ class TaskServiceImplTest {
         TaskService service = new TaskServiceImpl(taskRepository, notificationService);
 
         assertEquals(task, service.createTask(task));
+    }
+
+    @Test
+    void summarizesTasksByProjectAndClassifiesStatuses() {
+        TaskRepository taskRepository = mock(TaskRepository.class);
+        List<Task> projectTasks = List.of(
+                new Task("task-1", "project-1", "Complete release", null, "completed", "high"),
+                new Task("task-2", "project-1", "Review release", null, "done", "medium"),
+                new Task("task-3", "project-1", "Fix deployment", null, "in_progress", "high"),
+                new Task("task-4", "project-1", "Write docs", null, "todo", "low"),
+                new Task("task-5", "project-2", "Other project", null, "completed", "low"));
+        when(taskRepository.findByProjectId("project-1")).thenReturn(projectTasks.subList(0, 4));
+        TaskService service = new TaskServiceImpl(taskRepository);
+
+        ProjectTaskSummary summary = service.getTaskSummaryByProjectId("project-1");
+
+        assertEquals(4, summary.totalTasks());
+        assertEquals(2, summary.completedTasks());
+        assertEquals(1, summary.inProgressTasks());
+        assertEquals(1, summary.pendingTasks());
+        assertEquals(50.0, summary.completionPercentage());
+        assertEquals(List.of(), summary.overdueTasks());
+        assertEquals(false, summary.overdueTrackingAvailable());
+        verify(taskRepository).findByProjectId("project-1");
     }
 }

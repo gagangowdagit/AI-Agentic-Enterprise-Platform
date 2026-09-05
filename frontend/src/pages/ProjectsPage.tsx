@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getProjects, createProject } from '../services/projectApi';
 import type { Project, ProjectPriority } from '../services/projectApi';
 
@@ -21,6 +22,7 @@ const initialFormData: FormData = {
 };
 
 function ProjectsPage() {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -99,7 +101,7 @@ function ProjectsPage() {
   };
 
   const handleProjectClick = (project: Project) => {
-    alert(`Project ${project.id} - ${project.name} clicked`);
+    navigate(`/projects/${project.id}`);
   };
 
   return (

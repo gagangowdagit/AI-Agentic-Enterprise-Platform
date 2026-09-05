@@ -1,6 +1,7 @@
 package com.rag.ragbackend.service;
 
 import com.rag.ragbackend.entity.Task;
+import com.rag.ragbackend.dto.ProjectTaskSummary;
 
 import java.util.List;
 
@@ -11,4 +12,6 @@ public interface TaskService {
     Task updateTask(String taskId, Task task);
 
     List<Task> getTasksByProjectId(String projectId);
+
+    ProjectTaskSummary getTaskSummaryByProjectId(String projectId);
 }

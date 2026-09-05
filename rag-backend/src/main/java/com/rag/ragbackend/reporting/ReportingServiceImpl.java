@@ -38,7 +38,7 @@ public class ReportingServiceImpl implements ReportingService {
     public ProjectReport generateProjectReport(String projectId) {
         ProjectAnalytics analytics = projectAnalyticsService.analyzeProject(projectId);
         return new ProjectReport(
-                analytics.project().getId(),
+                projectId,
                 analytics.project().getName(),
                 analytics.project().getStatus(),
                 analytics.totalTasks(),

@@ -3,5 +3,5 @@ package com.rag.ragbackend.repository;
 import com.rag.ragbackend.entity.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ProjectRepository extends JpaRepository<Project, String> {
+public interface ProjectRepository extends JpaRepository<Project, Object> {
 }

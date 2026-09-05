@@ -3,6 +3,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import HomePage from './pages/HomePage';
 import ProjectsPage from './pages/ProjectsPage';
+import ProjectDetailsPage from './pages/ProjectDetailsPage';
 import DocumentsPage from './pages/DocumentsPage';
 import TeamsPage from './pages/TeamsPage';
 import NovaAIPage from './pages/NovaAIPage';
@@ -10,7 +11,10 @@ import NovaAIPage from './pages/NovaAIPage';
 function App() {
   const location = useLocation();
   const isHomePage = location.pathname === '/home';
-  const isDetailPage = ['/projects', '/documents', '/teams', '/nova-ai'].includes(location.pathname);
+  const isProjectDetailsPage = location.pathname.startsWith('/projects/');
+  const isDetailPage = location.pathname === '/projects'
+    || isProjectDetailsPage
+    || ['/documents', '/teams', '/nova-ai'].includes(location.pathname);
 
   return (
     <div>
@@ -42,7 +46,7 @@ function App() {
         </nav>
       )}
 
-      {(isHomePage || isDetailPage) && (
+      {(isHomePage || isDetailPage) && !isProjectDetailsPage && (
         <nav style={{ marginBottom: '20px', paddingBottom: '10px', borderBottom: '1px solid #ccc' }}>
           <Link
             to="/home"
@@ -63,6 +67,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/projects/:projectId" element={<ProjectDetailsPage />} />
         <Route path="/documents" element={<DocumentsPage />} />
         <Route path="/teams" element={<TeamsPage />} />
         <Route path="/nova-ai" element={<NovaAIPage />} />

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { getProjects, type Project } from '../services/projectApi';
 
 interface ChatMessage {
@@ -18,6 +19,7 @@ const API_BASE_URL = 'http://localhost:8080/api/v1';
 const TOP_K = 3;
 
 function NovaAIPage() {
+  const [searchParams] = useSearchParams();
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -32,9 +34,10 @@ function NovaAIPage() {
         setLoadingProjects(true);
         const projectList = await getProjects();
         setProjects(projectList);
-        if (projectList.length > 0) {
-          setSelectedProjectId(String(projectList[0].id));
-        }
+        const requestedProjectId = searchParams.get('projectId');
+        const requestedProjectExists = requestedProjectId
+          && projectList.some((project) => String(project.id) === requestedProjectId);
+        setSelectedProjectId(requestedProjectExists ? requestedProjectId : projectList.length > 0 ? String(projectList[0].id) : '');
       } catch (loadError) {
         setError(loadError instanceof Error ? loadError.message : 'Failed to load projects.');
       } finally {
@@ -43,7 +46,7 @@ function NovaAIPage() {
     };
 
     loadProjects();
-  }, []);
+  }, [searchParams]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

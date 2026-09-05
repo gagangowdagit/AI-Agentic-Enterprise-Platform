@@ -8,6 +8,7 @@ export interface DocumentResponse {
   fileSize: number;
   filePath: string;
   uploadedAt: string;
+  extractedText?: string;
 }
 
 export const uploadDocument = async (
