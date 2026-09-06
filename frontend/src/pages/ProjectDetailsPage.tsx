@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getProjects } from '../services/projectApi';
+import { deleteProject, getProjects } from '../services/projectApi';
 import type { Project } from '../services/projectApi';
 import { getProjectTaskMetrics } from '../services/projectAnalyticsApi';
 import type { ProjectTaskMetrics } from '../services/projectAnalyticsApi';
@@ -11,6 +11,8 @@ import { deleteDocument, downloadDocument, getDocumentsByProject } from '../serv
 import type { DocumentResponse } from '../services/documentApi';
 import { getProjectInsights } from '../services/projectInsightsApi';
 import type { ProjectInsights } from '../services/projectInsightsApi';
+import { addProjectTeamMember, getAvailableProjectEmployees, getProjectTeam, removeProjectTeamMember } from '../services/teamApi';
+import type { TeamMember } from '../services/teamApi';
 
 const sections = ['Overview', 'Tasks', 'Timeline', 'Team', 'Documents', 'AI Knowledge', 'AI Insights'] as const;
 
@@ -23,6 +25,12 @@ function ProjectDetailsPage() {
   const [activeSection, setActiveSection] = useState<Section>('Overview');
   const [taskMetrics, setTaskMetrics] = useState<ProjectTaskMetrics | null>(null);
   const [timeline, setTimeline] = useState<ProjectTimeline | null>(null);
+  const [team, setTeam] = useState<TeamMember[]>([]);
+  const [availableEmployees, setAvailableEmployees] = useState<TeamMember[]>([]);
+  const [teamLoading, setTeamLoading] = useState(false);
+  const [teamMutationLoading, setTeamMutationLoading] = useState(false);
+  const [teamError, setTeamError] = useState<string | null>(null);
+  const [teamMessage, setTeamMessage] = useState<string | null>(null);
   const [documents, setDocuments] = useState<DocumentResponse[]>([]);
   const [documentsLoading, setDocumentsLoading] = useState(false);
   const [documentsError, setDocumentsError] = useState<string | null>(null);
@@ -33,6 +41,29 @@ function ProjectDetailsPage() {
   const [tasksError, setTasksError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deletingProject, setDeletingProject] = useState(false);
+
+  const handleDeleteProject = async () => {
+    if (!projectId || !project) {
+      return;
+    }
+
+    const confirmed = window.confirm(`Delete "${project.name}" and all of its related project data?`);
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setDeletingProject(true);
+      setError(null);
+      await deleteProject(projectId);
+      navigate('/projects');
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : 'Failed to delete project');
+    } finally {
+      setDeletingProject(false);
+    }
+  };
 
   useEffect(() => {
     const loadProject = async () => {
@@ -95,6 +126,32 @@ function ProjectDetailsPage() {
     };
 
     loadInsights();
+  }, [activeSection, projectId]);
+
+  useEffect(() => {
+    if (activeSection !== 'Team' || !projectId) {
+      return;
+    }
+
+    const loadTeam = async () => {
+      try {
+        setTeamLoading(true);
+        setTeamError(null);
+        setTeamMessage(null);
+        const [members, available] = await Promise.all([
+          getProjectTeam(projectId),
+          getAvailableProjectEmployees(projectId),
+        ]);
+        setTeam(members);
+        setAvailableEmployees(available);
+      } catch (loadError) {
+        setTeamError(loadError instanceof Error ? loadError.message : 'Failed to load project team');
+      } finally {
+        setTeamLoading(false);
+      }
+    };
+
+    loadTeam();
   }, [activeSection, projectId]);
 
   useEffect(() => {
@@ -175,9 +232,27 @@ function ProjectDetailsPage() {
 
         {!loading && !error && project && (
           <>
-            <header style={{ marginBottom: '24px' }}>
-              <p style={{ margin: '0 0 8px', color: '#666', fontSize: '14px' }}>Project {project.id}</p>
-              <h1 style={{ margin: 0, color: '#333' }}>{project.name}</h1>
+            <header style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+              <div>
+                <p style={{ margin: '0 0 8px', color: '#666', fontSize: '14px' }}>Project {project.id}</p>
+                <h1 style={{ margin: 0, color: '#333' }}>{project.name}</h1>
+              </div>
+              <button
+                type="button"
+                onClick={handleDeleteProject}
+                disabled={deletingProject}
+                style={{
+                  padding: '10px 16px',
+                  border: 0,
+                  borderRadius: '4px',
+                  backgroundColor: deletingProject ? '#bdbdbd' : '#d32f2f',
+                  color: 'white',
+                  cursor: deletingProject ? 'not-allowed' : 'pointer',
+                  fontWeight: '600',
+                }}
+              >
+                {deletingProject ? 'Deleting...' : 'Delete Project'}
+              </button>
             </header>
 
             {activeSection === 'Overview' ? (
@@ -198,6 +273,57 @@ function ProjectDetailsPage() {
               <TasksSection metrics={taskMetrics} loading={tasksLoading} error={tasksError} />
             ) : activeSection === 'Timeline' ? (
               <TimelineSection project={project} timeline={timeline} metrics={taskMetrics} loading={tasksLoading} error={tasksError} />
+            ) : activeSection === 'Team' ? (
+              <TeamSection
+                members={team}
+                availableEmployees={availableEmployees}
+                loading={teamLoading}
+                mutationLoading={teamMutationLoading}
+                error={teamError}
+                message={teamMessage}
+                onAdd={async (employeeId) => {
+                  if (!projectId) return false;
+                  try {
+                    setTeamMutationLoading(true);
+                    setTeamError(null);
+                    setTeamMessage(null);
+                    await addProjectTeamMember(projectId, employeeId);
+                    const [members, available] = await Promise.all([
+                      getProjectTeam(projectId),
+                      getAvailableProjectEmployees(projectId),
+                    ]);
+                    setTeam(members);
+                    setAvailableEmployees(available);
+                    setTeamMessage('Team member added successfully.');
+                    return true;
+                  } catch (addError) {
+                    setTeamError(addError instanceof Error ? addError.message : 'Failed to add team member');
+                    return false;
+                  } finally {
+                    setTeamMutationLoading(false);
+                  }
+                }}
+                onRemove={async (employeeId) => {
+                  if (!projectId) return;
+                  try {
+                    setTeamMutationLoading(true);
+                    setTeamError(null);
+                    setTeamMessage(null);
+                    await removeProjectTeamMember(projectId, employeeId);
+                    const [members, available] = await Promise.all([
+                      getProjectTeam(projectId),
+                      getAvailableProjectEmployees(projectId),
+                    ]);
+                    setTeam(members);
+                    setAvailableEmployees(available);
+                    setTeamMessage('Team member removed successfully.');
+                  } catch (removeError) {
+                    setTeamError(removeError instanceof Error ? removeError.message : 'Failed to remove team member');
+                  } finally {
+                    setTeamMutationLoading(false);
+                  }
+                }}
+              />
             ) : activeSection === 'Documents' ? (
               <DocumentsSection
                 projectId={projectId || String(project.id)}
@@ -242,6 +368,124 @@ function ProjectDetailsPage() {
         )}
       </section>
     </main>
+  );
+}
+
+function TeamSection({
+  members,
+  availableEmployees,
+  loading,
+  mutationLoading,
+  error,
+  message,
+  onAdd,
+  onRemove,
+}: {
+  members: TeamMember[];
+  availableEmployees: TeamMember[];
+  loading: boolean;
+  mutationLoading: boolean;
+  error: string | null;
+  message: string | null;
+  onAdd: (employeeId: number) => Promise<boolean>;
+  onRemove: (employeeId: number) => Promise<void>;
+}) {
+  const [addFormOpen, setAddFormOpen] = useState(false);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
+  const hasTaskSummaries = members.some((member) => member.taskSummary);
+
+  if (loading) {
+    return <p>Loading project team...</p>;
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: '20px', backgroundColor: '#ffebee', border: '1px solid #f44336', borderRadius: '4px' }}>
+        <p style={{ color: '#c62828', margin: 0 }}>Error: {error}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'baseline', marginBottom: '24px', flexWrap: 'wrap' }}>
+        <div>
+          <h2 style={{ margin: '0 0 8px', color: '#333' }}>Team</h2>
+          <p style={{ margin: 0, color: '#666' }}>People assigned to this project</p>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <strong style={{ color: '#333' }}>{members.length} {members.length === 1 ? 'member' : 'members'}</strong>
+          <button type="button" onClick={() => setAddFormOpen((open) => !open)} disabled={mutationLoading} style={{ padding: '10px 16px', border: 0, borderRadius: '4px', backgroundColor: mutationLoading ? '#9e9e9e' : '#1976D2', color: 'white', cursor: mutationLoading ? 'not-allowed' : 'pointer', fontWeight: '600' }}>
+            {addFormOpen ? 'Cancel' : 'Add Team Member'}
+          </button>
+        </div>
+      </div>
+
+      {addFormOpen && (
+        <div style={{ display: 'flex', alignItems: 'end', gap: '12px', flexWrap: 'wrap', marginBottom: '20px', padding: '16px', border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#f9f9f9' }}>
+          <label style={{ display: 'grid', gap: '6px', color: '#555', fontSize: '14px' }}>
+            Employee
+            <select value={selectedEmployeeId} onChange={(event) => setSelectedEmployeeId(event.target.value)} disabled={mutationLoading} style={{ minWidth: '260px', padding: '9px', border: '1px solid #bbb', borderRadius: '4px', backgroundColor: 'white' }}>
+              <option value="">Select an employee</option>
+              {availableEmployees.map((employee) => (
+                <option key={employee.id} value={employee.id}>
+                  {employee.firstName} {employee.lastName} ({employee.email})
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            disabled={!selectedEmployeeId || mutationLoading}
+            onClick={async () => {
+              const added = await onAdd(Number(selectedEmployeeId));
+              if (added) {
+                setSelectedEmployeeId('');
+                setAddFormOpen(false);
+              }
+            }}
+            style={{ padding: '10px 16px', border: 0, borderRadius: '4px', backgroundColor: !selectedEmployeeId || mutationLoading ? '#bdbdbd' : '#388E3C', color: 'white', cursor: !selectedEmployeeId || mutationLoading ? 'not-allowed' : 'pointer', fontWeight: '600' }}
+          >
+            {mutationLoading ? 'Adding...' : 'Add Member'}
+          </button>
+          {availableEmployees.length === 0 && <span style={{ color: '#777', fontSize: '14px' }}>No unassigned employees are available.</span>}
+        </div>
+      )}
+
+      {message && <p role="status" style={{ margin: '0 0 16px', color: '#2e7d32' }}>{message}</p>}
+      {error && <p role="alert" style={{ margin: '0 0 16px', color: '#c62828' }}>Error: {error}</p>}
+
+      {members.length === 0 ? (
+        <div style={{ padding: '40px 24px', border: '2px dashed #ddd', borderRadius: '8px', backgroundColor: '#fafafa', textAlign: 'center' }}>
+          <p style={{ margin: 0, color: '#777' }}>No employees are assigned to this project.</p>
+        </div>
+      ) : (
+        <div style={{ overflowX: 'auto', border: '1px solid #ddd', borderRadius: '8px' }}>
+          <div style={{ minWidth: hasTaskSummaries ? '940px' : '780px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: hasTaskSummaries ? 'minmax(180px, 1.5fr) minmax(190px, 1.5fr) minmax(140px, 1fr) minmax(160px, 1fr) minmax(180px, 1.2fr) 90px' : 'minmax(180px, 1.5fr) minmax(190px, 1.5fr) minmax(140px, 1fr) minmax(160px, 1fr) 90px', gap: '16px', padding: '14px 18px', borderBottom: '2px solid #ddd', fontWeight: '600', color: '#333', fontSize: '13px' }}>
+              <div>Name</div>
+              <div>Email</div>
+              <div>Role</div>
+              <div>Department</div>
+              {hasTaskSummaries && <div>Task summary</div>}
+              <div>Actions</div>
+            </div>
+            {members.map((member) => (
+              <div key={member.id} style={{ display: 'grid', gridTemplateColumns: hasTaskSummaries ? 'minmax(180px, 1.5fr) minmax(190px, 1.5fr) minmax(140px, 1fr) minmax(160px, 1fr) minmax(180px, 1.2fr) 90px' : 'minmax(180px, 1.5fr) minmax(190px, 1.5fr) minmax(140px, 1fr) minmax(160px, 1fr) 90px', gap: '16px', padding: '16px 18px', borderBottom: '1px solid #eee', alignItems: 'center', color: '#555', fontSize: '14px' }}>
+                <div style={{ color: '#333', fontWeight: '600' }}>{member.firstName} {member.lastName}</div>
+                <div style={{ overflowWrap: 'anywhere' }}>{member.email}</div>
+                <div>{member.role}</div>
+                <div>{member.department?.name || 'Not assigned'}</div>
+                {hasTaskSummaries && <div>{member.taskSummary ? `${member.taskSummary.completedTasks}/${member.taskSummary.totalTasks} complete, ${member.taskSummary.pendingTasks} pending` : 'Not available'}</div>}
+                <button type="button" onClick={() => onRemove(member.id)} disabled={mutationLoading} style={{ padding: '7px 10px', border: 0, borderRadius: '4px', backgroundColor: mutationLoading ? '#bdbdbd' : '#e53935', color: 'white', cursor: mutationLoading ? 'not-allowed' : 'pointer', fontSize: '12px', fontWeight: '600' }}>
+                  {mutationLoading ? 'Working...' : 'Remove'}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 

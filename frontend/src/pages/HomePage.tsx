@@ -2,39 +2,35 @@ import { Link } from 'react-router-dom';
 
 function HomePage() {
   const sections = [
-    { name: 'Projects', path: '/projects' },
-    { name: 'Documents', path: '/documents' },
-    { name: 'Teams', path: '/teams' },
-    { name: 'Nova AI', path: '/nova-ai' },
+    { name: 'Projects', path: '/projects', description: 'Plan, track, and manage active work.' },
+    { name: 'Documents', path: '/documents', description: 'Upload and explore project knowledge.' },
+    { name: 'Departments', path: '/departments', description: 'Organize teams and ownership.' },
+    { name: 'Nova AI', path: '/nova-ai', description: 'Ask questions across your knowledge base.' },
+    { name: 'Analytics', path: '/analytics', description: 'Understand company-wide performance.' },
   ];
 
   return (
-    <div>
-      <h1>Home</h1>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px', marginTop: '20px' }}>
+    <main className="home-page">
+      <header className="home-hero">
+        <p className="home-eyebrow">Enterprise workspace</p>
+        <h1>
+        AI Agentic Enterprise Platform
+        </h1>
+        <p>One place to coordinate projects, people, documents, and intelligent decisions.</p>
+      </header>
+      <section className="home-section-grid" aria-label="Platform sections">
         {sections.map((section) => (
           <Link
             key={section.path}
             to={section.path}
-            style={{
-              padding: '20px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              textDecoration: 'none',
-              color: 'black',
-              backgroundColor: '#f5f5f5',
-              textAlign: 'center',
-              cursor: 'pointer',
-              transition: 'background-color 0.2s',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#e0e0e0')}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#f5f5f5')}
+            className="home-section-card"
           >
             <h2>{section.name}</h2>
+            <p>{section.description}</p>
           </Link>
         ))}
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
 

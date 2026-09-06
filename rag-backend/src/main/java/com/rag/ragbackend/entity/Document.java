@@ -17,7 +17,7 @@ public class Document {
     private Long id;
 
     @Column(name = "project_id")
-    private String projectId;
+    private Integer projectId;
 
     @Column(name = "file_name")
     private String fileName;
@@ -41,7 +41,7 @@ public class Document {
     }
 
     public Document(String projectId, String fileName, String fileType, Long fileSize, String filePath, LocalDateTime uploadedAt) {
-        this.projectId = projectId;
+        this.projectId = parseProjectId(projectId);
         this.fileName = fileName;
         this.fileType = fileType;
         this.fileSize = fileSize;
@@ -57,12 +57,27 @@ public class Document {
         this.id = id;
     }
 
-    public String getProjectId() {
+    public Integer getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(String projectId) {
+    public void setProjectId(Integer projectId) {
         this.projectId = projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = parseProjectId(projectId);
+    }
+
+    private static Integer parseProjectId(String projectId) {
+        if (projectId == null || projectId.isBlank()) {
+            return null;
+        }
+        try {
+            return Integer.valueOf(projectId);
+        } catch (NumberFormatException ignored) {
+            return null;
+        }
     }
 
     public String getFileName() {

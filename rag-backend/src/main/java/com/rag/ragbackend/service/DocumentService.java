@@ -10,6 +10,8 @@ public interface DocumentService {
 
     List<Document> getDocumentsByProjectId(String projectId);
 
+    void deleteDocumentsByProjectId(String projectId);
+
     Document getDocumentById(Long id);
 
     Document uploadDocument(String projectId, MultipartFile file);

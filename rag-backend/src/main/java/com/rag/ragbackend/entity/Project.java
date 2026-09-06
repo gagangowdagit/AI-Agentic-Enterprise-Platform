@@ -6,6 +6,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -20,7 +22,7 @@ public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Transient
     @JsonIgnore
@@ -42,6 +44,10 @@ public class Project {
     @Enumerated(EnumType.STRING)
     private ProjectPriority priority;
 
+    @ManyToOne
+    @JoinColumn(name = "assigned_to")
+    private Department department;
+
     public Project() {
     }
 
@@ -53,7 +59,7 @@ public class Project {
     }
 
     public Project(Long id, String name, String status) {
-        this.id = id;
+        this.id = toInteger(id);
         this.name = name;
         this.status = status;
         this.priority = ProjectPriority.MEDIUM;
@@ -72,7 +78,7 @@ public class Project {
 
     public Project(Long id, String name, String description, String status,
                    LocalDate startDate, LocalDate endDate, ProjectPriority priority) {
-        this.id = id;
+        this.id = toInteger(id);
         this.name = name;
         this.description = description;
         this.status = status;
@@ -81,12 +87,16 @@ public class Project {
         this.priority = priority;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
+    }
+
+    private static Integer toInteger(Long id) {
+        return id == null ? null : Math.toIntExact(id);
     }
 
     public String getLegacyId() {
@@ -139,5 +149,13 @@ public class Project {
 
     public void setPriority(ProjectPriority priority) {
         this.priority = priority;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 }

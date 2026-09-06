@@ -11,7 +11,7 @@ public class Task {
     @Id
     private String id;
 
-    private String projectId;
+    private Integer projectId;
     private Long assignedUserId;
     private String title;
     private String description;
@@ -23,7 +23,7 @@ public class Task {
 
     public Task(String id, String projectId, String title, String description, String status, String priority) {
         this.id = id;
-        this.projectId = projectId;
+        this.projectId = parseProjectId(projectId);
         this.title = title;
         this.description = description;
         this.status = status;
@@ -43,12 +43,27 @@ public class Task {
         this.id = id;
     }
 
-    public String getProjectId() {
+    public Integer getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(String projectId) {
+    public void setProjectId(Integer projectId) {
         this.projectId = projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = parseProjectId(projectId);
+    }
+
+    private static Integer parseProjectId(String projectId) {
+        if (projectId == null || projectId.isBlank()) {
+            return null;
+        }
+        try {
+            return Integer.valueOf(projectId);
+        } catch (NumberFormatException ignored) {
+            return null;
+        }
     }
 
     public Long getAssignedUserId() {

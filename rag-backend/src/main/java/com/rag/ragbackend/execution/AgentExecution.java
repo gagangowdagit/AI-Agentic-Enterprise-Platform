@@ -16,7 +16,7 @@ public class AgentExecution {
     private String executionId;
 
     @Column(name = "project_id")
-    private String projectId;
+    private Integer projectId;
 
     @Column(nullable = false)
     private String status;
@@ -35,7 +35,7 @@ public class AgentExecution {
 
     public AgentExecution(String projectId, String currentStep) {
         this.executionId = UUID.randomUUID().toString();
-        this.projectId = projectId;
+        this.projectId = parseProjectId(projectId);
         this.status = "RUNNING";
         this.startTime = LocalDateTime.now();
         this.currentStep = currentStep;
@@ -49,12 +49,27 @@ public class AgentExecution {
         this.executionId = executionId;
     }
 
-    public String getProjectId() {
+    public Integer getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(String projectId) {
+    public void setProjectId(Integer projectId) {
         this.projectId = projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = parseProjectId(projectId);
+    }
+
+    private static Integer parseProjectId(String projectId) {
+        if (projectId == null || projectId.isBlank()) {
+            return null;
+        }
+        try {
+            return Integer.valueOf(projectId);
+        } catch (NumberFormatException ignored) {
+            return null;
+        }
     }
 
     public String getStatus() {

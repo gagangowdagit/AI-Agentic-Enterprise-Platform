@@ -13,6 +13,8 @@ import java.util.List;
 @Service
 public class RagServiceImpl implements RagService {
 
+    private static final String GLOBAL_PROJECT_ID = "global";
+
     private final DocumentRepository documentRepository;
     private final DocumentChunkRepository documentChunkRepository;
     private final EmbeddingService embeddingService;
@@ -39,7 +41,9 @@ public class RagServiceImpl implements RagService {
             throw new IllegalStateException("Embedding service must return one embedding for the query.");
         }
 
-        List<Document> projectDocuments = documentRepository.findByProjectId(projectId);
+        List<Document> projectDocuments = GLOBAL_PROJECT_ID.equalsIgnoreCase(projectId)
+            ? documentRepository.findAll()
+            : documentRepository.findByProjectId(Integer.valueOf(projectId));
         if (projectDocuments.isEmpty()) {
             throw new ProjectNotFoundException(projectId);
         }

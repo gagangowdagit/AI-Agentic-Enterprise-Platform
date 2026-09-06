@@ -17,6 +17,7 @@ interface RagResponse {
 
 const API_BASE_URL = 'http://localhost:8080/api/v1';
 const TOP_K = 3;
+const GLOBAL_PROJECT_ID = 'global';
 
 function NovaAIPage() {
   const [searchParams] = useSearchParams();
@@ -123,6 +124,7 @@ function NovaAIPage() {
         >
           {loadingProjects && <option>Loading projects...</option>}
           {!loadingProjects && projects.length === 0 && <option>No projects available</option>}
+          {!loadingProjects && projects.length > 0 && <option value={GLOBAL_PROJECT_ID}>Global - All Projects</option>}
           {projects.map((project) => (
             <option key={project.id} value={project.id}>{project.name} ({project.id})</option>
           ))}

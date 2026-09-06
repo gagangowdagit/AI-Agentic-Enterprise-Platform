@@ -1,7 +1,9 @@
 package com.rag.ragbackend.service;
 
 import com.rag.ragbackend.entity.Document;
+import com.rag.ragbackend.processing.ProcessingService;
 import com.rag.ragbackend.repository.DocumentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -18,12 +20,19 @@ import java.util.List;
 public class DocumentServiceImpl implements DocumentService {
 
     private final DocumentRepository documentRepository;
+    private final ProcessingService processingService;
     private static final Path UPLOADS_DIR = Paths.get(System.getProperty("user.home"), "rag-backend-uploads")
             .toAbsolutePath()
             .normalize();
 
     public DocumentServiceImpl(DocumentRepository documentRepository) {
+        this(documentRepository, null);
+    }
+
+    @Autowired
+    public DocumentServiceImpl(DocumentRepository documentRepository, ProcessingService processingService) {
         this.documentRepository = documentRepository;
+        this.processingService = processingService;
     }
 
     private Path resolveProjectUploadPath(String projectId) {
@@ -38,7 +47,14 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public List<Document> getDocumentsByProjectId(String projectId) {
-        return documentRepository.findByProjectId(projectId);
+        return documentRepository.findByProjectId(Integer.valueOf(projectId));
+    }
+
+    @Override
+    public void deleteDocumentsByProjectId(String projectId) {
+        getDocumentsByProjectId(projectId).stream()
+                .map(Document::getId)
+                .forEach(this::deleteDocument);
     }
 
     @Override
@@ -63,14 +79,18 @@ public class DocumentServiceImpl implements DocumentService {
             file.transferTo(filePath.toFile());
 
             Document document = new Document();
-            document.setProjectId(projectId);
+            document.setProjectId(Integer.valueOf(projectId));
             document.setFileName(safeFileName);
             document.setFileType(file.getContentType());
             document.setFileSize(file.getSize());
             document.setFilePath(filePath.toString());
             document.setUploadedAt(LocalDateTime.now());
 
-            return documentRepository.save(document);
+            Document savedDocument = documentRepository.save(document);
+            if (processingService != null) {
+                processingService.processDocument(savedDocument.getId());
+            }
+            return savedDocument;
         } catch (IOException e) {
             throw new RuntimeException("Failed to upload document: " + e.getMessage(), e);
         }

@@ -20,7 +20,7 @@ class TaskServiceImplTest {
     void createsAssignmentNotificationForAssignedTask() {
         TaskRepository taskRepository = mock(TaskRepository.class);
         NotificationService notificationService = mock(NotificationService.class);
-        Task task = new Task("task-1", "project-1", 7L, "Prepare report", null, "todo", "high");
+        Task task = new Task("task-1", "1", 7L, "Prepare report", null, "todo", "high");
         when(taskRepository.save(task)).thenReturn(task);
         TaskService service = new TaskServiceImpl(taskRepository, notificationService);
 
@@ -34,7 +34,7 @@ class TaskServiceImplTest {
     void createsNotificationsForAssignmentAndStatusChanges() {
         TaskRepository taskRepository = mock(TaskRepository.class);
         NotificationService notificationService = mock(NotificationService.class);
-        Task existingTask = new Task("task-1", "project-1", "Prepare report", null, "todo", "high");
+        Task existingTask = new Task("task-1", "1", "Prepare report", null, "todo", "high");
         Task update = new Task("task-1", null, 7L, null, null, "done", null);
         when(taskRepository.findById("task-1")).thenReturn(Optional.of(existingTask));
         when(taskRepository.save(existingTask)).thenReturn(existingTask);
@@ -52,7 +52,7 @@ class TaskServiceImplTest {
     void notificationFailureDoesNotFailTaskOperation() {
         TaskRepository taskRepository = mock(TaskRepository.class);
         NotificationService notificationService = mock(NotificationService.class);
-        Task task = new Task("task-1", "project-1", 7L, "Prepare report", null, "todo", "high");
+        Task task = new Task("task-1", "1", 7L, "Prepare report", null, "todo", "high");
         when(taskRepository.save(task)).thenReturn(task);
         when(notificationService.createNotification(any(Long.class), any(String.class), any(String.class), any(String.class)))
                 .thenThrow(new IllegalStateException("notification unavailable"));
@@ -65,15 +65,15 @@ class TaskServiceImplTest {
     void summarizesTasksByProjectAndClassifiesStatuses() {
         TaskRepository taskRepository = mock(TaskRepository.class);
         List<Task> projectTasks = List.of(
-                new Task("task-1", "project-1", "Complete release", null, "completed", "high"),
-                new Task("task-2", "project-1", "Review release", null, "done", "medium"),
-                new Task("task-3", "project-1", "Fix deployment", null, "in_progress", "high"),
-                new Task("task-4", "project-1", "Write docs", null, "todo", "low"),
-                new Task("task-5", "project-2", "Other project", null, "completed", "low"));
-        when(taskRepository.findByProjectId("project-1")).thenReturn(projectTasks.subList(0, 4));
+                new Task("task-1", "1", "Complete release", null, "completed", "high"),
+                new Task("task-2", "1", "Review release", null, "done", "medium"),
+                new Task("task-3", "1", "Fix deployment", null, "in_progress", "high"),
+                new Task("task-4", "1", "Write docs", null, "todo", "low"),
+                new Task("task-5", "2", "Other project", null, "completed", "low"));
+        when(taskRepository.findByProjectId(1)).thenReturn(projectTasks.subList(0, 4));
         TaskService service = new TaskServiceImpl(taskRepository);
 
-        ProjectTaskSummary summary = service.getTaskSummaryByProjectId("project-1");
+        ProjectTaskSummary summary = service.getTaskSummaryByProjectId("1");
 
         assertEquals(4, summary.totalTasks());
         assertEquals(2, summary.completedTasks());
@@ -82,6 +82,6 @@ class TaskServiceImplTest {
         assertEquals(50.0, summary.completionPercentage());
         assertEquals(List.of(), summary.overdueTasks());
         assertEquals(false, summary.overdueTrackingAvailable());
-        verify(taskRepository).findByProjectId("project-1");
+        verify(taskRepository).findByProjectId(1);
     }
 }

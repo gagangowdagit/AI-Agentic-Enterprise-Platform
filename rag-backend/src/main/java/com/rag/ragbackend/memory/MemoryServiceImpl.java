@@ -41,7 +41,7 @@ public class MemoryServiceImpl implements MemoryService {
     @Override
     public List<Memory> getMemoriesByProjectId(String projectId) {
         requireValue(projectId, "Project ID");
-        return memoryRepository.findByProjectIdOrderByCreatedAtAsc(projectId);
+        return memoryRepository.findByProjectIdOrderByCreatedAtAsc(Integer.valueOf(projectId));
     }
 
     @Override
@@ -70,6 +70,12 @@ public class MemoryServiceImpl implements MemoryService {
 
     private void requireValue(String value, String fieldName) {
         if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(fieldName + " is required.");
+        }
+    }
+
+    private void requireValue(Integer value, String fieldName) {
+        if (value == null) {
             throw new IllegalArgumentException(fieldName + " is required.");
         }
     }

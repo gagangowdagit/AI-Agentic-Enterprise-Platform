@@ -338,7 +338,7 @@ function DocumentsPage() {
         >
           {isLoading ? (
             <p style={{ color: '#999', fontSize: '16px' }}>Loading documents...</p>
-          ) : documents.filter((doc) => doc.projectId === selectedProjectId).length === 0 ? (
+          ) : documents.filter((doc) => String(doc.projectId) === selectedProjectId).length === 0 ? (
             <>
               <p style={{ color: '#999', fontSize: '18px', marginBottom: '10px' }}>
                 📁 No documents uploaded yet
@@ -370,7 +370,7 @@ function DocumentsPage() {
                 <div>Action</div>
               </div>
               {documents
-                .filter((doc) => doc.projectId === selectedProjectId)
+                .filter((doc) => String(doc.projectId) === selectedProjectId)
                 .map((doc) => (
                   <div
                     key={doc.id}

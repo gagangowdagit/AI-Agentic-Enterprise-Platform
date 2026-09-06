@@ -16,6 +16,10 @@ function LoginPage() {
 
     try {
       const result = await login({ email, password });
+      localStorage.setItem('rag-auth-user', JSON.stringify({
+        name: result.name,
+        email: result.email,
+      }));
       setMessage(`Login successful! Welcome, ${result.name}`);
       setEmail('');
       setPassword('');
@@ -30,41 +34,63 @@ function LoginPage() {
   };
 
   return (
-    <div>
-      <h1>Login</h1>
+    <main className="login-page">
+      <section className="login-brand" aria-labelledby="login-title">
+          <div className="login-logo" aria-label="b1 logo">b1</div>
+        <h1 id="login-title">AI Agentic Enterprise Platform</h1>
+      </section>
 
-      {message && (
-        <div style={{ color: isError ? 'red' : 'green', marginBottom: '10px' }}>
-          {message}
-        </div>
-      )}
+      <section className="login-card">
+        {message && (
+          <div className={`login-message ${isError ? 'login-message-error' : 'login-message-success'}`} role={isError ? 'alert' : 'status'}>
+            {message}
+          </div>
+        )}
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">Email:</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="login-form">
+          <label className="login-field">
+            <span className="login-field-icon login-user-icon" aria-hidden="true" />
+            <span className="sr-only">Email address</span>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="Email address"
+              autoComplete="email"
+              required
+            />
+          </label>
 
-        <div>
-          <label htmlFor="password">Password:</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+          <label className="login-field">
+            <span className="login-field-icon login-lock-icon" aria-hidden="true" />
+            <span className="sr-only">Password</span>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Password"
+              autoComplete="current-password"
+              required
+            />
+          </label>
 
-        <button type="submit">Login</button>
-      </form>
-    </div>
+          <button type="submit" className="login-submit">Sign in</button>
+
+          <div className="login-options">
+            <label className="stay-signed-in">
+              <input type="checkbox" />
+              <span>Stay signed in</span>
+            </label>
+            <button type="button" className="forgot-password" onClick={() => setMessage('Please contact an administrator to reset your password.')}>
+              Forgot password?
+            </button>
+          </div>
+          <p className="auth-switch">Need an account? <a href="/signup">Sign up</a></p>
+        </form>
+      </section>
+    </main>
   );
 }
 

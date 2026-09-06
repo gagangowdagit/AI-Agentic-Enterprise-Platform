@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getProjects, createProject } from '../services/projectApi';
 import type { Project, ProjectPriority } from '../services/projectApi';
+import { getDepartments } from '../services/departmentApi';
+import type { Department } from '../services/departmentApi';
 
 interface FormData {
   name: string;
@@ -10,6 +12,7 @@ interface FormData {
   startDate: string;
   endDate: string;
   priority: ProjectPriority;
+  departmentId: string;
 }
 
 const initialFormData: FormData = {
@@ -19,11 +22,13 @@ const initialFormData: FormData = {
   startDate: '',
   endDate: '',
   priority: 'MEDIUM',
+  departmentId: '',
 };
 
 function ProjectsPage() {
   const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,6 +37,7 @@ function ProjectsPage() {
   const [submittedData, setSubmittedData] = useState<Project | null>(null);
   const [createLoading, setCreateLoading] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+  const [departmentsLoading, setDepartmentsLoading] = useState(false);
 
   // Fetch projects from backend
   useEffect(() => {
@@ -51,6 +57,21 @@ function ProjectsPage() {
     };
 
     fetchProjects();
+  }, []);
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        setDepartmentsLoading(true);
+        setDepartments(await getDepartments());
+      } catch (departmentError) {
+        setCreateError(departmentError instanceof Error ? departmentError.message : 'Failed to fetch departments');
+      } finally {
+        setDepartmentsLoading(false);
+      }
+    };
+
+    fetchDepartments();
   }, []);
 
   const handleCreateProject = () => {
@@ -85,6 +106,7 @@ function ProjectsPage() {
         startDate: formData.startDate || undefined,
         endDate: formData.endDate || undefined,
         priority: formData.priority,
+        department: formData.departmentId ? { id: Number(formData.departmentId) } : undefined,
       });
 
       setSubmittedData(newProject);
@@ -237,6 +259,32 @@ function ProjectsPage() {
                 <option value="LOW">Low</option>
                 <option value="MEDIUM">Medium</option>
                 <option value="HIGH">High</option>
+              </select>
+            </div>
+
+            <div style={{ marginBottom: '15px' }}>
+              <label htmlFor="departmentId" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                Assigned To:
+              </label>
+              <select
+                id="departmentId"
+                name="departmentId"
+                value={formData.departmentId}
+                onChange={handleInputChange}
+                disabled={departmentsLoading}
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  fontSize: '14px',
+                  boxSizing: 'border-box',
+                }}
+              >
+                <option value="">{departmentsLoading ? 'Loading departments...' : 'Select department'}</option>
+                {departments.map((department) => (
+                  <option key={department.id} value={department.id}>{department.name}</option>
+                ))}
               </select>
             </div>
 
