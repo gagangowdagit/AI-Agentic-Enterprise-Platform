@@ -1,247 +1,56 @@
-# Project Requirements
+# Requirements and Scope
 
-## 1. Core Requirements
+This document separates current product behavior from planned acceptance criteria. It is intentionally honest about the project being in progress.
 
-The system must provide:
-
-* User registration and authentication
-* Role-based authorization
-* Project management
-* Task management
-* Document management
-* AI assistant
-* RAG-based knowledge retrieval
-* AI agents and tool calling
-* AI memory
-* Analytics and reports
-* Notifications
-* Automated workflows
-* Real-time updates
+## Current Functional Requirements
 
----
+- Users can register and authenticate through the current application flows.
+- The platform exposes versioned REST APIs for core enterprise data.
+- Projects, departments, teams, documents, timelines, analytics, and selected AI insights are represented in backend services and frontend pages.
+- Documents can be extracted from supported PDF, DOCX, and text inputs, split into chunks, and embedded through Ollama.
+- Users can ask project-scoped questions through Nova AI; the backend retrieves relevant chunks and asks an Ollama model for a grounded answer.
+- Responses use a standard success/error contract and validate request data.
 
-## 2. User & Security
+## Near-Term Acceptance Requirements
 
-The system must support:
+### Identity and access
 
-* ADMIN
-* MANAGER
-* EMPLOYEE
-* AI_OPERATOR
+- Passwords are hashed and never returned.
+- Protected routes require a valid session/token.
+- Project, document, analytics, and AI access is authorized by user and project membership.
+- Authorization failures are tested, logged safely, and returned consistently.
 
-Security must include:
+### Core operations
 
-* JWT authentication
-* Password hashing
-* Role/permission checks
-* Input validation
-* Protected APIs
-* Secure secret management
-* AI tool authorization
-* Prompt-injection protection
+- Projects and tasks support validated CRUD, assignment, status, priority, dates, filtering, and pagination.
+- Team membership and document ownership are enforced at the service boundary.
+- DTOs prevent persistence entities and secrets from becoming public API contracts.
 
----
+### Knowledge and RAG
 
-## 3. Project & Task Management
+- Uploads enforce type, size, ownership, and safe filename rules.
+- Processing reports queued, running, completed, and failed states.
+- Reprocessing is idempotent and old chunks/embeddings are not orphaned.
+- Retrieval is scoped to authorized projects, applies a relevance policy, and returns source metadata.
+- The assistant clearly reports when the available context does not support an answer.
+- Ollama outages, missing models, timeouts, and malformed responses produce actionable API errors.
 
-Users with appropriate permissions must be able to:
+### Assistant and agents
 
-* Create, view, update, and delete projects
-* Add project members
-* Create, assign, update, and delete tasks
-* Set task status, priority, and deadlines
-* Search and filter tasks
-* Track project progress
-* Identify overdue tasks
+- Conversations can be stored and retrieved per authorized user/project.
+- Streaming or incremental progress is added only after durable chat behavior is stable.
+- Any mutating AI tool requires schema validation, authorization, audit logging, idempotency, and user confirmation.
+- Agent execution supports bounded retries, cancellation, and failure states.
 
----
+## Non-Functional Requirements
 
-## 4. Document & RAG
+- No secrets in Git or logs.
+- Database changes use Flyway migrations.
+- APIs remain testable independently of Ollama through mocks.
+- The local setup is reproducible on Windows and documented.
+- Critical paths have unit and integration coverage.
+- Production work must add observability, rate limits, backups, retention rules, and threat modeling.
 
-The system must support:
+## Out of Current Scope
 
-* PDF, DOCX, and TXT uploads
-* File validation
-* Document metadata
-* Document processing
-* Text extraction
-* Chunking
-* Embedding generation
-* Vector storage
-* Semantic search
-* Metadata filtering
-* Context construction
-* Source references
-
-The AI must not invent information when relevant knowledge cannot be retrieved.
-
----
-
-## 5. AI Assistant
-
-The AI must be able to:
-
-* Understand user requests
-* Maintain conversation context
-* Retrieve authorized information
-* Use approved tools
-* Perform multi-step operations
-* Return useful results
-* Handle failures and timeouts
-
----
-
-## 6. Agent System
-
-The platform should support:
-
-```text
-Supervisor Agent
-├── RAG Agent
-├── Database Agent
-├── Analytics Agent
-├── Task Agent
-├── Report Agent
-└── Notification Agent
-```
-
-Agents must use controlled tools and respect application permissions.
-
----
-
-## 7. AI Tools
-
-Initial tools:
-
-* Document Search
-* Project Search
-* Task Search
-* Database Query
-* Task Creation
-* Task Update
-* Analytics
-* Report Generation
-* Notification
-
-Every tool must have defined input, output, validation, authorization, and error handling.
-
----
-
-## 8. AI Memory
-
-The system should support:
-
-* Conversation history
-* Short-term memory
-* Long-term memory
-* Relevant context retrieval
-
-Memory must respect authorization and privacy requirements.
-
----
-
-## 9. Automation
-
-The system should support:
-
-* Scheduled AI analysis
-* Overdue task detection
-* Project health monitoring
-* Automated reminders
-* Scheduled reports
-* AI-generated recommendations
-
----
-
-## 10. Async & Concurrency
-
-The system must demonstrate:
-
-* Multithreading
-* CompletableFuture
-* Thread pools
-* Spring `@Async`
-* RabbitMQ-based asynchronous processing
-
-Use cases include document processing, embeddings, AI jobs, and background tasks.
-
----
-
-## 11. Real-Time Features
-
-WebSocket should provide updates for:
-
-* AI agent execution
-* Tool execution
-* Document processing
-* Notifications
-* Long-running operations
-
----
-
-## 12. Analytics & Reports
-
-The system should provide:
-
-* Project analytics
-* Task analytics
-* AI usage metrics
-* Project health analysis
-* Risk identification
-* AI-generated reports
-
----
-
-## 13. Testing
-
-The project must include appropriate:
-
-* Unit tests
-* Integration tests
-* API tests
-* End-to-end tests
-* Performance tests
-
----
-
-## 14. DevOps & Deployment
-
-The project should support:
-
-* Docker
-* Docker Compose
-* Jenkins
-* GitHub Actions
-* AWS ECR
-* AWS deployment
-* Kubernetes
-* Amazon EKS
-* Prometheus
-* Grafana
-* CloudWatch
-
----
-
-## 15. Quality Requirements
-
-The system should be:
-
-* Secure
-* Maintainable
-* Scalable
-* Reliable
-* Testable
-* Observable
-* Performance-oriented
-
----
-
-## 16. Requirement Change
-
-Significant requirement changes must be reflected in:
-
-* `03-DEVELOPMENT-PLAN.md`
-* `04-REQUIREMENTS.md`
-* `11-DECISIONS.md`
-
-Existing functionality should not be silently broken by new requirements.
+MongoDB, Redis, Qdrant, RabbitMQ, WebSockets, cloud hosting, Kubernetes, and full autonomous multi-agent orchestration are roadmap options, not current requirements. They should be introduced only when a measured product or scale requirement supports them.

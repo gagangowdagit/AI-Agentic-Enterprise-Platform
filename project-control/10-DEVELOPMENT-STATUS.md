@@ -1,84 +1,60 @@
 # Development Status
 
-## Current Snapshot
+**As of:** 2026-09-08
+**Overall state:** IN PROGRESS, usable development slice
+**Release status:** pre-release / not production ready
 
-```text
-Overall Status: FOUNDATION STABLE
-Overall Progress: 36%
-Current Main Part: 2. Spring Boot Backend
-Current Task: 2.4 API Standards
-Current Subtask: 2.4.4 Swagger/OpenAPI
-Status: COMPLETED
-```
+## What Works Today
 
-## Completed Work
+- Spring Boot 4.1.1 backend on Java 21 with Maven Wrapper.
+- React 19 + TypeScript + Vite frontend with routed enterprise pages.
+- PostgreSQL/JPA persistence and Flyway migrations.
+- Layered controllers, services, repositories, DTO validation, response envelopes, and global exception handling.
+- User registration/login service flows and password hashing support.
+- Project, department, team, document, timeline, analytics, and AI insight slices.
+- PDF/DOCX/TXT document extraction, chunking, embedding persistence, and processing services.
+- Ollama `nomic-embed-text` query embeddings and `llama3.2:3b` grounded generation.
+- Project/global top-K retrieval with source metadata and a Nova AI frontend query flow.
+- OpenAPI baseline and a broad JUnit/Mockito/Spring test suite.
 
-```text
-✓ Repository initialized
-✓ Project-control documentation created
-✓ Root README and repo structure defined
-✓ Spring Boot project scaffolded in rag-backend
-✓ Maven configuration added for Java 21 and Spring Boot 4
-✓ Application properties configured
-✓ Basic Spring Boot app bootstrap created
-✓ Health-check endpoint exposed and versioned
-✓ Controller, service, repository, model, DTO, mapper, and exception layers created
-✓ API response contract, validation, and global error handler implemented
-✓ OpenAPI/Swagger baseline added and verified
-✓ Backend tests passing and verified with Maven
-```
+## Current Gaps
 
-## Active Next Steps
+- Full Spring Security enforcement, JWT lifecycle, RBAC, and authorization tests.
+- Complete task/user/project CRUD polish, DTO boundaries, ownership checks, and pagination.
+- Production document upload lifecycle, file storage, processing status, and idempotent reprocessing.
+- Durable conversations, streaming, citations UI, prompt/model versioning, and AI evaluation.
+- High-scale vector search, asynchronous jobs, retries, cancellation, notifications, and observability.
+- CI/CD, containerized deployment, secret management, backups, and production hardening.
 
-```text
-1. Prepare PostgreSQL and JPA integration
-2. Create first database domain model and repository
-3. Add user/project/task domain foundation
-4. Add persistence and integration testing
-```
+## Status by Capability
 
-## Progress Tracking
+| Capability | Status |
+|---|---|
+| Repository and backend foundation | DONE |
+| Frontend shell and core pages | PARTIAL / ACTIVE |
+| PostgreSQL persistence and migrations | DONE for current schema |
+| API conventions and validation | DONE baseline |
+| Authentication | PARTIAL |
+| Authorization/RBAC | NEXT |
+| Project/team/document workflows | PARTIAL |
+| Document extraction and chunking | DONE baseline |
+| Ollama embedding and generation | DONE local integration |
+| RAG retrieval and grounded response | PARTIAL, local scale |
+| Agent workflows | PARTIAL |
+| Analytics and insights | PARTIAL |
+| Conversation memory | PLANNED / partial service concepts |
+| Async messaging and real-time updates | PLANNED |
+| Automated quality pipeline | NEXT |
+| Production deployment | PLANNED |
 
-| Main Part | Status |
-| --- | --- |
-| 1. Project Foundation | COMPLETED |
-| 2. Spring Boot Backend | COMPLETED |
-| 3. PostgreSQL + Hibernate/JPA | NOT_STARTED |
-| 4. Security & Authentication | NOT_STARTED |
-| 5. MongoDB | NOT_STARTED |
-| 6. Redis | NOT_STARTED |
-| 7. Document Management | NOT_STARTED |
-| 8. RAG Pipeline | NOT_STARTED |
-| 9. AI Agent System | NOT_STARTED |
-| 10. AI Memory | NOT_STARTED |
-| 11. Multithreading & Async | NOT_STARTED |
-| 12. Message Queue | NOT_STARTED |
-| 13. React Frontend | NOT_STARTED |
-| 14. Real-Time System | NOT_STARTED |
-| 15. Analytics & Reporting | NOT_STARTED |
-| 16. Notification System | NOT_STARTED |
-| 17. Scheduled AI Automation | NOT_STARTED |
-| 18. Testing | COMPLETED |
-| 19. Docker | NOT_STARTED |
-| 20. CI/CD | NOT_STARTED |
-| 21. AWS Deployment | NOT_STARTED |
-| 22. Kubernetes | NOT_STARTED |
-| 23. Monitoring | NOT_STARTED |
-| 24. Advanced AI Features | NOT_STARTED |
-| 25. Production Hardening | NOT_STARTED |
+## Immediate Priority Order
 
-## Status Rules
+1. Fix the current failing backend test and establish a clean baseline.
+2. Complete security boundaries and authorization before expanding AI mutations.
+3. Harden document upload/processing and RAG failure handling.
+4. Improve Nova AI conversations, sources, and evaluation.
+5. Add integration tests, observability, and repeatable local deployment.
 
-```text
-NOT_STARTED
-IN_PROGRESS
-BLOCKED
-COMPLETED
-FAILED
-```
+## Verification Snapshot
 
-## Current Branch
-
-```text
-main
-```
+The focused Ollama embedding and LLM client tests pass. Direct local smoke tests for `/api/embed` and `/api/generate` pass when Ollama is running with the configured models. The full Maven suite currently contains an unrelated failing `ProjectDocumentsControllerTest` assertion for a missing `projectId` response field; this is tracked as technical debt and prevents a clean overall baseline.

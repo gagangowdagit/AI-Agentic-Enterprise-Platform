@@ -1,192 +1,40 @@
-# Git Strategy
+# Git and Delivery Strategy
 
+## Branches
 
-## 2. Branch Strategy
+- `main` is the stable integration branch.
+- Use short-lived `feature/<name>` branches for planned work.
+- Use `fix/<name>` for focused defects and `docs/<name>` for documentation-only work.
 
-### Main Branches
+The repository may currently be developed directly on `main` while the project is small. Branch policy should become mandatory when parallel work or external contributors begin.
 
-```text
-main
-develop
-```
+## Commit Style
 
-### Feature Branches
-
-```text
-feature/<feature-name>
-```
-
-### Bug Fix Branches
+Use a conventional prefix and a specific scope:
 
 ```text
-fix/<bug-name>
+feat(rag): add retrieval threshold
+fix(auth): reject expired session
+test(api): cover project authorization
+docs(control): update delivery status
 ```
 
-### Example
+Do not commit secrets, local databases, model files, `target/`, `node_modules/`, or generated personal IDE files.
 
-```text
-main
-  │
-  └── develop
-        │
-        ├── feature/user-authentication
-        ├── feature/rag-pipeline
-        └── feature/ai-agent
-```
+## Change Workflow
 
----
+1. State the behavior and affected module.
+2. Inspect nearby code and tests.
+3. Make a focused change.
+4. Run the narrow check, then module checks.
+5. Update project-control status when behavior or architecture changes.
+6. Review the diff for unrelated files and secrets.
+7. Commit and push a stable checkpoint.
 
-## 3. Development Workflow
+## Pull Request Expectations
 
-```text
-Create Branch
-     ↓
-Implement Task
-     ↓
-Test
-     ↓
-Verify
-     ↓
-Update Project-Control Files
-     ↓
-Commit
-     ↓
-Push
-     ↓
-Merge
-```
+A meaningful feature should include its tests, setup/configuration changes, API/UI documentation, migration notes, and known limitations. Reviewers should be able to distinguish implemented behavior from roadmap intent without reading private conversation history.
 
----
+## Release Readiness
 
-## 4. Commit Strategy
-
-A completed subtask should normally result in a Git checkpoint.
-
-Example:
-
-```text
-feat(user): add user entity
-feat(user): add user repository
-feat(user): add user service
-feat(user): add user controller
-test(user): add user CRUD tests
-```
-
-Avoid combining unrelated changes in one commit.
-
----
-
-## 5. Commit Types
-
-Use conventional prefixes:
-
-```text
-feat      → New functionality
-fix       → Bug fix
-test      → Tests
-refactor  → Code restructuring
-docs      → Documentation
-chore     → Maintenance
-build     → Build/dependency changes
-ci        → CI/CD changes
-perf      → Performance improvement
-security  → Security changes
-```
-
----
-
-## 6. Commit Rules
-
-Before committing:
-
-* Code compiles.
-* Relevant tests pass.
-* No unnecessary files are included.
-* No secrets are committed.
-* Existing functionality is not unnecessarily broken.
-* Project-control status is updated when appropriate.
-
----
-
-## 7. Rollback Strategy
-
-Every stable checkpoint should be recoverable through Git.
-
-```text
-Stable Commit A
-      ↓
-Stable Commit B
-      ↓
-Stable Commit C
-      ↓
-New Development
-      ↓
-Problem
-      ↓
-Rollback to Stable Commit C
-```
-
-Do not rewrite shared history unless there is a clear reason.
-
----
-
-## 8. Project-Control Updates
-
-Important changes must update the appropriate files:
-
-```text
-Development Plan
-Requirements
-Architecture
-Tech Stack
-Database Design
-API Design
-AI Design
-Development Status
-Decisions
-Changelog
-```
-
----
-
-## 9. Pull Requests
-
-Before merging a significant feature:
-
-* Review the changes.
-* Run tests.
-* Verify no unrelated changes exist.
-* Confirm project-control documentation is updated.
-* Confirm the feature follows the approved architecture.
-
----
-
-## 10. Release Tags
-
-Stable releases should use version tags.
-
-Example:
-
-```text
-v0.1.0
-v0.2.0
-v1.0.0
-```
-
-Major releases should represent significant stable milestones.
-
----
-
-## 11. Security
-
-Never commit:
-
-* API keys
-* Passwords
-* JWT secrets
-* AWS credentials
-* Database credentials
-* Private certificates
-* `.env` files containing secrets
-
-Use environment variables and secure secret management instead.
+Use a tag only for a reproducible state with passing relevant checks, documented configuration, migration safety, and a known dependency matrix. The project is currently pre-release and has no production release promise.

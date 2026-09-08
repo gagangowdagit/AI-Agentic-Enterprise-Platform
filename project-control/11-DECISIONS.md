@@ -1,173 +1,52 @@
 # Technical Decisions
 
-This file records important architectural and technical decisions made during development.
+This log records decisions that affect implementation. Proposed technologies are not accepted decisions until they are implemented or explicitly approved for the next phase.
 
-## Decision Format
+## DECISION-001: Spring Boot and Java
 
-```text
-Decision ID:
-Date:
-Topic:
-Decision:
-Reason:
-Impact:
-Status:
-```
+- **Date:** 2026-08-20
+- **Decision:** Use Java 21 with Spring Boot 4.1.1 and Maven.
+- **Reason:** Strong fit for typed enterprise APIs, dependency injection, persistence, validation, and testing.
+- **Status:** ACCEPTED / IMPLEMENTED
 
----
+## DECISION-002: React Frontend
 
-## Decisions
+- **Date:** 2026-08-20
+- **Decision:** Use React 19, TypeScript, Vite, and React Router.
+- **Reason:** Fast local development and a clear component/page/service structure.
+- **Status:** ACCEPTED / IMPLEMENTED
 
-### DECISION-001
+## DECISION-003: PostgreSQL as Current System of Record
 
-```text
-Decision ID: DECISION-001
-Date: 2026-08-20
-Topic: Primary Backend Framework
-Decision: Spring Boot
-Reason: Strong enterprise ecosystem and suitable for REST APIs, security, JPA/Hibernate, asynchronous processing, and scalable backend development.
-Impact: Backend development will be based on Spring Boot.
-Status: ACCEPTED
-```
+- **Date:** 2026-08-20
+- **Decision:** Use PostgreSQL with Spring Data JPA and Flyway for current transactional and RAG metadata.
+- **Reason:** Relational project data, migrations, constraints, and local simplicity are the current priority.
+- **Status:** ACCEPTED / IMPLEMENTED
 
-### DECISION-002
+## DECISION-004: Ollama for Local AI Development
 
-```text
-Decision ID: DECISION-002
-Date: 2026-08-20
-Topic: Frontend Framework
-Decision: React + TypeScript + Vite
-Reason: Component-based architecture and strong ecosystem for modern web applications.
-Impact: Frontend will use React and TypeScript.
-Status: ACCEPTED
-```
+- **Date:** 2026-09-08
+- **Decision:** Use Ollama through a small REST client abstraction with `nomic-embed-text` and `llama3.2:3b` defaults.
+- **Reason:** Local, inspectable model execution without API keys; easy to test with mocked HTTP responses.
+- **Impact:** Ollama is a required local runtime dependency for live RAG queries, while unit tests remain provider-independent.
+- **Status:** ACCEPTED / IMPLEMENTED
 
-### DECISION-003
+## DECISION-005: Application-Side Similarity Search Initially
 
-```text
-Decision ID: DECISION-003
-Date: 2026-08-20
-Topic: Primary Relational Database
-Decision: PostgreSQL
-Reason: Reliable relational database suitable for transactional enterprise data.
-Impact: Core business entities will use PostgreSQL.
-Status: ACCEPTED
-```
+- **Date:** 2026-09-08
+- **Decision:** Persist embeddings in the current relational model and calculate similarity in application code initially.
+- **Reason:** Keeps the first working RAG slice small and avoids premature vector infrastructure.
+- **Impact:** The design is suitable for development and small datasets, but requires measurement before scale.
+- **Status:** ACCEPTED / CURRENT LIMITATION
 
-### DECISION-004
+## DECISION-006: Defer Infrastructure Expansion
 
-```text
-Decision ID: DECISION-004
-Date: 2026-08-20
-Topic: NoSQL Database
-Decision: MongoDB
-Reason: Flexible document storage suitable for conversations, AI execution data, and other evolving AI-related structures.
-Impact: Selected AI-related data will use MongoDB.
-Status: ACCEPTED
-```
-
-### DECISION-005
-
-```text
-Decision ID: DECISION-005
-Date: 2026-08-20
-Topic: Cache
-Decision: Redis
-Reason: Suitable for caching, temporary state, rate limiting, and distributed locking.
-Impact: Redis will be used for appropriate temporary and frequently accessed data.
-Status: ACCEPTED
-```
-
-### DECISION-006
-
-```text
-Decision ID: DECISION-006
-Date: 2026-08-20
-Topic: Vector Database
-Decision: Qdrant
-Reason: Suitable for vector storage and semantic retrieval required by the RAG system.
-Impact: Qdrant will initially handle document vector search.
-Status: ACCEPTED
-```
-
-### DECISION-007
-
-```text
-Decision ID: DECISION-007
-Date: 2026-08-20
-Topic: Message Broker
-Decision: RabbitMQ
-Reason: Provides reliable asynchronous messaging and event-driven processing.
-Impact: Background jobs and selected domain events will use RabbitMQ.
-Status: ACCEPTED
-```
-
-### DECISION-008
-
-```text
-Decision ID: DECISION-008
-Date: 2026-08-20
-Topic: ORM
-Decision: Hibernate + JPA
-Reason: Provides enterprise-grade ORM and integrates naturally with Spring Boot.
-Impact: PostgreSQL persistence will use Hibernate/JPA.
-Status: ACCEPTED
-```
-
-### DECISION-009
-
-```text
-Decision ID: DECISION-009
-Date: 2026-08-20
-Topic: AI Integration
-Decision: Spring AI
-Reason: Provides an AI integration layer that fits naturally into the Spring Boot backend.
-Impact: AI functionality will be integrated through a dedicated AI layer.
-Status: ACCEPTED
-```
-
-### DECISION-010
-
-```text
-Decision ID: DECISION-010
-Date: 2026-08-20
-Topic: Version Control
-Decision: Git + GitHub
-Reason: Required for version control, collaboration, stable checkpoints, and rollback.
-Impact: All development will be tracked through Git.
-Status: ACCEPTED
-```
-
----
+- **Date:** 2026-09-08
+- **Decision:** Treat MongoDB, Redis, Qdrant/pgvector, RabbitMQ, WebSockets, cloud, and Kubernetes as conditional roadmap options.
+- **Reason:** They are not currently required by the implemented product slice and would add operational cost.
+- **Impact:** Each future addition requires a concrete use case, migration plan, tests, and operational ownership.
+- **Status:** ACCEPTED / ROADMAP POLICY
 
 ## Decision Change Policy
 
-An accepted decision must not be changed silently.
-
-When a decision changes:
-
-1. Create a new decision entry.
-2. Explain why the previous decision is being changed.
-3. Identify the affected components.
-4. Update the relevant project-control document.
-5. Mark the previous decision as `SUPERSEDED`.
-
-Example:
-
-```text
-DECISION-011
-
-Topic: Vector Database
-
-Decision: Replace Qdrant with another vector database.
-
-Replaces: DECISION-006
-
-Reason:
-...
-
-Impact:
-...
-
-Status: ACCEPTED
-```
+When a decision changes, add a new entry with the reason, affected modules, migration plan, and superseded decision. Never present an unimplemented proposal as current architecture.

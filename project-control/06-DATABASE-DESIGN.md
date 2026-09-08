@@ -1,156 +1,41 @@
 # Database Design
 
-## 1. Database Strategy
+## Current Database
 
-The system will use multiple data stores, with each database serving a specific purpose.
+PostgreSQL is the only active application database. Spring Data JPA maps domain entities and Flyway owns schema evolution. The runtime uses `spring.jpa.hibernate.ddl-auto=none` so migrations, not Hibernate startup mutation, define the schema.
 
-```text
-PostgreSQL → Transactional Data
-MongoDB    → AI / Document Data
-Redis      → Cache / Temporary Data
-Qdrant     → Vector Data
-```
+## Current Relational Areas
 
----
+The repository contains relational models and repositories for users, projects, departments, teams/memberships, documents, document chunks, chunk embeddings, tasks, notifications, timelines, and related analytics/AI data. Exact columns and constraints are defined by migrations under `rag-backend/src/main/resources/db/migration` and must be treated as the schema source of truth.
 
-## 2. PostgreSQL
-
-PostgreSQL will store structured relational data.
-
-### Core Tables
+Important current RAG tables:
 
 ```text
-users
-roles
-permissions
-user_roles
-role_permissions
-
-projects
-project_members
-
-tasks
-task_comments
-
-notifications
-audit_logs
+documents
+  -> document_chunks
+       -> chunk_embeddings
 ```
 
-### Main Relationships
+Document file name is carried into retrieval results as response metadata rather than persisted directly on each transient chunk result.
 
-```text
-User
- ├── Roles
- ├── Projects
- ├── Tasks
- └── Notifications
+## Data Rules
 
-Project
- ├── Members
- └── Tasks
+- Use foreign keys, not duplicated identifiers, for ownership relationships.
+- Add indexes based on measured query patterns.
+- Use transactions for multi-table mutations and embedding replacement.
+- Store model name, embedding dimensions, and processing version with embeddings before production scale.
+- Keep uploaded file bytes separate from relational metadata when object storage is introduced.
+- Do not store passwords, tokens, or provider secrets in plaintext.
+- Use retention and deletion rules for conversations, files, and AI execution records.
 
-Task
- └── Comments
-```
+## Future Data Stores
 
-Hibernate/JPA will manage PostgreSQL entities.
+| Store | Status | Candidate responsibility |
+|---|---|---|
+| PostgreSQL | Implemented | Transactional entities and current RAG metadata/embeddings |
+| pgvector or Qdrant | Planned | Vector search if application-side search no longer meets scale/latency targets |
+| Redis | Planned | Cache, rate limits, locks, short-lived job state |
+| MongoDB | Optional | Conversation/execution documents only if relational storage becomes a poor fit |
+| Object storage | Planned | Durable document bytes and generated reports |
 
----
-
-## 3. MongoDB
-
-MongoDB will store flexible AI-related data.
-
-### Collections
-
-```text
-conversations
-agent_executions
-ai_reports
-document_metadata
-```
-
-### Conversation
-
-Stores:
-
-* User
-* Conversation ID
-* Messages
-* Timestamps
-* Metadata
-
-### Agent Execution
-
-Stores:
-
-* Agent ID
-* User
-* Request
-* Execution status
-* Tool calls
-* Execution time
-* Errors
-* Result metadata
-
----
-
-## 4. Redis
-
-Redis will be used for temporary and frequently accessed data.
-
-Examples:
-
-```text
-cache:user
-cache:project
-cache:ai-response
-rate-limit:user
-agent:state
-distributed-lock
-```
-
-TTL should be configured where appropriate.
-
----
-
-## 5. Qdrant
-
-Qdrant will store document embeddings.
-
-Each vector should contain metadata such as:
-
-```text
-documentId
-documentName
-chunkId
-pageNumber
-ownerId
-projectId
-```
-
-This metadata will support filtered retrieval and source citations.
-
----
-
-## 6. Data Rules
-
-* PostgreSQL is the primary source for transactional data.
-* MongoDB is not a replacement for relational transactional data.
-* Redis data must be considered temporary/cacheable.
-* Qdrant stores searchable vector representations, not the original documents.
-* Original files will be stored separately.
-* Database credentials must never be committed to Git.
-* Database schema changes must be version controlled using Flyway.
-
----
-
-## 7. Database Design Principles
-
-* Use appropriate primary keys and foreign keys.
-* Add indexes for frequently queried fields.
-* Use transactions for critical operations.
-* Avoid unnecessary relationships.
-* Use pagination for large datasets.
-* Prevent duplicate records where appropriate.
-* Keep database responsibilities clearly separated.
+No additional store is approved merely because it appears in a future diagram. The choice must be recorded in `11-DECISIONS.md` with migration and operational implications.

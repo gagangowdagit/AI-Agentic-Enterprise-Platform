@@ -1,31 +1,22 @@
 # Changelog
 
-This file records only meaningful milestones and material project changes.
-
-## [Unreleased]
+## 2026-09-08
 
 ### Added
 
-* Repository initialized with project structure and starter documentation.
-* Project-control tracking set up for planning, architecture, requirements, and status updates.
-* Spring Boot backend scaffold created under rag-backend.
-* Java 21 + Spring Boot 4 foundation configured with Maven.
-* Basic application bootstrap and health endpoint implemented.
-* Initial Spring Boot context test added for startup validation.
+- Reconciled project-control documentation with the implemented repository.
+- Documented the current React, Spring Boot, PostgreSQL, Flyway, document-processing, Ollama, and RAG slices.
+- Added a phased development roadmap from current state through production readiness.
+- Added explicit gaps, acceptance requirements, decision policy, and future technology criteria.
 
 ### Changed
 
-* Development status updated from placeholder initialization to the current implementation snapshot.
-* Status tracking condensed to a compact, readable format to reduce repeated reading overhead.
+- Reclassified MongoDB, Redis, Qdrant, RabbitMQ, WebSockets, cloud, Kubernetes, and observability as future options rather than implemented stack components.
+- Replaced the obsolete development status that described only the original backend foundation.
+- Consolidated duplicate Agile and Waterfall plans into a canonical task roadmap plus milestone view.
 
-### Fixed
+## Earlier Foundation
 
-* None.
-
-### Security
-
-* Security requirements documented for future authentication and authorization work.
-
-### Infrastructure
-
-* Initial backend project skeleton and .gitignore configuration established.
+- Repository and module structure created.
+- Spring Boot backend and React/Vite frontend bootstrapped.
+- Layered API, persistence, validation, OpenAPI, document processing, project workflows, analytics, and initial RAG/AI services added incrementally.

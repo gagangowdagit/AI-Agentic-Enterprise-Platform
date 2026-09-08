@@ -1,249 +1,42 @@
 # AI Development Instructions
 
-## 1. Project Context
+This repository is an in-progress portfolio project. The source code is the authority for implementation status; project-control documents describe intent, constraints, and the next work.
 
-This repository contains the AI Agentic Enterprise Platform.
+## Before Changing Code
 
-The project is being developed incrementally using a predefined development plan, with Git used for version control and rollback.
+1. Read the relevant module README and nearby implementation.
+2. Check `10-DEVELOPMENT-STATUS.md` for the current phase.
+3. Confirm whether the requested capability is implemented, partial, or planned.
+4. Prefer the smallest change that preserves existing behavior.
 
-The repository is the primary source of truth for the project.
+Do not treat future roadmap items as existing functionality. Do not claim a library, database, endpoint, security control, or deployment target is implemented until it exists in source and has been verified.
 
----
+## Engineering Rules
 
-## 2. Mandatory Files to Read
+- Keep controllers thin and business logic in services.
+- Use DTOs and validation at API boundaries.
+- Keep persistence changes in versioned Flyway migrations.
+- Use environment variables for credentials, tokens, model endpoints, and deployment configuration.
+- Never commit secrets or generated build output.
+- Preserve public API contracts unless the task explicitly changes them.
+- Add or update focused tests for behavior changes.
+- Record meaningful architecture changes in `11-DECISIONS.md`.
+- Update `10-DEVELOPMENT-STATUS.md` and `12-CHANGELOG.md` when work changes the project state.
 
-Before making any code changes, the AI assistant must read the relevant files inside:
+## AI and Data Safety
 
-`project-control/`
+AI features must use authorized application data only. Tool execution must have explicit inputs, validation, authorization, bounded execution, and failure handling. Prompts and logs must not expose credentials or private data unnecessarily.
 
-At minimum:
+## Verification
 
-1. `01-PROJECT-OVERVIEW.md`
-2. `02-TECH-STACK.md`
-3. `03-DEVELOPMENT-PLAN.md`
-4. `04-REQUIREMENTS.md`
-5. `05-ARCHITECTURE.md`
-6. `10-DEVELOPMENT-STATUS.md`
-7. `11-DECISIONS.md`
+Run the narrowest useful check first, then the relevant module checks. A feature is complete only when the implementation, tests, documentation, and local setup instructions agree. Known unrelated failures must be recorded rather than hidden.
 
----
+## Source-of-Truth Order
 
-## 3. Development Rules
+1. Compiled source and tests
+2. Database migrations and runtime configuration
+3. Current architecture and decisions
+4. Requirements and development status
+5. Roadmap and future proposals
 
-The AI assistant must:
-
-- Follow the defined project architecture.
-- Follow the approved technology stack.
-- Follow the development hierarchy.
-- Work only on the current task unless explicitly instructed otherwise.
-- Complete the current task before moving to the next task.
-- Avoid modifying unrelated modules.
-- Avoid introducing unnecessary technologies.
-- Avoid rewriting working code without a valid reason.
-- Preserve existing functionality when adding new features.
-- Prefer clean, modular, maintainable code.
-- Follow established coding conventions.
-- Add appropriate error handling.
-- Add tests where applicable.
-
----
-
-## 4. Development Workflow
-
-For every development task:
-
-1. Read the project-control files.
-2. Check `10-DEVELOPMENT-STATUS.md`.
-3. Identify the current task.
-4. Understand the existing implementation.
-5. Implement only the required changes.
-6. Run relevant tests.
-7. Fix any issues.
-8. Verify that existing functionality still works.
-9. Update `10-DEVELOPMENT-STATUS.md`.
-10. Record important architectural decisions in `11-DECISIONS.md`.
-11. Update `12-CHANGELOG.md` when appropriate.
-12. Create a Git commit after the task is successfully completed.
-
----
-
-## 5. Git Rules
-
-Git is used to maintain stable checkpoints.
-
-A task should not be marked as completed until:
-
-- Implementation is complete.
-- Relevant tests pass.
-- Existing functionality is verified.
-- The code is in a stable state.
-
-Use meaningful commit messages.
-
-Example:
-
-`feat(user): add user entity`
-
-`feat(user): add user repository`
-
-`test(user): add user service tests`
-
-Do not combine unrelated changes into a single commit.
-
----
-
-## 6. Architecture Rules
-
-Do not change the project architecture or technology stack without explicit approval.
-
-If a change is required:
-
-1. Explain why the change is necessary.
-2. Identify the impact.
-3. Record the decision in `11-DECISIONS.md`.
-4. Proceed only after approval when the change is architectural or affects the approved stack.
-
----
-
-## 7. Security Rules
-
-Security must be considered during development.
-
-The AI assistant must:
-
-- Never hardcode passwords.
-- Never hardcode API keys.
-- Never commit secrets.
-- Use environment variables for sensitive configuration.
-- Validate user input.
-- Apply proper authorization.
-- Protect APIs appropriately.
-- Follow secure coding practices.
-- Consider AI-specific security risks such as prompt injection and unauthorized tool execution.
-
----
-
-## 8. AI Agent Rules
-
-AI agents must not perform unrestricted actions.
-
-Agent tools must have:
-
-- Defined inputs.
-- Defined outputs.
-- Validation.
-- Authorization where required.
-- Error handling.
-- Appropriate execution limits.
-
-The agent must not bypass application security or business rules.
-
----
-
-## 9. Database Rules
-
-Database changes must be deliberate and documented.
-
-The AI assistant must:
-
-- Follow the approved database architecture.
-- Avoid unnecessary schema changes.
-- Maintain relationships correctly.
-- Consider transactions where required.
-- Consider indexing and query performance.
-- Preserve existing data when modifying schemas.
-
----
-
-## 10. Testing Rules
-
-Testing is part of development, not an optional final step.
-
-Depending on the feature, use appropriate testing such as:
-
-- Unit testing
-- Integration testing
-- API testing
-- End-to-end testing
-- Performance testing
-
-A feature should not be considered complete if relevant tests are failing.
-
----
-
-## 11. Documentation Rules
-
-Important architectural or technical decisions must be documented.
-
-Documentation should be updated when:
-
-- Architecture changes.
-- Technology choices change.
-- APIs change significantly.
-- Database structure changes significantly.
-- AI/RAG architecture changes.
-- Development workflow changes.
-
----
-
-## 12. Scope Control
-
-Do not implement future features simply because they are mentioned in the overall project plan.
-
-The project is intentionally developed incrementally.
-
-Always prioritize:
-
-`Current Task → Current Subtask → Current Super Subtask`
-
-Only move forward after the current scope is stable.
-
----
-
-## 13. Recovery Principle
-
-The project must remain recoverable even if:
-
-- A ChatGPT conversation is lost.
-- A Claude Code session is lost.
-- An AI coding session fails.
-- Development is interrupted.
-- A feature introduces a regression.
-
-The Git repository and `project-control/` files must contain enough information to continue development from the last stable checkpoint.
-
----
-
-## 14. Source of Truth
-
-The following priority should be followed when information conflicts:
-
-1. Approved project decisions
-2. Current project requirements
-3. Current architecture
-4. Technology stack
-5. Development plan
-6. Development status
-7. AI assistant suggestions
-
-The AI assistant must not silently override an existing project decision.
-
----
-
-## 15. General Principle
-
-Build the project incrementally.
-
-Keep the code clean.
-
-Keep the architecture consistent.
-
-Keep changes isolated.
-
-Test before committing.
-
-Document important decisions.
-
-Maintain stable Git checkpoints.
-
-Never sacrifice project stability just to implement a feature quickly.
+Project-control files must be revised when they conflict with the implementation.

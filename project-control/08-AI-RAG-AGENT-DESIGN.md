@@ -1,224 +1,53 @@
-# AI, RAG and Agent Design
+# AI, RAG, and Agent Design
 
-## 1. AI Architecture
+## Current AI Components
 
-```text
-User Request
-     ↓
-AI Orchestrator
-     ↓
-Supervisor Agent
-     ↓
-Intent / Task Analysis
-     ↓
-Tool or Specialized Agent
-     ↓
-Execution
-     ↓
-Result
-     ↓
-LLM
-     ↓
-Final Response
-```
+The current implementation deliberately uses small interfaces around local Ollama services:
 
----
+- `EmbeddingService` sends text batches to `/api/embed` and normalizes returned vectors.
+- `LlmService` sends grounded prompts to `/api/generate` with streaming disabled.
+- `RagService` scopes documents, retrieves chunks, and delegates similarity selection.
+- Agent/project-analysis services reuse application services rather than bypassing business rules.
 
-## 2. RAG Architecture
+Configured local models are `nomic-embed-text` and `llama3.2:3b`. Ollama must be running separately; model availability is an environment prerequisite.
+
+## Current RAG Pipeline
 
 ```text
-Document
-   ↓
-Text Extraction
-   ↓
-Cleaning
-   ↓
-Chunking
-   ↓
-Embedding
-   ↓
-Qdrant
+Document -> extract text -> chunk -> embed -> persist
+Question -> embed -> project scope -> similarity top-K
+         -> grounded prompt -> Ollama generate -> answer + sources
 ```
 
-For a user query:
+The prompt instructs the model to use retrieved context and say it does not know when the documents do not support an answer. This is a grounding control, not a proof of factual correctness.
+
+## Current Limitations
+
+- No durable conversation history or token-aware memory window.
+- No streaming response.
+- No external vector index, retrieval evaluation harness, or reranker.
+- No complete model health/readiness endpoint.
+- Agent execution and tool authorization need a production-grade contract.
+
+## Agent Roadmap
+
+Agents should be introduced as bounded application workflows:
 
 ```text
-Question
-   ↓
-Query Embedding
-   ↓
-Vector Search
-   ↓
-Top-K Chunks
-   ↓
-Metadata Filtering
-   ↓
-Context
-   ↓
-LLM
-   ↓
-Answer + Sources
+Request -> classify -> authorize -> validate tool input -> execute
+        -> audit result -> optionally ask for confirmation -> respond
 ```
 
----
+Each tool must define a name, version, input schema, output schema, permission, timeout, retry policy, idempotency behavior, and audit event. Mutating tools must require explicit confirmation until policy and testing demonstrate otherwise.
 
-## 3. Agent Architecture
+Future specialized capabilities may include document search, project/task lookup, analytics, report generation, and task actions. A supervisor or multi-agent design is optional; a deterministic workflow is preferable when it is easier to audit.
 
-### Supervisor Agent
+## AI Quality and Safety Backlog
 
-Responsible for:
-
-* Understanding the request
-* Selecting the appropriate agent/tool
-* Coordinating multi-step operations
-* Combining results
-
-### Specialized Agents
-
-```text
-Supervisor
-│
-├── RAG Agent
-├── Database Agent
-├── Analytics Agent
-├── Task Agent
-├── Report Agent
-└── Notification Agent
-```
-
----
-
-## 4. Tool Architecture
-
-Tools will use a common interface.
-
-```text
-Tool
-├── Name
-├── Description
-├── Input Schema
-├── Authorization
-├── Execution
-├── Output
-└── Error Handling
-```
-
-Initial tools:
-
-```text
-Document Search
-Project Search
-Task Search
-Database Query
-Task Creation
-Task Update
-Analytics
-Report Generation
-Notification
-```
-
----
-
-## 5. Agent Execution
-
-A typical execution:
-
-```text
-User Request
-    ↓
-Create Execution
-    ↓
-Analyze Intent
-    ↓
-Select Tool/Agent
-    ↓
-Validate Authorization
-    ↓
-Execute
-    ↓
-Store Execution Result
-    ↓
-Continue / Finish
-    ↓
-Generate Final Response
-```
-
-Agent execution status:
-
-```text
-PENDING
-RUNNING
-COMPLETED
-FAILED
-CANCELLED
-```
-
----
-
-## 6. AI Memory
-
-### Short-Term Memory
-
-Used for the current conversation and active task.
-
-### Long-Term Memory
-
-Used for useful persistent context where appropriate.
-
-Storage:
-
-```text
-MongoDB
-Redis
-Vector Storage
-```
-
-Memory retrieval must respect user authorization.
-
----
-
-## 7. AI Safety
-
-The AI system must:
-
-* Validate tool inputs.
-* Verify user authorization.
-* Prevent unauthorized data access.
-* Limit tool execution.
-* Handle timeouts.
-* Handle failed tools.
-* Protect against prompt injection.
-* Avoid exposing sensitive information.
-* Never bypass application business rules.
-
----
-
-## 8. RAG Quality
-
-The RAG system should support:
-
-* Top-K retrieval
-* Similarity thresholds
-* Metadata filtering
-* Chunk optimization
-* Context limits
-* Source citations
-* Retrieval failure handling
-
-The AI should clearly indicate when sufficient information is not available instead of inventing information.
-
----
-
-## 9. AI Observability
-
-The system should track:
-
-* Agent execution time
-* Tool execution time
-* RAG retrieval time
-* AI request count
-* Execution status
-* Errors
-* Token usage where available
-
-Sensitive prompts, credentials, and private information must not be logged unnecessarily.
+- Build a small golden dataset for retrieval and answer grounding.
+- Measure retrieval relevance, answer support, latency, and model failure rate.
+- Add prompt-injection tests using untrusted document content.
+- Redact secrets and personal data from logs.
+- Enforce project authorization before retrieval, not only in the prompt.
+- Add timeout, retry, circuit-breaker, and degraded-mode behavior.
+- Persist prompt/model versions for reproducibility.

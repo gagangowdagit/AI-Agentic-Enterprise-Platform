@@ -5,240 +5,38 @@
 * React
 * TypeScript
 * Vite
-* Tailwind CSS
-* REST API
-* WebSocket
-* Playwright
-* React Testing Library
+# Technology Stack
 
----
+Status labels in this file are deliberate: **Implemented** means present in the repository; **Planned** means a future option, not a current dependency.
 
-## 2. Backend
+## Implemented Now
 
-* Java
-* Spring Boot
-* Spring MVC
-* Spring Security
-* Spring Data JPA
-* Hibernate
-* Jakarta Validation
-* OpenAPI / Swagger
-* Maven
+| Area | Technology | Evidence / use |
+|---|---|---|
+| Frontend | React 19, TypeScript 6, Vite 8 | `frontend/package.json`, page and service modules |
+| Routing | React Router 7 | Frontend route composition |
+| Backend | Java 21, Spring Boot 4.1.1, Spring MVC | `rag-backend/pom.xml` and application bootstrap |
+| API validation | Jakarta Validation | Request DTO constraints and global error responses |
+| Persistence | PostgreSQL, Spring Data JPA, Hibernate | Relational entities and repositories |
+| Migrations | Flyway PostgreSQL | Versioned SQL migrations in backend resources |
+| API documentation | springdoc OpenAPI 2.8.9 | Swagger/OpenAPI configuration |
+| Documents | Apache PDFBox 2.0.32, Apache POI 5.3.0 | PDF/DOCX extraction plus text processing |
+| AI runtime | Ollama REST API | `nomic-embed-text` embeddings and `llama3.2:3b` generation |
+| Backend tests | JUnit 5, Mockito, Spring Boot Test | Unit and controller tests |
+| Tooling | Maven Wrapper, npm, ESLint | Repeatable local builds and linting |
 
----
+## Implemented in a Limited or Local Form
 
-## 3. Databases
+- Authentication and user registration/login flows exist, but the full Spring Security filter chain, JWT lifecycle, and authorization policy are not complete.
+- RAG stores embeddings in the current relational model and performs application-side similarity search; Qdrant is not connected.
+- Document storage and processing are synchronous/local-development oriented.
+- Agent and AI service classes exist for selected project workflows, but they are not yet a complete autonomous multi-agent platform.
 
-### PostgreSQL
+## Planned Options, Not Current Dependencies
 
-Primary relational database for:
+MongoDB, Redis, Qdrant, RabbitMQ, WebSocket/STOMP, React Testing Library, Playwright, Testcontainers, Docker Compose, GitHub Actions, AWS, Kubernetes, Prometheus, Grafana, and Spring AI may be introduced when a concrete requirement justifies them. Adding a technology requires a decision entry, implementation, tests, and updated documentation.
 
-* Users
-* Roles
-* Projects
-* Tasks
-* Permissions
-* Notifications
+## Principles
+
+Prefer the existing Spring/React/PostgreSQL/Ollama stack until scale, reliability, or product requirements demonstrate the need for another component. Keep boundaries modular so future vector storage, queues, caching, and model providers can be added without rewriting domain behavior.
 * Other transactional data
-
-### MongoDB
-
-For flexible AI-related data:
-
-* Conversations
-* Chat history
-* Agent executions
-* AI reports
-* AI metadata
-
-### Redis
-
-For:
-
-* Caching
-* Temporary state
-* Rate limiting
-* Distributed locks
-
-### Qdrant
-
-Vector database for:
-
-* Document embeddings
-* Semantic search
-* RAG retrieval
-
----
-
-## 4. AI
-
-* Spring AI
-* Configurable LLM provider
-* Embedding models
-* Tool calling
-* Structured AI responses
-* Streaming responses where supported
-
-### AI Capabilities
-
-* RAG
-* Agent orchestration
-* Multi-agent system
-* AI memory
-* Tool calling
-* AI analytics
-* AI reports
-
----
-
-## 5. Concurrency & Async Processing
-
-Java/Spring features:
-
-* ExecutorService
-* ThreadPoolExecutor
-* Callable
-* Future
-* CompletableFuture
-* ConcurrentHashMap
-* Locks
-* Semaphore
-* Spring `@Async`
-* ThreadPoolTaskExecutor
-
----
-
-## 6. Messaging & Scheduling
-
-### RabbitMQ
-
-For:
-
-* Background jobs
-* Document processing
-* AI jobs
-* Notifications
-* Domain events
-
-### Spring Scheduler
-
-For:
-
-* Scheduled reports
-* Overdue task checks
-* Project monitoring
-* Automated workflows
-
----
-
-## 7. File Storage
-
-### Development
-
-Local file storage.
-
-### Production
-
-AWS S3.
-
----
-
-## 8. Testing
-
-* JUnit 5
-* Mockito
-* Spring Boot Test
-* Testcontainers
-* REST Assured
-* Postman
-* Playwright
-* React Testing Library
-* Apache JMeter
-
----
-
-## 9. DevOps
-
-* Git
-* GitHub
-* Docker
-* Docker Compose
-* Jenkins
-* GitHub Actions
-* AWS ECR
-
----
-
-## 10. Cloud
-
-### AWS
-
-Planned services:
-
-* EC2
-* ECR
-* S3
-* RDS
-* IAM
-* VPC
-* Application Load Balancer
-* CloudWatch
-* EKS
-
----
-
-## 11. Kubernetes
-
-* Kubernetes
-* Amazon EKS
-* Deployments
-* Services
-* ConfigMaps
-* Secrets
-* Ingress
-* Health checks
-* Horizontal Pod Autoscaler
-* Rolling deployments
-
----
-
-## 12. Monitoring
-
-* Spring Boot Actuator
-* Prometheus
-* Grafana
-* AWS CloudWatch
-
-Monitor:
-
-* API performance
-* Errors
-* Database performance
-* AI execution
-* RAG performance
-* Resource usage
-
----
-
-## 13. Architecture Principles
-
-The project should follow:
-
-* SOLID
-* Clean Code
-* Separation of Concerns
-* Dependency Injection
-* Loose Coupling
-* High Cohesion
-* Security
-* Testability
-* Observability
-* Scalability
-
----
-
-## 14. Technology Change Rule
-
-The listed technologies are the initial approved stack.
-
-A significant technology change must be documented in `11-DECISIONS.md` and reflected in this file.

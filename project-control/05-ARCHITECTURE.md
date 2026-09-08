@@ -1,274 +1,65 @@
 # System Architecture
 
-## 1. Architecture Overview
-
-The system will follow a modular full-stack architecture.
+## Current Runtime Shape
 
 ```text
-React Frontend
-      │
-      ▼
-Spring Boot Backend
-      │
-      ├── Authentication & Authorization
-      ├── Project & Task Management
-      ├── Document Management
-      ├── AI Orchestration
-      ├── RAG Services
-      ├── Notification Services
-      └── Analytics
-      │
-      ├──────────────┬──────────────┐
-      ▼              ▼              ▼
-PostgreSQL       MongoDB         Redis
-      │              │
-      └───────┬──────┘
-              ▼
-         AI Platform
-              │
-       ┌──────┼──────┐
-       ▼      ▼      ▼
-      RAG    Agents  Tools
-       │      │      │
-       ▼      ▼      ▼
-   Qdrant    LLM   App Services
+React 19 + TypeScript + Vite
+          |
+          | REST / JSON
+          v
+Spring Boot 4.1.1 / Java 21
+          |
+    Controllers
+          v
+    Services + AI services
+          |
+    Repositories / processors
+       |              |
+       v              v
+ PostgreSQL        Ollama
+ (JPA/Flyway)      (embed/generate)
 ```
 
----
+## Frontend
 
-## 2. Frontend Architecture
+`frontend/src` is organized around routed pages, reusable components, and API service modules. Pages currently cover authentication, home, projects, project details, departments, teams, documents, analytics, and Nova AI. The frontend calls the backend through REST and currently keeps API configuration in service/page code; environment-based configuration is a near-term improvement.
+
+## Backend
+
+The backend uses a conventional layered Spring architecture:
 
 ```text
-frontend/
-└── src/
-    ├── components/
-    ├── pages/
-    ├── layouts/
-    ├── services/
-    ├── hooks/
-    ├── context/
-    ├── types/
-    ├── utils/
-    └── routes/
+Controller -> DTO/validation -> Service -> Repository -> PostgreSQL
+                         |
+                         +-> document processors
+                         +-> embedding/retrieval services
+                         +-> Ollama LLM service
 ```
 
-React communicates with Spring Boot through REST APIs and WebSocket connections.
+Dependency injection is used for service boundaries such as `EmbeddingService`, `LlmService`, and `RagService`. Global exception handling and API response wrappers keep errors and success responses consistent.
 
----
-
-## 3. Backend Architecture
-
-The backend will follow a layered architecture.
+## Current RAG Flow
 
 ```text
-Controller
-    ↓
-Service
-    ↓
-Repository
-    ↓
-Database
+RAG query
+  -> embed query with Ollama /api/embed
+  -> load authorized project documents/chunks
+  -> calculate application-side similarity and select top-K
+  -> build grounded prompt
+  -> generate with Ollama /api/generate
+  -> return answer, context, and source metadata
 ```
 
-Additional layers:
+Embeddings currently live in the relational model as serialized values and are compared in application code. This is a deliberately simple local implementation, not yet a high-scale vector architecture.
 
-```text
-Controller
-    ↓
-DTO
-    ↓
-Service
-    ↓
-Domain / Entity
-    ↓
-Repository
-```
+## Future Boundaries
 
-The backend will use interfaces and dependency injection to maintain loose coupling.
+- Add Spring Security at the API boundary before exposing the application beyond local development.
+- Add an object-storage abstraction for uploaded files.
+- Add a job boundary for long-running ingestion and agent executions.
+- Add a vector-store adapter only if retrieval volume justifies pgvector or Qdrant.
+- Add event delivery, WebSocket/SSE, or a message broker only for a demonstrated asynchronous workflow.
 
----
+## Architecture Principles
 
-## 4. AI Architecture
-
-The AI layer will be separated from normal business logic.
-
-```text
-User Request
-     ↓
-AI Orchestrator
-     ↓
-Supervisor Agent
-     │
-     ├── RAG Agent
-     ├── Database Agent
-     ├── Analytics Agent
-     ├── Task Agent
-     ├── Report Agent
-     └── Notification Agent
-     │
-     ▼
-Tool Execution
-     │
-     ▼
-Result
-     │
-     ▼
-AI Response
-```
-
-Agents will only access authorized tools.
-
----
-
-## 5. RAG Architecture
-
-```text
-Document
-   ↓
-Text Extraction
-   ↓
-Chunking
-   ↓
-Embedding
-   ↓
-Qdrant
-   ↓
-Semantic Search
-   ↓
-Relevant Chunks
-   ↓
-LLM
-   ↓
-Response + Sources
-```
-
----
-
-## 6. Data Architecture
-
-### PostgreSQL
-
-Used for transactional relational data:
-
-* Users
-* Roles
-* Projects
-* Tasks
-* Permissions
-* Notifications
-
-### MongoDB
-
-Used for flexible AI-related data:
-
-* Conversations
-* Chat history
-* Agent executions
-* AI-generated reports
-
-### Redis
-
-Used for:
-
-* Caching
-* Temporary state
-* Rate limiting
-* Distributed locks
-
-### Qdrant
-
-Used for:
-
-* Document embeddings
-* Vector search
-* RAG retrieval
-
----
-
-## 7. Asynchronous Architecture
-
-Long-running operations should not block normal API requests.
-
-```text
-API Request
-    ↓
-RabbitMQ
-    ↓
-Background Worker
-    ↓
-Processing
-    ↓
-Database / Vector DB
-    ↓
-WebSocket Update
-    ↓
-React UI
-```
-
-Java concurrency and Spring asynchronous processing will be used where appropriate.
-
----
-
-## 8. Real-Time Architecture
-
-```text
-Spring Boot
-    │
-    ▼
-WebSocket
-    │
-    ▼
-React
-```
-
-Used for:
-
-* Agent execution status
-* Document processing status
-* Notifications
-* Long-running task updates
-
----
-
-## 9. Deployment Architecture
-
-```text
-GitHub
-   ↓
-Jenkins
-   ↓
-Docker Build
-   ↓
-AWS ECR
-   ↓
-Kubernetes / EKS
-   ↓
-Application
-```
-
-Production infrastructure will use appropriate AWS services such as:
-
-* EKS
-* RDS
-* S3
-* Load Balancer
-* CloudWatch
-* IAM
-
----
-
-## 10. Architecture Principles
-
-The system should follow:
-
-* Modular design
-* Separation of concerns
-* SOLID principles
-* Loose coupling
-* Secure access control
-* Testability
-* Observability
-* Scalability
-* Maintainability
-
-Architecture changes must be documented in `11-DECISIONS.md`.
+Keep domain behavior independent from Ollama and infrastructure details. Prefer explicit service interfaces, validated DTOs, least privilege, idempotent processing, measurable quality, and small deployable changes. A future component belongs in the architecture only after its failure mode, ownership, testing strategy, and operational cost are understood.

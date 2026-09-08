@@ -1,201 +1,47 @@
 # API Design
 
-## 1. API Standards
+## Contract
 
-The backend will expose REST APIs using JSON.
+The backend uses JSON REST APIs under `/api/v1`. Controllers validate request DTOs and return a consistent `ApiResponse` envelope where the endpoint contract defines one. Errors are normalized by the global exception handler.
 
-Base URL:
+## Implemented Surface
 
-```text
-/api/v1
+The exact route inventory should be confirmed from controller annotations. The current API groups include:
+
+- `/api/v1/system` for service status/health.
+- `/api/v1/auth` and `/api/v1/users` for current registration/login/user flows.
+- `/api/v1/projects` for project lifecycle, project details, teams, documents, timelines, and project insights.
+- `/api/v1/departments` and team/member routes for organizational data.
+- `/api/v1/documents` for document operations and processing.
+- `/api/v1/analytics` for company/project analytics.
+- `/api/v1/rag/query` for project-scoped grounded question answering.
+
+## RAG Query Contract
+
+```http
+POST /api/v1/rag/query
+Content-Type: application/json
 ```
-
-Use standard HTTP methods:
-
-```text
-GET     → Read
-POST    → Create
-PUT     → Update
-PATCH   → Partial Update
-DELETE  → Delete
-```
-
----
-
-## 2. Authentication APIs
-
-```text
-POST   /api/v1/auth/register
-POST   /api/v1/auth/login
-POST   /api/v1/auth/refresh
-POST   /api/v1/auth/logout
-GET    /api/v1/auth/me
-```
-
----
-
-## 3. User APIs
-
-```text
-GET    /api/v1/users
-GET    /api/v1/users/{id}
-POST   /api/v1/users
-PUT    /api/v1/users/{id}
-DELETE /api/v1/users/{id}
-```
-
----
-
-## 4. Project APIs
-
-```text
-GET    /api/v1/projects
-GET    /api/v1/projects/{id}
-POST   /api/v1/projects
-PUT    /api/v1/projects/{id}
-DELETE /api/v1/projects/{id}
-
-POST   /api/v1/projects/{id}/members
-DELETE /api/v1/projects/{id}/members/{userId}
-```
-
----
-
-## 5. Task APIs
-
-```text
-GET    /api/v1/tasks
-GET    /api/v1/tasks/{id}
-POST   /api/v1/tasks
-PUT    /api/v1/tasks/{id}
-DELETE /api/v1/tasks/{id}
-
-PATCH  /api/v1/tasks/{id}/status
-PATCH  /api/v1/tasks/{id}/assign
-```
-
----
-
-## 6. Document APIs
-
-```text
-GET    /api/v1/documents
-GET    /api/v1/documents/{id}
-POST   /api/v1/documents/upload
-DELETE /api/v1/documents/{id}
-
-GET    /api/v1/documents/{id}/status
-```
-
----
-
-## 7. AI APIs
-
-```text
-POST   /api/v1/ai/chat
-GET    /api/v1/ai/conversations
-GET    /api/v1/ai/conversations/{id}
-DELETE /api/v1/ai/conversations/{id}
-```
-
----
-
-## 8. RAG APIs
-
-```text
-POST   /api/v1/rag/search
-POST   /api/v1/rag/query
-```
-
-RAG responses should include source information where applicable.
-
----
-
-## 9. Agent APIs
-
-```text
-POST   /api/v1/agents/execute
-GET    /api/v1/agents/executions
-GET    /api/v1/agents/executions/{id}
-POST   /api/v1/agents/executions/{id}/cancel
-```
-
----
-
-## 10. Analytics APIs
-
-```text
-GET    /api/v1/analytics/projects/{id}
-GET    /api/v1/analytics/tasks
-GET    /api/v1/analytics/ai
-```
-
----
-
-## 11. Report APIs
-
-```text
-POST   /api/v1/reports/project
-POST   /api/v1/reports/task
-POST   /api/v1/reports/analytics
-
-GET    /api/v1/reports
-GET    /api/v1/reports/{id}
-```
-
----
-
-## 12. Notification APIs
-
-```text
-GET    /api/v1/notifications
-PATCH  /api/v1/notifications/{id}/read
-PATCH  /api/v1/notifications/read-all
-```
-
----
-
-## 13. Response Structure
-
-Successful responses should follow a consistent structure.
 
 ```json
 {
-  "success": true,
-  "message": "Operation successful",
-  "data": {},
-  "timestamp": "..."
+  "projectId": "1",
+  "query": "What is the project status?",
+  "topK": 3
 }
 ```
 
-Error responses:
+The response contains the query, generated answer, retrieved context, and de-duplicated source metadata when available. `projectId` may use the current global scope behavior where supported.
 
-```json
-{
-  "success": false,
-  "message": "Resource not found",
-  "errorCode": "RESOURCE_NOT_FOUND",
-  "timestamp": "..."
-}
-```
+## Error Contract
 
----
+Validation and application failures should provide an HTTP status plus a stable error code/message. Internal exception details must not leak secrets, database credentials, prompt contents, or stack traces in production.
 
-## 14. API Security
+## Planned Contract Work
 
-* Protected APIs require authentication.
-* Authorization must be checked before accessing protected resources.
-* User input must be validated.
-* Sensitive information must not be returned unnecessarily.
-* AI tools must respect the same authorization rules as normal APIs.
-
----
-
-## 15. API Documentation
-
-All public APIs should be documented using:
-
-* OpenAPI
-* Swagger UI
-
-API changes must be reflected in the documentation.
+- Publish generated OpenAPI as the canonical route/schema reference.
+- Complete DTO coverage and pagination conventions.
+- Add authentication and authorization requirements per route.
+- Add idempotency keys for upload and mutating AI actions.
+- Add request correlation IDs and rate-limit headers.
+- Version breaking changes rather than silently changing response shapes.
