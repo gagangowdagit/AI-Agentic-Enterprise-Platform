@@ -5,6 +5,8 @@ import com.rag.ragbackend.dto.DepartmentResponse;
 import com.rag.ragbackend.entity.Department;
 import com.rag.ragbackend.repository.DepartmentRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -26,7 +28,12 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public DepartmentResponse createDepartment(CreateDepartmentRequest request) {
-        Department department = new Department(request.name().trim(), request.description());
+        String departmentName = request.name().trim();
+        if (departmentRepository.existsByNameIgnoreCase(departmentName)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Department name already exists");
+        }
+
+        Department department = new Department(departmentName, request.description());
         return DepartmentResponse.from(departmentRepository.save(department));
     }
 }

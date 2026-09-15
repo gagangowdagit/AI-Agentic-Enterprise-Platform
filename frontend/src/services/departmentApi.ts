@@ -11,6 +11,23 @@ export interface CreateDepartmentRequest {
   description?: string;
 }
 
+export interface Employee {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+  department: { id: number; name: string } | null;
+}
+
+export interface CreateEmployeeRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+  departmentId: number;
+}
+
 export const getDepartments = async (): Promise<Department[]> => {
   const response = await fetch(`${API_BASE_URL}/departments`, {
     method: 'GET',
@@ -33,6 +50,20 @@ export const createDepartment = async (department: CreateDepartmentRequest): Pro
 
   if (!response.ok) {
     throw new Error('Failed to create department');
+  }
+
+  return response.json();
+};
+
+export const createEmployee = async (employee: CreateEmployeeRequest): Promise<Employee> => {
+  const response = await fetch(`${API_BASE_URL}/employees`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(employee),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to create employee');
   }
 
   return response.json();

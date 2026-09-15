@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { createDepartment, getDepartments } from '../services/departmentApi';
+import { createDepartment, createEmployee, getDepartments } from '../services/departmentApi';
 import type { Department } from '../services/departmentApi';
 
 function DepartmentsPage() {
@@ -11,6 +11,15 @@ function DepartmentsPage() {
   const [description, setDescription] = useState('');
   const [createLoading, setCreateLoading] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+  const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
+  const [showEmployeeForm, setShowEmployeeForm] = useState(false);
+  const [employeeFirstName, setEmployeeFirstName] = useState('');
+  const [employeeLastName, setEmployeeLastName] = useState('');
+  const [employeeEmail, setEmployeeEmail] = useState('');
+  const [employeeRole, setEmployeeRole] = useState('');
+  const [employeeDepartmentId, setEmployeeDepartmentId] = useState('');
+  const [employeeLoading, setEmployeeLoading] = useState(false);
+  const [employeeError, setEmployeeError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadDepartments = async () => {
@@ -37,6 +46,7 @@ function DepartmentsPage() {
       setCreateError(null);
       const department = await createDepartment({ name: name.trim(), description: description.trim() || undefined });
       setDepartments((current) => [...current, department]);
+      setSelectedDepartment(null);
       setName('');
       setDescription('');
       setShowForm(false);
@@ -47,6 +57,33 @@ function DepartmentsPage() {
     }
   };
 
+  const handleEmployeeSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!employeeDepartmentId) return;
+
+    try {
+      setEmployeeLoading(true);
+      setEmployeeError(null);
+      await createEmployee({
+        firstName: employeeFirstName.trim(),
+        lastName: employeeLastName.trim(),
+        email: employeeEmail.trim(),
+        role: employeeRole.trim(),
+        departmentId: Number(employeeDepartmentId),
+      });
+      setEmployeeFirstName('');
+      setEmployeeLastName('');
+      setEmployeeEmail('');
+      setEmployeeRole('');
+      setEmployeeDepartmentId('');
+      setShowEmployeeForm(false);
+    } catch (submitError) {
+      setEmployeeError(submitError instanceof Error ? submitError.message : 'Failed to create employee');
+    } finally {
+      setEmployeeLoading(false);
+    }
+  };
+
   return (
     <main style={{ padding: '24px 20px', maxWidth: '1100px', margin: '0 auto' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '24px' }}>
@@ -54,7 +91,12 @@ function DepartmentsPage() {
           <h1 style={{ margin: '0 0 8px', color: '#333' }}>Departments</h1>
           <p style={{ margin: 0, color: '#666' }}>Organize your organization by department.</p>
         </div>
-        {!showForm && <button type="button" onClick={() => setShowForm(true)} style={buttonStyle('#4CAF50')}>Create New Department</button>}
+        {!showForm && !showEmployeeForm && (
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <button type="button" onClick={() => setShowForm(true)} style={buttonStyle('#4CAF50')}>Create New Department</button>
+            <button type="button" onClick={() => { setShowEmployeeForm(true); setEmployeeError(null); }} style={buttonStyle('#1976D2')}>Create New Employee</button>
+          </div>
+        )}
       </header>
 
       {loading && <p>Loading departments...</p>}
@@ -75,16 +117,53 @@ function DepartmentsPage() {
         </form>
       )}
 
+      {showEmployeeForm && (
+        <form onSubmit={handleEmployeeSubmit} style={{ marginBottom: '28px', padding: '20px', border: '1px solid #ccc', borderRadius: '6px', backgroundColor: '#f5f5f5' }}>
+          <h2 style={{ marginTop: 0, color: '#333' }}>Create New Employee</h2>
+          {employeeError && <p role="alert" style={errorStyle}>{employeeError}</p>}
+          <label style={labelStyle} htmlFor="employee-first-name">First name</label>
+          <input id="employee-first-name" value={employeeFirstName} onChange={(event) => setEmployeeFirstName(event.target.value)} required style={inputStyle} />
+          <label style={labelStyle} htmlFor="employee-last-name">Last name</label>
+          <input id="employee-last-name" value={employeeLastName} onChange={(event) => setEmployeeLastName(event.target.value)} required style={inputStyle} />
+          <label style={labelStyle} htmlFor="employee-email">Email</label>
+          <input id="employee-email" type="email" value={employeeEmail} onChange={(event) => setEmployeeEmail(event.target.value)} required style={inputStyle} />
+          <label style={labelStyle} htmlFor="employee-role">Role</label>
+          <input id="employee-role" value={employeeRole} onChange={(event) => setEmployeeRole(event.target.value)} required style={inputStyle} />
+          <label style={labelStyle} htmlFor="employee-department">Department</label>
+          <select id="employee-department" value={employeeDepartmentId} onChange={(event) => setEmployeeDepartmentId(event.target.value)} required style={inputStyle}>
+            <option value="">Select department</option>
+            {departments.map((department) => <option key={department.id} value={department.id}>{department.name}</option>)}
+          </select>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '16px' }}>
+            <button type="submit" disabled={employeeLoading || departments.length === 0} style={buttonStyle(employeeLoading || departments.length === 0 ? '#9e9e9e' : '#1976D2')}>{employeeLoading ? 'Creating...' : 'Create Employee'}</button>
+            <button type="button" onClick={() => { setShowEmployeeForm(false); setEmployeeError(null); }} style={buttonStyle('#757575')}>Cancel</button>
+          </div>
+        </form>
+      )}
+
       {!loading && !error && departments.length === 0 && <p style={{ color: '#666' }}>No departments have been created yet.</p>}
       {!loading && !error && departments.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+        <>
+          {selectedDepartment && (
+            <section aria-live="polite" style={{ marginBottom: '20px', padding: '16px 20px', border: '2px solid #4CAF50', borderRadius: '8px', backgroundColor: '#f7fff7' }}>
+              <h2 style={{ margin: 0, color: '#333', fontSize: '22px' }}>{selectedDepartment.name}</h2>
+            </section>
+          )}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
           {departments.map((department) => (
-            <article key={department.id} style={{ minHeight: '120px', padding: '20px', border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+            <button
+              key={department.id}
+              type="button"
+              aria-pressed={selectedDepartment?.id === department.id}
+              onClick={() => setSelectedDepartment(department)}
+              style={{ ...departmentCardStyle, borderColor: selectedDepartment?.id === department.id ? '#4CAF50' : '#ddd' }}
+            >
               <h2 style={{ margin: '0 0 10px', color: '#333', fontSize: '20px' }}>{department.name}</h2>
               <p style={{ margin: 0, color: '#666', lineHeight: 1.5 }}>{department.description || 'No description provided.'}</p>
-            </article>
+            </button>
           ))}
-        </div>
+          </div>
+        </>
       )}
     </main>
   );
@@ -94,5 +173,6 @@ const inputStyle = { width: '100%', padding: '9px', marginBottom: '14px', border
 const labelStyle = { display: 'block', marginBottom: '6px', fontWeight: '600', color: '#444' };
 const errorStyle = { padding: '12px', backgroundColor: '#ffebee', border: '1px solid #f44336', borderRadius: '4px', color: '#c62828' };
 const buttonStyle = (backgroundColor: string) => ({ padding: '10px 16px', backgroundColor, color: 'white', border: 0, borderRadius: '4px', cursor: backgroundColor === '#9e9e9e' ? 'not-allowed' : 'pointer', fontWeight: '600' as const });
+const departmentCardStyle = { minHeight: '120px', padding: '20px', border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', cursor: 'pointer', textAlign: 'left' as const };
 
 export default DepartmentsPage;
