@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
@@ -19,6 +22,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeServiceImpl(EmployeeRepository employeeRepository, DepartmentRepository departmentRepository) {
         this.employeeRepository = employeeRepository;
         this.departmentRepository = departmentRepository;
+    }
+
+    @Override
+    public List<EmployeeTeamResponse> getEmployees(Integer departmentId) {
+        Stream<Employee> employees = departmentId == null
+                ? employeeRepository.findAll().stream()
+                : employeeRepository.findByDepartmentId(departmentId).stream();
+
+        return employees.map(EmployeeTeamResponse::from).toList();
     }
 
     @Override

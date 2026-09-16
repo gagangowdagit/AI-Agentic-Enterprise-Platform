@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { createDepartment, createEmployee, getDepartments } from '../services/departmentApi';
-import type { Department } from '../services/departmentApi';
+import { createDepartment, createEmployee, getDepartments, getEmployees } from '../services/departmentApi';
+import type { Department, Employee } from '../services/departmentApi';
 
 function DepartmentsPage() {
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -12,6 +12,8 @@ function DepartmentsPage() {
   const [createLoading, setCreateLoading] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
+  const [expandedDepartmentId, setExpandedDepartmentId] = useState<number | null>(null);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [showEmployeeForm, setShowEmployeeForm] = useState(false);
   const [employeeFirstName, setEmployeeFirstName] = useState('');
   const [employeeLastName, setEmployeeLastName] = useState('');
@@ -26,7 +28,9 @@ function DepartmentsPage() {
       try {
         setLoading(true);
         setError(null);
-        setDepartments(await getDepartments());
+        const [departmentData, employeeData] = await Promise.all([getDepartments(), getEmployees()]);
+        setDepartments(departmentData);
+        setEmployees(employeeData);
       } catch (loadError) {
         setError(loadError instanceof Error ? loadError.message : 'Failed to fetch departments');
       } finally {
@@ -71,6 +75,7 @@ function DepartmentsPage() {
         role: employeeRole.trim(),
         departmentId: Number(employeeDepartmentId),
       });
+      setEmployees(await getEmployees());
       setEmployeeFirstName('');
       setEmployeeLastName('');
       setEmployeeEmail('');
@@ -146,7 +151,25 @@ function DepartmentsPage() {
         <>
           {selectedDepartment && (
             <section aria-live="polite" style={{ marginBottom: '20px', padding: '16px 20px', border: '2px solid #4CAF50', borderRadius: '8px', backgroundColor: '#f7fff7' }}>
-              <h2 style={{ margin: 0, color: '#333', fontSize: '22px' }}>{selectedDepartment.name}</h2>
+              <h2 style={{ margin: '0 0 6px', color: '#333', fontSize: '22px' }}>{selectedDepartment.name}</h2>
+              <p style={{ margin: 0, color: '#555' }}>{employees.filter((employee) => employee.department?.id === selectedDepartment.id).length} employees associated with this department</p>
+              {expandedDepartmentId === selectedDepartment.id && (
+                <div style={{ marginTop: '16px', display: 'grid', gap: '8px' }}>
+                  {employees.filter((employee) => employee.department?.id === selectedDepartment.id).length === 0 ? (
+                    <p style={{ margin: 0, color: '#666' }}>No employees are associated with this department.</p>
+                  ) : (
+                    employees
+                      .filter((employee) => employee.department?.id === selectedDepartment.id)
+                      .map((employee) => (
+                        <div key={employee.id} style={employeeRowStyle}>
+                          <strong>{employee.firstName} {employee.lastName}</strong>
+                          <span>{employee.role}</span>
+                          {employee.email && <span>{employee.email}</span>}
+                        </div>
+                      ))
+                  )}
+                </div>
+              )}
             </section>
           )}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
@@ -155,10 +178,18 @@ function DepartmentsPage() {
               key={department.id}
               type="button"
               aria-pressed={selectedDepartment?.id === department.id}
-              onClick={() => setSelectedDepartment(department)}
+              onClick={() => {
+                if (selectedDepartment?.id === department.id) {
+                  setExpandedDepartmentId((current) => current === department.id ? null : department.id);
+                } else {
+                  setSelectedDepartment(department);
+                  setExpandedDepartmentId(null);
+                }
+              }}
               style={{ ...departmentCardStyle, borderColor: selectedDepartment?.id === department.id ? '#4CAF50' : '#ddd' }}
             >
               <h2 style={{ margin: '0 0 10px', color: '#333', fontSize: '20px' }}>{department.name}</h2>
+              <p style={{ margin: '0 0 10px', color: '#1976D2', fontWeight: 700 }}>{employees.filter((employee) => employee.department?.id === department.id).length} employees</p>
               <p style={{ margin: 0, color: '#666', lineHeight: 1.5 }}>{department.description || 'No description provided.'}</p>
             </button>
           ))}
@@ -174,5 +205,6 @@ const labelStyle = { display: 'block', marginBottom: '6px', fontWeight: '600', c
 const errorStyle = { padding: '12px', backgroundColor: '#ffebee', border: '1px solid #f44336', borderRadius: '4px', color: '#c62828' };
 const buttonStyle = (backgroundColor: string) => ({ padding: '10px 16px', backgroundColor, color: 'white', border: 0, borderRadius: '4px', cursor: backgroundColor === '#9e9e9e' ? 'not-allowed' : 'pointer', fontWeight: '600' as const });
 const departmentCardStyle = { minHeight: '120px', padding: '20px', border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', cursor: 'pointer', textAlign: 'left' as const };
+const employeeRowStyle = { display: 'grid', gridTemplateColumns: 'minmax(140px, 1fr) minmax(120px, 1fr) minmax(180px, 1fr)', gap: '12px', padding: '10px 12px', border: '1px solid #dce8dc', borderRadius: '4px', backgroundColor: '#fff', color: '#444' };
 
 export default DepartmentsPage;

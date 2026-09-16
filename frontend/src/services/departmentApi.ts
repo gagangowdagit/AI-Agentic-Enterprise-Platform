@@ -68,3 +68,16 @@ export const createEmployee = async (employee: CreateEmployeeRequest): Promise<E
 
   return response.json();
 };
+
+export const getEmployees = async (): Promise<Employee[]> => {
+  const response = await fetch(`${API_BASE_URL}/employees`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch employees');
+  }
+
+  return response.json();
+};
