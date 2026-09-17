@@ -29,7 +29,7 @@ These are candidates, not commitments. Priority should follow user value, securi
 - Conversation summarization and user preferences.
 - Retrieval reranking, hybrid keyword/vector search, and document version awareness.
 - Model/provider abstraction for cloud or self-hosted alternatives.
-- Evaluation dashboard for grounding, relevance, latency, and cost.
+
 
 ## Scale and Reliability
 
