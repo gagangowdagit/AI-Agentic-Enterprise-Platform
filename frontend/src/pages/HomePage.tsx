@@ -5,6 +5,7 @@ function HomePage() {
     { name: 'Projects', path: '/projects', description: 'Plan, track, and manage active work.' },
     { name: 'Documents', path: '/documents', description: 'Upload and explore project knowledge.' },
     { name: 'Departments', path: '/departments', description: 'Organize teams and ownership.' },
+    { name: 'Meetings', path: '/meetings', description: 'Manage meetings, attendees, and agendas.' },
     { name: 'Nova AI', path: '/nova-ai', description: 'Ask questions across your knowledge base.' },
     { name: 'Analytics', path: '/analytics', description: 'Understand company-wide performance.' },
   ];

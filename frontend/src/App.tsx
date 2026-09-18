@@ -7,6 +7,7 @@ import ProjectsPage from './pages/ProjectsPage';
 import ProjectDetailsPage from './pages/ProjectDetailsPage';
 import DocumentsPage from './pages/DocumentsPage';
 import DepartmentsPage from './pages/DepartmentsPage';
+import MeetingsPage from './pages/MeetingsPage';
 import NovaAIPage from './pages/NovaAIPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 
@@ -25,7 +26,7 @@ function App() {
   const isProjectDetailsPage = location.pathname.startsWith('/projects/');
   const isDetailPage = location.pathname === '/projects'
     || isProjectDetailsPage
-    || ['/departments', '/documents', '/nova-ai', '/analytics'].includes(location.pathname);
+    || ['/departments', '/documents', '/meetings', '/nova-ai', '/analytics'].includes(location.pathname);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('rag-auth-user');
@@ -137,6 +138,7 @@ function App() {
         <Route path="/projects/:projectId" element={<ProjectDetailsPage />} />
         <Route path="/documents" element={<DocumentsPage />} />
         <Route path="/departments" element={<DepartmentsPage />} />
+        <Route path="/meetings" element={<MeetingsPage />} />
         <Route path="/nova-ai" element={<NovaAIPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="/" element={<LoginPage />} />
