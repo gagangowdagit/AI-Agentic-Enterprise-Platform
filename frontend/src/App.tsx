@@ -8,6 +8,8 @@ import ProjectDetailsPage from './pages/ProjectDetailsPage';
 import DocumentsPage from './pages/DocumentsPage';
 import DepartmentsPage from './pages/DepartmentsPage';
 import MeetingsPage from './pages/MeetingsPage';
+import MeetingDetailsPage from './pages/MeetingDetailsPage';
+import CreateMeetingPage from './pages/CreateMeetingPage';
 import NovaAIPage from './pages/NovaAIPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 
@@ -24,8 +26,10 @@ function App() {
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('rag-theme') === 'dark');
   const isHomePage = location.pathname === '/home';
   const isProjectDetailsPage = location.pathname.startsWith('/projects/');
+  const isMeetingDetailsPage = location.pathname.startsWith('/meetings/') && !location.pathname.endsWith('/create');
   const isDetailPage = location.pathname === '/projects'
     || isProjectDetailsPage
+    || isMeetingDetailsPage
     || ['/departments', '/documents', '/meetings', '/nova-ai', '/analytics'].includes(location.pathname);
 
   useEffect(() => {
@@ -139,6 +143,8 @@ function App() {
         <Route path="/documents" element={<DocumentsPage />} />
         <Route path="/departments" element={<DepartmentsPage />} />
         <Route path="/meetings" element={<MeetingsPage />} />
+        <Route path="/meetings/:meetingId" element={<MeetingDetailsPage />} />
+        <Route path="/meetings/create" element={<CreateMeetingPage />} />
         <Route path="/nova-ai" element={<NovaAIPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="/" element={<LoginPage />} />

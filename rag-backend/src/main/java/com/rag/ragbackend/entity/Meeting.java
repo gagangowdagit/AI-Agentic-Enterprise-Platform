@@ -4,15 +4,22 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "meetings")
@@ -26,6 +33,9 @@ public class Meeting {
     private String title;
 
     private String description;
+
+    @Column(name = "agenda", columnDefinition = "TEXT")
+    private String agenda;
 
     @NotBlank
     @Column(name = "project_id")
@@ -50,7 +60,7 @@ public class Meeting {
     @NotNull
     @Min(0)
     @Column(name = "participant_count")
-    private Integer participantCount;
+    private Integer participantCount = 0;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -58,6 +68,23 @@ public class Meeting {
 
     @Column(name = "google_meet_url")
     private String googleMeetUrl;
+
+    @Column(name = "created_by")
+    private String createdBy;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "meeting_participants",
+            joinColumns = @JoinColumn(name = "meeting_id"),
+            inverseJoinColumns = @JoinColumn(name = "employee_id")
+    )
+    private Set<Employee> participants = new HashSet<>();
 
     public Meeting() {
     }
@@ -84,6 +111,14 @@ public class Meeting {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getAgenda() {
+        return agenda;
+    }
+
+    public void setAgenda(String agenda) {
+        this.agenda = agenda;
     }
 
     public String getProjectId() {
@@ -148,5 +183,37 @@ public class Meeting {
 
     public void setGoogleMeetUrl(String googleMeetUrl) {
         this.googleMeetUrl = googleMeetUrl;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Set<Employee> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(Set<Employee> participants) {
+        this.participants = participants;
     }
 }

@@ -1,4 +1,13 @@
-export type MeetingStatus = 'Scheduled' | 'In Progress' | 'Completed' | 'Cancelled';
+export type MeetingStatus = 'Scheduled' | 'In Progress' | 'In_Progress' | 'Completed' | 'Cancelled';
+
+export interface MeetingParticipant {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role?: string;
+  department?: { id: number; name: string } | null;
+}
 
 export interface Meeting {
   id: number;
@@ -12,7 +21,75 @@ export interface Meeting {
   participantCount: number;
   status: MeetingStatus;
   googleMeetUrl: string;
+  agenda?: string;
+  participantIds?: number[];
+  participants?: MeetingParticipant[];
+  createdBy?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
+
+export interface CreateMeetingRequest {
+  title: string;
+  description?: string;
+  projectId: string;
+  projectName?: string;
+  meetingDate: string;
+  startTime: string;
+  endTime: string;
+  googleMeetUrl?: string;
+  agenda?: string;
+  participantIds?: number[];
+}
+
+const normalizeMeetingStatus = (status?: string): MeetingStatus => {
+  if (status === 'In_Progress') {
+    return 'In Progress';
+  }
+
+  if (status === 'In Progress' || status === 'Scheduled' || status === 'Completed' || status === 'Cancelled') {
+    return status;
+  }
+
+  return 'Scheduled';
+};
+
+const normalizeParticipant = (participant: Partial<MeetingParticipant> | null | undefined): MeetingParticipant | null => {
+  if (!participant) {
+    return null;
+  }
+
+  return {
+    id: Number(participant.id ?? 0),
+    firstName: participant.firstName ?? '',
+    lastName: participant.lastName ?? '',
+    email: participant.email ?? '',
+    role: participant.role,
+    department: participant.department ?? null,
+  };
+};
+
+const normalizeMeeting = (meeting: Partial<Meeting>): Meeting => ({
+  id: Number(meeting.id ?? 0),
+  title: meeting.title ?? '',
+  description: meeting.description ?? '',
+  projectId: meeting.projectId ?? '',
+  projectName: meeting.projectName ?? 'Unassigned Project',
+  meetingDate: meeting.meetingDate ?? '',
+  startTime: meeting.startTime ?? '',
+  endTime: meeting.endTime ?? '',
+  participantCount: Number(meeting.participantCount ?? meeting.participants?.length ?? 0),
+  status: normalizeMeetingStatus(meeting.status),
+  googleMeetUrl: meeting.googleMeetUrl ?? '',
+  agenda: meeting.agenda,
+  participantIds: meeting.participantIds ?? [],
+  participants: Array.isArray(meeting.participants)
+    ? meeting.participants.map((participant) => normalizeParticipant(participant)).filter((participant): participant is MeetingParticipant => participant !== null)
+    : [],
+  createdBy: meeting.createdBy,
+  createdAt: meeting.createdAt,
+  updatedAt: meeting.updatedAt,
+});
 
 const toISODate = (offsetDays: number) => {
   const date = new Date();
@@ -129,6 +206,75 @@ export const mockMeetings: Meeting[] = [
 ];
 
 export const getMeetings = async (): Promise<Meeting[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 450));
-  return mockMeetings;
+  const response = await fetch(`${API_BASE_URL}/meetings`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  if (!response.ok) {
+    let errorMessage = 'Failed to fetch meetings';
+    try {
+      const payload = await response.json();
+      if (payload?.message) {
+        errorMessage = payload.message;
+      }
+    } catch {
+      // ignore JSON parse issues and keep the default error
+    }
+    throw new Error(errorMessage);
+  }
+
+  const data = await response.json();
+  return Array.isArray(data) ? data.map((meeting) => normalizeMeeting(meeting)) : [];
+};
+
+export const getMeetingById = async (meetingId: string | number): Promise<Meeting> => {
+  const response = await fetch(`${API_BASE_URL}/meetings/${encodeURIComponent(String(meetingId))}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  if (!response.ok) {
+    let errorMessage = 'Failed to fetch meeting details';
+    try {
+      const payload = await response.json();
+      if (payload?.message) {
+        errorMessage = payload.message;
+      }
+    } catch {
+      // ignore JSON parse issues and keep the default error
+    }
+    throw new Error(errorMessage);
+  }
+
+  return normalizeMeeting(await response.json());
+};
+
+const API_BASE_URL = 'http://localhost:8080/api/v1';
+
+export const createMeeting = async (request: CreateMeetingRequest): Promise<Meeting> => {
+  const response = await fetch(`${API_BASE_URL}/meetings`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    let errorMessage = 'Failed to create meeting';
+    try {
+      const payload = await response.json();
+      if (payload?.message) {
+        errorMessage = payload.message;
+      }
+    } catch {
+      // ignore JSON parse issues and use the default error
+    }
+
+    throw new Error(errorMessage);
+  }
+
+  const createdMeeting = await response.json();
+  return normalizeMeeting(createdMeeting);
 };

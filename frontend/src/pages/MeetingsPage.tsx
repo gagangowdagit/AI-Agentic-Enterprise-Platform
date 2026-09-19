@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import MeetingCard from '../components/MeetingCard';
 import MeetingRow from '../components/MeetingRow';
 import type { Meeting, MeetingStatus } from '../services/meetingApi';
@@ -22,10 +23,13 @@ const isSameDay = (meetingDate: string) => {
 };
 
 function MeetingsPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<'All Statuses' | MeetingStatus>('All Statuses');
   const [projectFilter, setProjectFilter] = useState('All Projects');
   const [dateFilter, setDateFilter] = useState('');
@@ -46,6 +50,14 @@ function MeetingsPage() {
 
     fetchMeetings();
   }, []);
+
+  useEffect(() => {
+    const typedState = location.state as { meetingCreated?: boolean; meetingTitle?: string } | null;
+    if (typedState?.meetingCreated) {
+      setSuccessMessage(`Meeting "${typedState.meetingTitle ?? 'created'}" was scheduled successfully.`);
+      window.history.replaceState({}, '', '/meetings');
+    }
+  }, [location.state]);
 
   const projectOptions = useMemo(() => {
     const uniqueProjects = new Set(meetings.map((meeting) => meeting.projectName));
@@ -87,10 +99,16 @@ function MeetingsPage() {
           <p className="section-subtitle">Manage your meetings, agendas, participants, and meeting information.</p>
         </div>
 
-        <button type="button" className="primary-button" aria-label="Create a new meeting">
+        <button type="button" className="primary-button" aria-label="Create a new meeting" onClick={() => navigate('/meetings/create')}>
           + Create Meeting
         </button>
       </header>
+
+      {successMessage && (
+        <div className="success-banner" role="status" aria-live="polite">
+          {successMessage}
+        </div>
+      )}
 
       {loading && (
         <div className="loading-state" aria-live="polite">

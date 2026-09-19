@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import type { Meeting } from '../services/meetingApi';
 
 interface MeetingCardProps {
@@ -7,6 +8,16 @@ interface MeetingCardProps {
 const formatBadgeClass = (status: string) => status.toLowerCase().replace(/\s+/g, '-');
 
 function MeetingCard({ meeting }: MeetingCardProps) {
+  const navigate = useNavigate();
+
+  const handleJoinMeet = () => {
+    if (!meeting.googleMeetUrl) {
+      return;
+    }
+
+    window.open(meeting.googleMeetUrl, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <article className="meeting-card" aria-label={`${meeting.title} meeting card`}>
       <div className="meeting-card-header">
@@ -37,10 +48,12 @@ function MeetingCard({ meeting }: MeetingCardProps) {
       <p className="meeting-description">{meeting.description}</p>
 
       <div className="meeting-card-footer">
-        <a className="meet-link" href={meeting.googleMeetUrl} target="_blank" rel="noreferrer">
-          Google Meet
-        </a>
-        <button type="button" className="secondary-button" aria-label={`View details for ${meeting.title}`}>
+        {meeting.googleMeetUrl ? (
+          <button type="button" className="secondary-button" onClick={handleJoinMeet} aria-label={`Join Google Meet for ${meeting.title}`}>
+            Join Google Meet
+          </button>
+        ) : null}
+        <button type="button" className="secondary-button" aria-label={`View details for ${meeting.title}`} onClick={() => navigate(`/meetings/${meeting.id}`)}>
           View Details
         </button>
       </div>
