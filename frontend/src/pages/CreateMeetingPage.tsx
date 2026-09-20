@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { createMeeting, type CreateMeetingRequest } from '../services/meetingApi';
+import { useNavigate, useParams } from 'react-router-dom';
+import { createMeeting, getMeetingById, type AgendaItem, type CreateMeetingRequest, updateMeeting } from '../services/meetingApi';
 import { getProjects, type Project } from '../services/projectApi';
 import { getEmployees, type Employee } from '../services/departmentApi';
 
@@ -56,11 +56,14 @@ const formatTimeForComparison = (time: string) => {
 
 function CreateMeetingPage() {
   const navigate = useNavigate();
+  const { meetingId } = useParams<{ meetingId: string }>();
+  const isEditMode = Boolean(meetingId);
   const [formData, setFormData] = useState<MeetingFormState>(initialState);
   const [projects, setProjects] = useState<Project[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedParticipantIds, setSelectedParticipantIds] = useState<number[]>([]);
   const [participantQuery, setParticipantQuery] = useState('');
+  const [agendaItems, setAgendaItems] = useState<AgendaItem[]>([]);
   const [creating, setCreating] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -71,13 +74,32 @@ function CreateMeetingPage() {
         const [projectData, employeeData] = await Promise.all([getProjects(), getEmployees()]);
         setProjects(projectData);
         setEmployees(employeeData);
+
+        if (!isEditMode || !meetingId) {
+          return;
+        }
+
+        const meeting = await getMeetingById(meetingId);
+        setFormData({
+          title: meeting.title ?? '',
+          description: meeting.description ?? '',
+          projectId: String(meeting.projectId ?? ''),
+          projectName: meeting.projectName ?? '',
+          meetingDate: meeting.meetingDate ?? '',
+          startTime: meeting.startTime ?? '',
+          endTime: meeting.endTime ?? '',
+          googleMeetUrl: meeting.googleMeetUrl ?? '',
+          agenda: meeting.agenda ?? '',
+        });
+        setSelectedParticipantIds(meeting.participantIds ?? []);
+        setAgendaItems(meeting.agendaItems ?? (meeting.agenda ? [{ id: 1, title: meeting.agenda, displayOrder: 1 }] : []));
       } catch (err) {
         setErrorMessage(err instanceof Error ? err.message : 'Unable to load projects and employees.');
       }
     };
 
     fetchDependencies();
-  }, []);
+  }, [isEditMode, meetingId]);
 
   const filteredEmployees = useMemo(() => {
     const query = participantQuery.trim().toLowerCase();
@@ -110,6 +132,28 @@ function CreateMeetingPage() {
       return [...current, employeeId];
     });
     setFieldErrors((current) => ({ ...current, participants: '' }));
+  };
+
+  const addAgendaItem = () => {
+    setAgendaItems((current) => [
+      ...current,
+      {
+        id: Date.now() + Math.random(),
+        title: '',
+        displayOrder: current.length + 1,
+      },
+    ]);
+    setFieldErrors((current) => ({ ...current, agendaItems: '' }));
+  };
+
+  const updateAgendaItem = (index: number, value: string) => {
+    setAgendaItems((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, title: value } : item));
+    setFieldErrors((current) => ({ ...current, agendaItems: '' }));
+  };
+
+  const removeAgendaItem = (index: number) => {
+    setAgendaItems((current) => current.filter((_, itemIndex) => itemIndex !== index).map((item, itemIndex) => ({ ...item, displayOrder: itemIndex + 1 })));
+    setFieldErrors((current) => ({ ...current, agendaItems: '' }));
   };
 
   const handleProjectChange = (projectId: string) => {
@@ -156,6 +200,10 @@ function CreateMeetingPage() {
       errors.googleMeetUrl = 'Please enter a valid URL, such as https://meet.google.com/abc-defg-hij.';
     }
 
+    if (agendaItems.some((item) => item.title.trim().length === 0)) {
+      errors.agendaItems = 'Agenda items cannot be blank.';
+    }
+
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -171,6 +219,13 @@ function CreateMeetingPage() {
     setCreating(true);
 
     try {
+      const validAgendaItems = agendaItems
+        .map((item, index) => ({
+          title: item.title.trim(),
+          displayOrder: index + 1,
+        }))
+        .filter((item) => item.title.length > 0);
+
       const payload: CreateMeetingRequest = {
         title: formData.title.trim(),
         description: formData.description.trim() || undefined,
@@ -180,15 +235,20 @@ function CreateMeetingPage() {
         startTime: formData.startTime,
         endTime: formData.endTime,
         googleMeetUrl: formData.googleMeetUrl.trim() || undefined,
-        agenda: formData.agenda.trim() || undefined,
+        agenda: validAgendaItems.length > 0 ? validAgendaItems.map((item, index) => `${index + 1}. ${item.title}`).join('\n') : (formData.agenda || undefined),
+        agendaItems: validAgendaItems.length > 0 ? validAgendaItems : undefined,
         participantIds: selectedParticipantIds,
       };
 
-      const newMeeting = await createMeeting(payload);
+      const savedMeeting = isEditMode && meetingId
+        ? await updateMeeting(meetingId, payload)
+        : await createMeeting(payload);
+
       navigate('/meetings', {
         state: {
           meetingCreated: true,
-          meetingTitle: newMeeting.title,
+          meetingTitle: savedMeeting.title,
+          action: isEditMode ? 'updated' : 'created',
         },
       });
     } catch (err) {
@@ -300,14 +360,32 @@ function CreateMeetingPage() {
             </div>
 
             <div className="field-group full-width">
-              <label htmlFor="meeting-agenda">Agenda</label>
-              <textarea
-                id="meeting-agenda"
-                rows={5}
-                value={formData.agenda}
-                onChange={(event) => handleInputChange('agenda', event.target.value)}
-                placeholder="Outline the discussion points for the meeting"
-              />
+              <label>Agenda</label>
+              <div style={{ display: 'grid', gap: '10px' }}>
+                {agendaItems.length === 0 ? (
+                  <div className="participant-empty">No agenda items added yet.</div>
+                ) : (
+                  agendaItems.map((item, index) => (
+                    <div key={item.id ?? index} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <span style={{ minWidth: '24px', color: '#475569', fontWeight: 700 }}>{index + 1}.</span>
+                      <input
+                        type="text"
+                        value={item.title}
+                        onChange={(event) => updateAgendaItem(index, event.target.value)}
+                        placeholder="Agenda item"
+                        aria-label={`Agenda item ${index + 1}`}
+                      />
+                      <button type="button" className="secondary-button" onClick={() => removeAgendaItem(index)} aria-label={`Remove agenda item ${index + 1}`}>
+                        Remove
+                      </button>
+                    </div>
+                  ))
+                )}
+                <button type="button" className="secondary-button" onClick={addAgendaItem}>
+                  + Add Agenda Item
+                </button>
+              </div>
+              {fieldErrors.agendaItems && <span className="form-error">{fieldErrors.agendaItems}</span>}
             </div>
 
             <div className="field-group full-width participant-field">
@@ -367,7 +445,7 @@ function CreateMeetingPage() {
               Cancel
             </button>
             <button type="submit" className="primary-button" disabled={creating}>
-              {creating ? 'Creating...' : 'Create Meeting'}
+              {creating ? (isEditMode ? 'Saving...' : 'Creating...') : (isEditMode ? 'Save Changes' : 'Create Meeting')}
             </button>
           </div>
         </form>

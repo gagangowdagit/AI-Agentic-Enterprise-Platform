@@ -9,6 +9,12 @@ export interface MeetingParticipant {
   department?: { id: number; name: string } | null;
 }
 
+export interface AgendaItem {
+  id?: number;
+  title: string;
+  displayOrder: number;
+}
+
 export interface Meeting {
   id: number;
   title: string;
@@ -22,8 +28,15 @@ export interface Meeting {
   status: MeetingStatus;
   googleMeetUrl: string;
   agenda?: string;
+  agendaItems?: AgendaItem[];
   participantIds?: number[];
   participants?: MeetingParticipant[];
+  transcriptText?: string;
+  transcriptFileName?: string;
+  transcriptUploadedAt?: string;
+  aiSummary?: string;
+  aiActionItems?: string[];
+  aiDecisions?: string[];
   createdBy?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -39,6 +52,7 @@ export interface CreateMeetingRequest {
   endTime: string;
   googleMeetUrl?: string;
   agenda?: string;
+  agendaItems?: AgendaItem[];
   participantIds?: number[];
 }
 
@@ -69,6 +83,26 @@ const normalizeParticipant = (participant: Partial<MeetingParticipant> | null | 
   };
 };
 
+export const parseAgendaItems = (agenda?: string): AgendaItem[] => {
+  if (!agenda || !agenda.trim()) {
+    return [];
+  }
+
+  return agenda
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line, index) => {
+      const cleanLine = line.replace(/^\d+\.\s*/, '').trim();
+      return {
+        id: index + 1,
+        title: cleanLine,
+        displayOrder: index + 1,
+      };
+    })
+    .filter((item) => item.title);
+};
+
 const normalizeMeeting = (meeting: Partial<Meeting>): Meeting => ({
   id: Number(meeting.id ?? 0),
   title: meeting.title ?? '',
@@ -81,11 +115,18 @@ const normalizeMeeting = (meeting: Partial<Meeting>): Meeting => ({
   participantCount: Number(meeting.participantCount ?? meeting.participants?.length ?? 0),
   status: normalizeMeetingStatus(meeting.status),
   googleMeetUrl: meeting.googleMeetUrl ?? '',
-  agenda: meeting.agenda,
+  agenda: meeting.agenda ?? '',
+  agendaItems: meeting.agendaItems ?? parseAgendaItems(meeting.agenda),
   participantIds: meeting.participantIds ?? [],
   participants: Array.isArray(meeting.participants)
     ? meeting.participants.map((participant) => normalizeParticipant(participant)).filter((participant): participant is MeetingParticipant => participant !== null)
     : [],
+  transcriptText: meeting.transcriptText ?? '',
+  transcriptFileName: meeting.transcriptFileName ?? '',
+  transcriptUploadedAt: meeting.transcriptUploadedAt ?? '',
+  aiSummary: meeting.aiSummary ?? '',
+  aiActionItems: Array.isArray(meeting.aiActionItems) ? meeting.aiActionItems : [],
+  aiDecisions: Array.isArray(meeting.aiDecisions) ? meeting.aiDecisions : [],
   createdBy: meeting.createdBy,
   createdAt: meeting.createdAt,
   updatedAt: meeting.updatedAt,
@@ -277,4 +318,125 @@ export const createMeeting = async (request: CreateMeetingRequest): Promise<Meet
 
   const createdMeeting = await response.json();
   return normalizeMeeting(createdMeeting);
+};
+
+export const updateMeeting = async (meetingId: string | number, request: CreateMeetingRequest): Promise<Meeting> => {
+  const response = await fetch(`${API_BASE_URL}/meetings/${encodeURIComponent(String(meetingId))}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    let errorMessage = 'Failed to update meeting';
+    try {
+      const payload = await response.json();
+      if (payload?.message) {
+        errorMessage = payload.message;
+      }
+    } catch {
+      // ignore JSON parse issues and use the default error
+    }
+
+    throw new Error(errorMessage);
+  }
+
+  return normalizeMeeting(await response.json());
+};
+
+export const cancelMeeting = async (meetingId: string | number): Promise<Meeting> => {
+  const response = await fetch(`${API_BASE_URL}/meetings/${encodeURIComponent(String(meetingId))}/cancel`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  if (!response.ok) {
+    let errorMessage = 'Failed to cancel meeting';
+    try {
+      const payload = await response.json();
+      if (payload?.message) {
+        errorMessage = payload.message;
+      }
+    } catch {
+      // ignore JSON parse issues and use the default error
+    }
+
+    throw new Error(errorMessage);
+  }
+
+  return normalizeMeeting(await response.json());
+};
+
+export const uploadMeetingTranscript = async (
+  meetingId: string | number,
+  transcriptText: string,
+  fileName?: string
+): Promise<Meeting> => {
+  const response = await fetch(`${API_BASE_URL}/meetings/${encodeURIComponent(String(meetingId))}/transcript`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ transcriptText, fileName: fileName ?? 'meeting-transcript.txt' }),
+  });
+
+  if (!response.ok) {
+    let errorMessage = 'Failed to save meeting transcript';
+    try {
+      const payload = await response.json();
+      if (payload?.message) {
+        errorMessage = payload.message;
+      }
+    } catch {
+      // ignore JSON parse issues and use the default error
+    }
+
+    throw new Error(errorMessage);
+  }
+
+  return normalizeMeeting(await response.json());
+};
+
+export const regenerateMeetingSummary = async (meetingId: string | number): Promise<Meeting> => {
+  const response = await fetch(`${API_BASE_URL}/meetings/${encodeURIComponent(String(meetingId))}/summary/regenerate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  if (!response.ok) {
+    let errorMessage = 'Failed to regenerate meeting summary';
+    try {
+      const payload = await response.json();
+      if (payload?.message) {
+        errorMessage = payload.message;
+      }
+    } catch {
+      // ignore JSON parse issues and use the default error
+    }
+
+    throw new Error(errorMessage);
+  }
+
+  return normalizeMeeting(await response.json());
+};
+
+export const deleteMeeting = async (meetingId: string | number): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/meetings/${encodeURIComponent(String(meetingId))}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  if (!response.ok) {
+    let errorMessage = 'Failed to delete meeting';
+    try {
+      const payload = await response.json();
+      if (payload?.message) {
+        errorMessage = payload.message;
+      }
+    } catch {
+      // ignore JSON parse issues and use the default error
+    }
+
+    throw new Error(errorMessage);
+  }
 };

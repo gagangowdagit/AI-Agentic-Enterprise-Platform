@@ -144,6 +144,7 @@ function App() {
         <Route path="/departments" element={<DepartmentsPage />} />
         <Route path="/meetings" element={<MeetingsPage />} />
         <Route path="/meetings/:meetingId" element={<MeetingDetailsPage />} />
+        <Route path="/meetings/:meetingId/edit" element={<CreateMeetingPage />} />
         <Route path="/meetings/create" element={<CreateMeetingPage />} />
         <Route path="/nova-ai" element={<NovaAIPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
