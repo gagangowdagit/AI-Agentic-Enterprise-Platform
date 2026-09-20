@@ -1,6 +1,7 @@
 package com.rag.ragbackend.service;
 
 import com.rag.ragbackend.entity.Document;
+import com.rag.ragbackend.exception.ApiException;
 import com.rag.ragbackend.processing.ProcessingService;
 import com.rag.ragbackend.repository.DocumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,18 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public List<Document> getDocumentsByProjectId(String projectId) {
-        return documentRepository.findByProjectId(Integer.valueOf(projectId));
+        return documentRepository.findByProjectId(parseProjectId(projectId));
+    }
+
+    private Integer parseProjectId(String projectId) {
+        if (projectId == null || projectId.isBlank()) {
+            throw new ApiException("Project id is required", "VALIDATION_ERROR");
+        }
+        try {
+            return Integer.valueOf(projectId);
+        } catch (NumberFormatException e) {
+            throw new ApiException("Project id must be numeric: " + projectId, "VALIDATION_ERROR");
+        }
     }
 
     @Override
@@ -79,7 +91,7 @@ public class DocumentServiceImpl implements DocumentService {
             file.transferTo(filePath.toFile());
 
             Document document = new Document();
-            document.setProjectId(Integer.valueOf(projectId));
+            document.setProjectId(parseProjectId(projectId));
             document.setFileName(safeFileName);
             document.setFileType(file.getContentType());
             document.setFileSize(file.getSize());
