@@ -1,56 +1,61 @@
 # Requirements and Scope
 
-This document separates current product behavior from planned acceptance criteria. It is intentionally honest about the project being in progress.
+This document reflects the currently implemented product scope for the repository as of 2026-09-20.
 
-## Current Functional Requirements
+## Implemented Functional Requirements
 
 - Users can register and authenticate through the current application flows.
 - The platform exposes versioned REST APIs for core enterprise data.
-- Projects, departments, teams, documents, timelines, analytics, and selected AI insights are represented in backend services and frontend pages.
-- Documents can be extracted from supported PDF, DOCX, and text inputs, split into chunks, and embedded through Ollama.
+- Projects, departments, teams, documents, timelines, analytics, and AI insights are represented in backend services and frontend pages.
+- Documents can be processed from PDF, DOCX, and text inputs, split into chunks, and embedded through Ollama.
 - Users can ask project-scoped questions through Nova AI; the backend retrieves relevant chunks and asks an Ollama model for a grounded answer.
-- Responses use a standard success/error contract and validate request data.
+- Meeting lifecycle flows support create, update, cancel, delete, agenda, participants, and Google Meet-link management.
+- Meeting transcripts can be uploaded and summarized using an LLM-backed summary flow.
+- The platform returns consistent success/error payloads and validates request data.
 
-## Near-Term Acceptance Requirements
+## Current Scope Boundaries
 
 ### Identity and access
 
-- Passwords are hashed and never returned.
-- Protected routes require a valid session/token.
-- Project, document, analytics, and AI access is authorized by user and project membership.
-- Authorization failures are tested, logged safely, and returned consistently.
+- Password hashing exists for user storage and login flows.
+- Session flow and auth screens are implemented in the app.
+- Full Spring Security, JWT lifecycle, and RBAC enforcement remain next-step hardening work.
 
 ### Core operations
 
-- Projects and tasks support validated CRUD, assignment, status, priority, dates, filtering, and pagination.
-- Team membership and document ownership are enforced at the service boundary.
-- DTOs prevent persistence entities and secrets from becoming public API contracts.
+- Project, department, team, and document data flows are implemented.
+- Meeting scheduling and management are implemented as a working feature slice.
+- DTOs are used at API boundaries to avoid exposing persistence internals.
 
 ### Knowledge and RAG
 
-- Uploads enforce type, size, ownership, and safe filename rules.
-- Processing reports queued, running, completed, and failed states.
-- Reprocessing is idempotent and old chunks/embeddings are not orphaned.
-- Retrieval is scoped to authorized projects, applies a relevance policy, and returns source metadata.
-- The assistant clearly reports when the available context does not support an answer.
-- Ollama outages, missing models, timeouts, and malformed responses produce actionable API errors.
+- Document uploads, chunking, and embeddings are implemented.
+- Retrieval is project-scoped and source-aware.
+- Ollama is used for embeddings and answer generation.
+- Model/runtime failure behavior is handled at the application layer.
 
-### Assistant and agents
+### Meeting AI
 
-- Conversations can be stored and retrieved per authorized user/project.
-- Streaming or incremental progress is added only after durable chat behavior is stable.
-- Any mutating AI tool requires schema validation, authorization, audit logging, idempotency, and user confirmation.
-- Agent execution supports bounded retries, cancellation, and failure states.
+- Meeting transcript upload and stored transcript text are implemented.
+- AI summary generation is implemented and can be regenerated.
+- Summary and transcript data are persisted as part of the meeting record.
 
-## Non-Functional Requirements
+## Non-Functional Requirements in Scope
 
 - No secrets in Git or logs.
 - Database changes use Flyway migrations.
-- APIs remain testable independently of Ollama through mocks.
+- APIs are testable independently of the local Ollama runtime.
 - The local setup is reproducible on Windows and documented.
-- Critical paths have unit and integration coverage.
-- Production work must add observability, rate limits, backups, retention rules, and threat modeling.
+- Critical implementation paths have targeted automated coverage.
 
 ## Out of Current Scope
 
-MongoDB, Redis, Qdrant, RabbitMQ, WebSockets, cloud hosting, Kubernetes, and full autonomous multi-agent orchestration are roadmap options, not current requirements. They should be introduced only when a measured product or scale requirement supports them.
+The following are not current implementation claims and should not be described as delivered features without separate implementation work:
+
+- Full production authorization and RBAC
+- JWT-based session policy
+- Event streaming and chat persistence at scale
+- Queue-based async processing
+- Kubernetes or cloud deployment
+- External vector database infrastructure
+- Full autonomous multi-agent production orchestration

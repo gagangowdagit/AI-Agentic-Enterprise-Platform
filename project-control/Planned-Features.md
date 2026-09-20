@@ -1,54 +1,55 @@
 # Future Feature Catalog
 
-These are candidates, not commitments. Priority should follow user value, security, measured pain, and the smallest architecture that solves the problem.
+This file contains ideas that are still not implemented. It is intentionally separated from the current status documentation so the repository does not confuse future work with completed work.
+
+## Current Status
+
+These items are not part of the current shipped product and should be treated as backlog only.
 
 ## Highest-Value Next Features
 
-1. JWT/session security and project-aware authorization.
-2. Complete task management and ownership rules.
-3. Reliable document upload, processing status, deletion, and reprocessing.
-4. RAG evaluation set, thresholds, sources UI, model health, and better errors.
-5. Durable Nova AI conversations with privacy/retention controls.
-6. Clean CI baseline and PostgreSQL/Ollama local environment.
+1. Full JWT/session security and project-aware authorization.
+2. Complete task lifecycle management and ownership enforcement.
+3. Robust document upload, status tracking, deletion, and reprocessing.
+4. Retrieval evaluation, quality checks, and better AI failure handling.
+5. Durable user conversation memory and UI source attribution.
+6. Production-ready CI, observability, and deployment hardening.
 
 ## Product Expansion
 
-- Workspaces and organization tenancy.
-- Fine-grained project/document permissions.
-- Comments, activity history, approvals, and audit logs.
-- Calendar/deadline integrations and workload views.
-- Report export and scheduled project summaries.
-- Notification center, email delivery, and configurable preferences.
-- Search across projects, tasks, and documents with filters.
+- workspaces and organization-level tenancy
+- fine-grained project and document permission rules
+- comments, approvals, and audit trails
+- calendar and deadline integration
+- report export and scheduled summaries
+- notification center and preference management
+- global search across projects, tasks, and documents
 
 ## AI Expansion
 
-- Read-only project/task/analytics tools.
-- Human-confirmed task creation and updates.
-- Agent execution history, cancellation, retries, and audit trail.
-- Conversation summarization and user preferences.
-- Retrieval reranking, hybrid keyword/vector search, and document version awareness.
-- Model/provider abstraction for cloud or self-hosted alternatives.
-
+- read-only project and analytics tools
+- human-confirmed task updates
+- agent execution history, cancellation, and retries
+- conversation summarization and retention controls
+- reranking and hybrid retrieval improvements
+- model/provider abstraction for future scale
 
 ## Scale and Reliability
 
-- Background ingestion jobs with idempotency and dead-letter handling.
-- pgvector or Qdrant when measured retrieval scale requires it.
-- Redis for rate limits/cache/short-lived locks when multi-instance deployment needs it.
-- Object storage for files and generated reports.
-- Structured logging, metrics, tracing, readiness probes, backups, and disaster recovery.
-- Docker Compose for local dependencies and GitHub Actions for CI.
+- background job processing with idempotency
+- external vector storage if retrieval scale requires it
+- cache and rate-limit services if multi-instance deployment is needed
+- object storage for large files and generated reports
+- monitoring, backups, and disaster recovery planning
 
 ## Deployment and Governance
 
-- Environment-specific configuration and secret management.
-- Container image scanning and dependency updates.
-- Staging deployment before production.
-- Threat modeling for prompt injection, data leakage, SSRF, unsafe file parsing, and tool abuse.
-- Data retention, deletion, export, and privacy documentation.
-- Load, recovery, and security testing.
+- environment-specific configuration and secret management
+- container and dependency scanning
+- staging deployment and release checks
+- security review for prompt injection, data leakage, and unsafe parsing
+- privacy retention and deletion policy
 
-## Ideas to Evaluate Carefully
+## Important Rule
 
-Multi-agent collaboration, Kubernetes/EKS, RabbitMQ, MongoDB, and a large cloud architecture are possible future directions, but they should not be added for resume keywords alone. A smaller auditable workflow is often the stronger product and engineering choice.
+These items remain future backlog until they are implemented, tested, and reflected in the current status files.

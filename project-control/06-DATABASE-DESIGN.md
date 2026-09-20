@@ -2,40 +2,46 @@
 
 ## Current Database
 
-PostgreSQL is the only active application database. Spring Data JPA maps domain entities and Flyway owns schema evolution. The runtime uses `spring.jpa.hibernate.ddl-auto=none` so migrations, not Hibernate startup mutation, define the schema.
+PostgreSQL is the active application database for the current implementation. Spring Data JPA maps the domain entities and Flyway owns schema evolution. The app is designed so the migration scripts remain the schema source of truth.
 
-## Current Relational Areas
+## Core Relational Areas
 
-The repository contains relational models and repositories for users, projects, departments, teams/memberships, documents, document chunks, chunk embeddings, tasks, notifications, timelines, and related analytics/AI data. Exact columns and constraints are defined by migrations under `rag-backend/src/main/resources/db/migration` and must be treated as the schema source of truth.
+The current schema supports:
 
-Important current RAG tables:
+- users and authentication state
+- departments and employees
+- projects and project-related metadata
+- task and team relationships
+- project documents and document processing metadata
+- document chunks and stored embeddings
+- meetings, participants, agendas, and transcript metadata
+- analytics and AI-generated meeting summary records
+
+Important current data relationships:
 
 ```text
 documents
   -> document_chunks
        -> chunk_embeddings
+
+projects
+  -> meetings
+  -> documents
+  -> team records
 ```
 
-Document file name is carried into retrieval results as response metadata rather than persisted directly on each transient chunk result.
+## Current Design Principles
 
-## Data Rules
+- Use foreign keys to model ownership and relationships.
+- Keep business metadata separate from generated AI data.
+- Persist document and meeting summary metadata in the relational model.
+- Keep model and embedding metadata explicit for debugging and traceability.
+- Do not store sensitive credentials in application data tables.
 
-- Use foreign keys, not duplicated identifiers, for ownership relationships.
-- Add indexes based on measured query patterns.
-- Use transactions for multi-table mutations and embedding replacement.
-- Store model name, embedding dimensions, and processing version with embeddings before production scale.
-- Keep uploaded file bytes separate from relational metadata when object storage is introduced.
-- Do not store passwords, tokens, or provider secrets in plaintext.
-- Use retention and deletion rules for conversations, files, and AI execution records.
+## Current Implementation Notes
 
-## Future Data Stores
+The current implementation uses a relational model for core project data and the embedding pipeline. This is sufficient for the application scope and keeps the architecture simple and auditable.
 
-| Store | Status | Candidate responsibility |
-|---|---|---|
-| PostgreSQL | Implemented | Transactional entities and current RAG metadata/embeddings |
-| pgvector or Qdrant | Planned | Vector search if application-side search no longer meets scale/latency targets |
-| Redis | Planned | Cache, rate limits, locks, short-lived job state |
-| MongoDB | Optional | Conversation/execution documents only if relational storage becomes a poor fit |
-| Object storage | Planned | Durable document bytes and generated reports |
+## Future Storage Decisions
 
-No additional store is approved merely because it appears in a future diagram. The choice must be recorded in `11-DECISIONS.md` with migration and operational implications.
+No additional database technology is currently required by the project. If scale or performance ever demands it, future changes should be introduced only after measuring the workload and documenting the tradeoff in `11-DECISIONS.md`.

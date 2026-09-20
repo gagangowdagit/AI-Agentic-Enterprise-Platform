@@ -1,92 +1,69 @@
-# Development Plan and Delivery Roadmap
+# Agile Delivery Status
 
-This is the canonical roadmap. Status is based on the repository as of 2026-09-08. Work is intentionally incremental; future phases are proposals until implemented and verified.
+This document reflects the current repository state as of 2026-09-20. It is intentionally limited to features that are implemented, in active work, or genuinely next-priority work. Outdated roadmap items that were not implemented have been removed.
 
 ## Status Legend
 
-- `[DONE]` implemented and verified in the current repository
-- `[PARTIAL]` a useful slice exists, but the production capability is incomplete
-- `[NEXT]` the next high-value delivery target
-- `[PLANNED]` future backlog item
-- `[OPTIONAL]` a scale or product enhancement to evaluate later
+- DONE: implemented and present in the source tree
+- IN PROGRESS: partially built and being finished
+- NEXT: not yet complete but clearly prioritized
 
-## Phase 0: Foundation [DONE]
+## Completed Work
 
-- Repository structure, module READMEs, project-control set, and Git workflow.
-- Spring Boot application, Maven Wrapper, Java 21, API versioning, response envelope, validation, exception handling, and OpenAPI baseline.
-- React/Vite/TypeScript application with routed pages and REST service modules.
+### Phase 1: Foundation [DONE]
 
-## Phase 1: Core Operations [PARTIAL]
+- Repository structure and working backend/frontend modules
+- Java 21 + Spring Boot backend with Maven wrapper
+- React + TypeScript + Vite frontend with routed pages
+- REST API conventions with validation and response handling
+- PostgreSQL/JPA/Flyway relational persistence
 
-- `[DONE]` User entity, repository, registration/login service flows, password hashing support, and frontend login/register pages.
-- `[DONE]` Project, department, team, document, timeline, analytics, and insight service/API slices.
-- `[DONE]` PostgreSQL/JPA entities, repositories, Flyway migrations, and controller/service tests.
-- `[PARTIAL]` Complete CRUD and UI workflows for projects, tasks, members, and users.
-- `[NEXT]` Finish task lifecycle, pagination/filtering, ownership rules, DTO separation, and consistent authorization.
+### Phase 2: Core Enterprise Features [DONE]
 
-## Phase 2: Identity and Security [NEXT]
+- User registration and login flows
+- Project, department, and team management
+- Document management, upload, and project-scoped retrieval
+- Analytics pages and project insight endpoints
+- Meeting lifecycle management
+- Google Meet link handling
+- Meeting participants and agenda support
 
-- Add Spring Security configuration and protected route policy.
-- Implement short-lived access tokens, refresh-token rotation, logout/revocation, and frontend session handling.
-- Define ADMIN, MANAGER, and EMPLOYEE permissions against projects, documents, analytics, and AI actions.
-- Add negative authorization tests and remove sensitive fields from API responses.
+### Phase 3: Meeting Intelligence [DONE]
 
-## Phase 3: Document Knowledge Base [PARTIAL]
+- Meeting create/update/cancel/delete flow
+- Transcript upload and storage
+- AI summary generation for stored transcripts
+- Summary regeneration and persistence
+- Meeting detail UI for transcript and summary review
 
-- `[DONE]` PDF/DOCX/TXT extraction, chunk persistence, document processing service, embedding service abstraction, and local Ollama embedding client.
-- `[DONE]` Project-scoped/global retrieval, normalized vectors, top-K similarity selection, grounded prompt construction, and source metadata in responses.
-- `[PARTIAL]` Upload/list/delete UX and processing lifecycle are not yet a complete production workflow.
-- `[NEXT]` Add upload validation, file-size limits, processing status, idempotent reprocessing, document ownership, and robust failure reporting.
+### Phase 4: RAG and AI [DONE]
 
-## Phase 4: RAG Reliability [NEXT]
+- Document ingestion and chunk processing
+- Ollama embedding pipeline
+- Similarity-based retrieval for project documents
+- Grounded LLM answer generation
+- AI project queries via Nova AI UI
 
-- Add retrieval thresholds, chunk metadata, duplicate handling, prompt/context limits, and evaluation fixtures.
-- Decide whether PostgreSQL storage is sufficient for the target scale; introduce pgvector or Qdrant only with measured need.
-- Add model health checks, timeouts, retry policy, model configuration validation, and a useful degraded-mode API error.
-- Add retrieval precision/recall examples and regression tests for grounding and source attribution.
+### Phase 5: Test and Build Validation [DONE]
 
-## Phase 5: Nova AI Assistant [PARTIAL]
+- Backend meeting service/controller tests
+- Frontend production build validation
+- Verified repository state for the implemented scope
 
-- `[DONE]` Nova AI frontend page sends project-scoped queries to `/api/v1/rag/query`.
-- `[DONE]` Ollama generation client uses a grounded prompt and returns context/source data.
-- `[PARTIAL]` Conversation history, streaming, citations UI, prompt versioning, and durable chat sessions.
-- `[NEXT]` Persist conversations, add streaming or polling for long generations, expose sources in the UI, and improve user-facing error states.
+## In Progress / Not Yet Production-Complete
 
-## Phase 6: Controlled Agent Workflows [PARTIAL]
+- Full security and authorization boundary using Spring Security/JWT
+- Production-grade file lifecycle, ownership enforcement, and robust upload status tracking
+- Larger AI evaluation and prompt safety checks
+- Observability and operational telemetry
 
-- `[DONE]` Agent/service classes and selected project-analysis/tool flows exist in the backend.
-- `[NEXT]` Define a versioned tool contract with schemas, authorization, idempotency, audit events, timeouts, and explicit human confirmation for mutations.
-- `[PLANNED]` Add execution records, retries, cancellation, supervisor routing, and specialized read-only agents.
-- `[PLANNED]` Add task/project/report tools only after normal APIs and authorization are stable.
+## Current Priorities
 
-## Phase 7: Analytics, Memory, and Notifications [PARTIAL]
-
-- `[DONE]` Project/company analytics and selected insight APIs/pages.
-- `[PARTIAL]` Memory classes and service concepts exist; durable conversation/user memory is incomplete.
-- `[NEXT]` Define analytics metrics, add trend/health calculations, persist AI execution metadata, and add source-aware reports.
-- `[PLANNED]` Add in-app notifications, email integration, conversation summarization, user preferences, and retention controls.
-
-## Phase 8: Async and Real-Time Processing [PLANNED]
-
-- Introduce background document ingestion after the synchronous workflow is reliable.
-- Add a job model, status transitions, retries, dead-letter handling, and idempotency.
-- Evaluate Spring events, an executor, or RabbitMQ based on measured workload.
-- Add WebSocket/SSE only when the UI has a real long-running status workflow to display.
-
-## Phase 9: Quality and Operations [NEXT]
-
-- Fix existing failing tests and establish a clean baseline before new features.
-- Add frontend lint/build checks, API integration tests, PostgreSQL integration tests, and a small Playwright smoke suite.
-- Add structured logs, correlation IDs, health/readiness checks, AI latency/error metrics, and safe logging policy.
-- Add Docker Compose for reproducible PostgreSQL/Ollama development, then CI with build/test/security checks.
-
-## Phase 10: Production Delivery [PLANNED]
-
-- External object storage for documents, backups, migrations, secret management, and rate limits.
-- Containerized frontend/backend deployment and environment-specific configuration.
-- Evaluate managed PostgreSQL, object storage, observability, and a container platform such as ECS/EKS only after the local deployment is repeatable.
-- Add threat modeling, privacy/retention policy, load testing, disaster recovery, and release automation.
+1. Complete security and authorization enforcement.
+2. Harden document upload and AI failure handling.
+3. Add stronger evaluation and safe prompt behavior checks.
+4. Improve production readiness for deployment, logs, and operational monitoring.
 
 ## Definition of Done
 
-A roadmap item is complete when code, tests, configuration, API/UI behavior, setup documentation, and status records agree. A proposed technology is not considered delivered because it appears in a plan.
+A feature is considered complete only when the code, tests, API behavior, UI behavior, and project-control documentation are aligned.

@@ -1,42 +1,48 @@
 # Technology Stack
 
-## 1. Frontend
-
-* React
-* TypeScript
-* Vite
-# Technology Stack
-
-Status labels in this file are deliberate: **Implemented** means present in the repository; **Planned** means a future option, not a current dependency.
+Status labels in this file are deliberate: Implemented means present in the repository; Planned means a future option, not a current dependency.
 
 ## Implemented Now
 
-| Area | Technology | Evidence / use |
+| Area | Technology | Status |
 |---|---|---|
-| Frontend | React 19, TypeScript 6, Vite 8 | `frontend/package.json`, page and service modules |
-| Routing | React Router 7 | Frontend route composition |
-| Backend | Java 21, Spring Boot 4.1.1, Spring MVC | `rag-backend/pom.xml` and application bootstrap |
-| API validation | Jakarta Validation | Request DTO constraints and global error responses |
-| Persistence | PostgreSQL, Spring Data JPA, Hibernate | Relational entities and repositories |
-| Migrations | Flyway PostgreSQL | Versioned SQL migrations in backend resources |
-| API documentation | springdoc OpenAPI 2.8.9 | Swagger/OpenAPI configuration |
-| Documents | Apache PDFBox 2.0.32, Apache POI 5.3.0 | PDF/DOCX extraction plus text processing |
-| AI runtime | Ollama REST API | `nomic-embed-text` embeddings and `llama3.2:3b` generation |
-| Backend tests | JUnit 5, Mockito, Spring Boot Test | Unit and controller tests |
-| Tooling | Maven Wrapper, npm, ESLint | Repeatable local builds and linting |
+| Frontend | React 19, TypeScript, Vite | Implemented |
+| Frontend routing | React Router | Implemented |
+| Backend | Java 21, Spring Boot 4.1.1, Spring MVC | Implemented |
+| API validation | Jakarta Validation | Implemented |
+| Persistence | PostgreSQL, Spring Data JPA, Hibernate | Implemented |
+| Migrations | Flyway | Implemented |
+| Documents | Apache PDFBox, Apache POI | Implemented |
+| AI runtime | Ollama REST API | Implemented |
+| Testing | JUnit 5, Mockito, Spring Boot Test | Implemented |
+| Tooling | Maven Wrapper, npm, ESLint | Implemented |
 
-## Implemented in a Limited or Local Form
+## Current Project Scope
 
-- Authentication and user registration/login flows exist, but the full Spring Security filter chain, JWT lifecycle, and authorization policy are not complete.
-- RAG stores embeddings in the current relational model and performs application-side similarity search; Qdrant is not connected.
-- Document storage and processing are synchronous/local-development oriented.
-- Agent and AI service classes exist for selected project workflows, but they are not yet a complete autonomous multi-agent platform.
+The project is currently built around the following stack:
 
-## Planned Options, Not Current Dependencies
+- Java 21 + Spring Boot 4.1.1
+- Spring MVC REST controllers
+- Spring Data JPA + Hibernate + PostgreSQL
+- Flyway database migration scripts
+- React 19 + TypeScript + Vite
+- React Router for routed app pages
+- PDF/DOCX/TXT processing with Apache libraries
+- Ollama for embeddings and grounded LLM generation
+- JUnit + Mockito for backend verification
 
-MongoDB, Redis, Qdrant, RabbitMQ, WebSocket/STOMP, React Testing Library, Playwright, Testcontainers, Docker Compose, GitHub Actions, AWS, Kubernetes, Prometheus, Grafana, and Spring AI may be introduced when a concrete requirement justifies them. Adding a technology requires a decision entry, implementation, tests, and updated documentation.
+## Current Limitations
+
+These are not active dependencies of the current project implementation:
+
+- Full Spring Security and JWT lifecycle
+- Redis, MongoDB, pgvector/Qdrant, RabbitMQ, Kafka
+- Docker Compose or Kubernetes deployment
+- WebSocket real-time streaming
+- A production CI/CD pipeline
+
+These can be introduced later when the project requires them, but they are not part of the current codebase or delivery claim.
 
 ## Principles
 
-Prefer the existing Spring/React/PostgreSQL/Ollama stack until scale, reliability, or product requirements demonstrate the need for another component. Keep boundaries modular so future vector storage, queues, caching, and model providers can be added without rewriting domain behavior.
-* Other transactional data
+Prefer the existing Spring/React/PostgreSQL/Ollama stack until scale, reliability, or product requirements justify a new component. Keep boundaries modular so future vector storage, job queues, or orchestration layers can be added without rewriting business logic.
