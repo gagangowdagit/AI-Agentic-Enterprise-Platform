@@ -17,8 +17,12 @@ public record CreateMeetingRequest(
         @NotBlank(message = "End time is required") String endTime,
         String googleMeetUrl,
         String agenda,
-        List<Integer> participantIds
+        List<Integer> participantIds,
+        List<AgendaItemRequest> agendaItems
 ) {
+    public record AgendaItemRequest(String title, Integer displayOrder) {
+    }
+
     @AssertTrue(message = "End time must be after start time")
     public boolean isValidTimeRange() {
         if (startTime == null || endTime == null || startTime.isBlank() || endTime.isBlank()) {
@@ -55,5 +59,28 @@ public record CreateMeetingRequest(
         } catch (Exception ex) {
             return false;
         }
+    }
+
+    @AssertTrue(message = "Agenda items cannot be blank")
+    public boolean isValidAgendaItems() {
+        if (agendaItems == null || agendaItems.isEmpty()) {
+            return true;
+        }
+
+        for (AgendaItemRequest item : agendaItems) {
+            if (item == null) {
+                return false;
+            }
+
+            if (item.title() == null || item.title().trim().isEmpty()) {
+                return false;
+            }
+
+            if (item.displayOrder() != null && item.displayOrder() < 1) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

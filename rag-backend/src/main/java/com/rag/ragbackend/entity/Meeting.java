@@ -69,6 +69,24 @@ public class Meeting {
     @Column(name = "google_meet_url")
     private String googleMeetUrl;
 
+    @Column(name = "transcript_text", columnDefinition = "TEXT")
+    private String transcriptText;
+
+    @Column(name = "transcript_file_name")
+    private String transcriptFileName;
+
+    @Column(name = "transcript_uploaded_at")
+    private LocalDateTime transcriptUploadedAt;
+
+    @Column(name = "ai_summary", columnDefinition = "TEXT")
+    private String aiSummary;
+
+    @Column(name = "ai_action_items", columnDefinition = "TEXT")
+    private String aiActionItems;
+
+    @Column(name = "ai_decisions", columnDefinition = "TEXT")
+    private String aiDecisions;
+
     @Column(name = "created_by")
     private String createdBy;
 
@@ -183,6 +201,54 @@ public class Meeting {
 
     public void setGoogleMeetUrl(String googleMeetUrl) {
         this.googleMeetUrl = googleMeetUrl;
+    }
+
+    public String getTranscriptText() {
+        return transcriptText;
+    }
+
+    public void setTranscriptText(String transcriptText) {
+        this.transcriptText = transcriptText;
+    }
+
+    public String getTranscriptFileName() {
+        return transcriptFileName;
+    }
+
+    public void setTranscriptFileName(String transcriptFileName) {
+        this.transcriptFileName = transcriptFileName;
+    }
+
+    public LocalDateTime getTranscriptUploadedAt() {
+        return transcriptUploadedAt;
+    }
+
+    public void setTranscriptUploadedAt(LocalDateTime transcriptUploadedAt) {
+        this.transcriptUploadedAt = transcriptUploadedAt;
+    }
+
+    public String getAiSummary() {
+        return aiSummary;
+    }
+
+    public void setAiSummary(String aiSummary) {
+        this.aiSummary = aiSummary;
+    }
+
+    public String getAiActionItems() {
+        return aiActionItems;
+    }
+
+    public void setAiActionItems(String aiActionItems) {
+        this.aiActionItems = aiActionItems;
+    }
+
+    public String getAiDecisions() {
+        return aiDecisions;
+    }
+
+    public void setAiDecisions(String aiDecisions) {
+        this.aiDecisions = aiDecisions;
     }
 
     public String getCreatedBy() {

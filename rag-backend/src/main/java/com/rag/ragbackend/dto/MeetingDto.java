@@ -20,6 +20,12 @@ public class MeetingDto {
     private Integer participantCount;
     private MeetingStatus status;
     private String googleMeetUrl;
+    private String transcriptText;
+    private String transcriptFileName;
+    private LocalDateTime transcriptUploadedAt;
+    private String aiSummary;
+    private List<String> aiActionItems = new ArrayList<>();
+    private List<String> aiDecisions = new ArrayList<>();
     private List<Integer> participantIds = new ArrayList<>();
     private List<EmployeeTeamResponse> participants = new ArrayList<>();
     private String createdBy;
@@ -172,6 +178,54 @@ public class MeetingDto {
 
     public void setGoogleMeetUrl(String googleMeetUrl) {
         this.googleMeetUrl = googleMeetUrl;
+    }
+
+    public String getTranscriptText() {
+        return transcriptText;
+    }
+
+    public void setTranscriptText(String transcriptText) {
+        this.transcriptText = transcriptText;
+    }
+
+    public String getTranscriptFileName() {
+        return transcriptFileName;
+    }
+
+    public void setTranscriptFileName(String transcriptFileName) {
+        this.transcriptFileName = transcriptFileName;
+    }
+
+    public LocalDateTime getTranscriptUploadedAt() {
+        return transcriptUploadedAt;
+    }
+
+    public void setTranscriptUploadedAt(LocalDateTime transcriptUploadedAt) {
+        this.transcriptUploadedAt = transcriptUploadedAt;
+    }
+
+    public String getAiSummary() {
+        return aiSummary;
+    }
+
+    public void setAiSummary(String aiSummary) {
+        this.aiSummary = aiSummary;
+    }
+
+    public List<String> getAiActionItems() {
+        return aiActionItems;
+    }
+
+    public void setAiActionItems(List<String> aiActionItems) {
+        this.aiActionItems = aiActionItems == null ? new ArrayList<>() : aiActionItems;
+    }
+
+    public List<String> getAiDecisions() {
+        return aiDecisions;
+    }
+
+    public void setAiDecisions(List<String> aiDecisions) {
+        this.aiDecisions = aiDecisions == null ? new ArrayList<>() : aiDecisions;
     }
 
     public List<Integer> getParticipantIds() {

@@ -37,7 +37,8 @@ class MeetingServiceImplTest {
                 "11:00",
                 "https://meet.google.com/abc-defg-hij",
                 "Agenda",
-                List.of(1, 1)
+                List.of(1, 1),
+                null
         );
 
         assertThrows(IllegalArgumentException.class, () -> service.createMeeting(request));
@@ -61,7 +62,8 @@ class MeetingServiceImplTest {
                 "11:00",
                 "https://meet.google.com/abc-defg-hij",
                 "Agenda",
-                List.of(1, 2)
+                List.of(1, 2),
+                null
         );
 
         assertThrows(EmployeeNotFoundException.class, () -> service.createMeeting(request));
