@@ -373,6 +373,338 @@ body {
   }
 }
 
+.project-page {
+  width: min(100% - 32px, 1180px);
+  margin: 0 auto;
+  padding: 28px 0 56px;
+  color: #172033;
+}
+
+.project-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.project-header-copy h1 {
+  margin: 0;
+  font-size: clamp(32px, 4vw, 44px);
+  line-height: 1.1;
+}
+
+.project-state {
+  margin-bottom: 20px;
+  padding: 16px 18px;
+  border: 1px solid #dbe3ef;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.project-state p {
+  margin: 0;
+  font-size: 15px;
+}
+
+.project-state-loading {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.project-state-error {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.project-form-card,
+.project-success-banner,
+.project-empty-state,
+.project-card {
+  border: 1px solid #dbe3ef;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+}
+
+.project-form-card {
+  margin-bottom: 24px;
+  padding: 24px;
+}
+
+.project-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.project-form-header h2 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.project-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.project-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.field-group-wide {
+  grid-column: 1 / -1;
+}
+
+.project-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.project-success-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 20px 22px;
+  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+  border-color: #bbf7d0;
+}
+
+.project-success-banner h3 {
+  margin: 8px 0 0;
+  font-size: 22px;
+}
+
+.project-success-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.project-empty-state {
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.project-empty-state h2 {
+  margin: 0 0 8px;
+  font-size: 26px;
+}
+
+.project-empty-state p {
+  margin: 0;
+  color: #64748b;
+}
+
+.project-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 18px;
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.project-card:hover,
+.project-card:focus-visible {
+  border-color: #94a3b8;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.project-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.project-card-id {
+  margin: 0 0 8px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.project-card-header h3 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.project-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.project-card-description {
+  margin: 0;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.project-card-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid #edf2f7;
+}
+
+.project-card-details span {
+  display: block;
+  margin-bottom: 6px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.project-card-details strong {
+  font-size: 14px;
+  color: #172033;
+}
+
+.project-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 6px;
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.project-badge,
+.project-priority {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.project-badge-active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.project-badge-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.project-badge-complete {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.project-badge-neutral {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.project-priority-high {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.project-priority-medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.project-priority-low {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.dark-mode .project-page,
+.dark-mode .project-form-card,
+.dark-mode .project-state,
+.dark-mode .project-success-banner,
+.dark-mode .project-empty-state,
+.dark-mode .project-card {
+  color: #f2f2f2;
+  background: #1f1f1f;
+  border-color: #444;
+}
+
+.dark-mode .project-card-description,
+.dark-mode .project-card-details strong,
+.dark-mode .project-card-header h3,
+.dark-mode .project-empty-state p,
+.dark-mode .project-card-meta,
+.dark-mode .project-success-banner h3,
+.dark-mode .project-form-card h2,
+.dark-mode .project-header-copy h1 {
+  color: #f2f2f2;
+}
+
+.dark-mode .project-card-description,
+.dark-mode .project-card-meta,
+.dark-mode .project-empty-state p,
+.dark-mode .project-state p,
+.dark-mode .project-card-details span,
+.dark-mode .project-card-id,
+.dark-mode .project-form .field-group label {
+  color: #cbd5e1;
+}
+
+.dark-mode .project-state-loading {
+  background: rgba(30, 64, 175, 0.14);
+  border-color: rgba(96, 165, 250, 0.6);
+  color: #bfdbfe;
+}
+
+.dark-mode .project-state-error {
+  background: rgba(127, 29, 29, 0.2);
+  border-color: rgba(248, 113, 113, 0.45);
+  color: #fecaca;
+}
+
+.dark-mode .project-success-banner {
+  background: linear-gradient(135deg, rgba(20, 83, 45, 0.28), rgba(22, 101, 52, 0.14));
+  border-color: rgba(134, 239, 172, 0.4);
+}
+
+.dark-mode .project-card-details {
+  border-color: #3a3a3a;
+}
+
 .home-page {
   width: min(100% - 40px, 1120px);
   margin: 0 auto;

@@ -126,306 +126,244 @@ function ProjectsPage() {
     navigate(`/projects/${project.id}`);
   };
 
+  const handleProjectKeyDown = (event: React.KeyboardEvent<HTMLElement>, project: Project) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleProjectClick(project);
+    }
+  };
+
+  const formatDate = (value?: string) => {
+    if (!value) {
+      return 'Not set';
+    }
+
+    const parsedDate = new Date(value);
+    if (Number.isNaN(parsedDate.getTime())) {
+      return value;
+    }
+
+    return parsedDate.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
+
+  const getStatusClass = (status: string) => {
+    const normalizedStatus = status.toLowerCase();
+    if (normalizedStatus.includes('active')) return 'project-badge-active';
+    if (normalizedStatus.includes('pending')) return 'project-badge-pending';
+    if (normalizedStatus.includes('complete')) return 'project-badge-complete';
+    return 'project-badge-neutral';
+  };
+
+  const getPriorityClass = (priority: string) => {
+    const normalizedPriority = priority.toLowerCase();
+    if (normalizedPriority === 'high') return 'project-priority-high';
+    if (normalizedPriority === 'medium') return 'project-priority-medium';
+    return 'project-priority-low';
+  };
+
   return (
-    <div>
-      <h1>Projects</h1>
+    <main className="project-page">
+      <header className="project-page-header">
+        <div className="project-header-copy">
+          <p className="section-kicker">Portfolio</p>
+          <h1>Projects</h1>
+          <p className="section-subtitle">
+            Track delivery, priorities, and ownership across every active initiative.
+          </p>
+        </div>
+
+        {!showForm && !loading && (
+          <button type="button" className="primary-button" onClick={handleCreateProject}>
+            + Create Project
+          </button>
+        )}
+      </header>
 
       {loading && (
-        <div style={{ padding: '20px', backgroundColor: '#e3f2fd', border: '1px solid #2196F3', borderRadius: '4px', marginBottom: '20px' }}>
+        <div className="project-state project-state-loading">
           <p>Loading projects...</p>
         </div>
       )}
 
       {error && (
-        <div style={{ padding: '20px', backgroundColor: '#ffebee', border: '1px solid #f44336', borderRadius: '4px', marginBottom: '20px' }}>
-          <p style={{ color: '#c62828' }}>Error: {error}</p>
+        <div className="project-state project-state-error">
+          <p>Error: {error}</p>
         </div>
-      )}
-
-      {!showForm && !loading && (
-        <button
-          onClick={handleCreateProject}
-          style={{
-            padding: '10px 20px',
-            marginBottom: '20px',
-            backgroundColor: '#4CAF50',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '16px',
-          }}
-        >
-          Create New Project
-        </button>
       )}
 
       {showForm && (
-        <div style={{ marginBottom: '30px', padding: '20px', border: '1px solid #ccc', borderRadius: '4px', backgroundColor: '#f5f5f5' }}>
-          <h2>Create New Project</h2>
+        <section className="project-form-card">
+          <div className="project-form-header">
+            <div>
+              <p className="section-kicker">New project</p>
+              <h2>Create a new project</h2>
+            </div>
+          </div>
+
           {createError && (
-            <div style={{ padding: '15px', backgroundColor: '#ffebee', border: '1px solid #f44336', borderRadius: '4px', marginBottom: '15px' }}>
-              <p style={{ color: '#c62828', margin: '0' }}>Error: {createError}</p>
+            <div className="project-state project-state-error project-form-error">
+              <p>Error: {createError}</p>
             </div>
           )}
-          <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: '15px' }}>
-              <label htmlFor="name" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                Project Name:
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                required
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box',
-                }}
-              />
-            </div>
 
-            <div style={{ marginBottom: '15px' }}>
-              <label htmlFor="description" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                Description:
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                rows={4}
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box',
-                  resize: 'vertical',
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '15px' }}>
-              <label htmlFor="status" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                Status:
-              </label>
-              <select
-                id="status"
-                name="status"
-                value={formData.status}
-                onChange={handleInputChange}
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box',
-                }}
-              >
-                <option value="Active">Active</option>
-                <option value="Pending">Pending</option>
-                <option value="Completed">Completed</option>
-              </select>
-            </div>
-
-            <div style={{ marginBottom: '15px' }}>
-              <label htmlFor="priority" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                Priority:
-              </label>
-              <select
-                id="priority"
-                name="priority"
-                value={formData.priority}
-                onChange={handleInputChange}
-                required
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box',
-                }}
-              >
-                <option value="LOW">Low</option>
-                <option value="MEDIUM">Medium</option>
-                <option value="HIGH">High</option>
-              </select>
-            </div>
-
-            <div style={{ marginBottom: '15px' }}>
-              <label htmlFor="departmentId" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                Assigned To:
-              </label>
-              <select
-                id="departmentId"
-                name="departmentId"
-                value={formData.departmentId}
-                onChange={handleInputChange}
-                disabled={departmentsLoading}
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box',
-                }}
-              >
-                <option value="">{departmentsLoading ? 'Loading departments...' : 'Select department'}</option>
-                {departments.map((department) => (
-                  <option key={department.id} value={department.id}>{department.name}</option>
-                ))}
-              </select>
-            </div>
-
-            <div style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
-              <div style={{ flex: 1 }}>
-                <label htmlFor="startDate" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                  Start Date:
-                </label>
+          <form className="project-form" onSubmit={handleSubmit}>
+            <div className="project-form-grid">
+              <div className="field-group">
+                <label htmlFor="name">Project Name</label>
                 <input
-                  type="date"
-                  id="startDate"
-                  name="startDate"
-                  value={formData.startDate}
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
                   onChange={handleInputChange}
-                  style={{
-                    width: '100%',
-                    padding: '8px',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px',
-                    fontSize: '14px',
-                    boxSizing: 'border-box',
-                  }}
+                  required
+                  placeholder="Enter project name"
                 />
               </div>
-              <div style={{ flex: 1 }}>
-                <label htmlFor="endDate" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                  End Date:
-                </label>
-                <input
-                  type="date"
-                  id="endDate"
-                  name="endDate"
-                  value={formData.endDate}
+
+              <div className="field-group">
+                <label htmlFor="departmentId">Department</label>
+                <select
+                  id="departmentId"
+                  name="departmentId"
+                  value={formData.departmentId}
                   onChange={handleInputChange}
-                  style={{
-                    width: '100%',
-                    padding: '8px',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px',
-                    fontSize: '14px',
-                    boxSizing: 'border-box',
-                  }}
+                  disabled={departmentsLoading}
+                >
+                  <option value="">{departmentsLoading ? 'Loading departments...' : 'Select department'}</option>
+                  {departments.map((department) => (
+                    <option key={department.id} value={department.id}>{department.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="field-group">
+                <label htmlFor="status">Status</label>
+                <select id="status" name="status" value={formData.status} onChange={handleInputChange}>
+                  <option value="Active">Active</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
+
+              <div className="field-group">
+                <label htmlFor="priority">Priority</label>
+                <select
+                  id="priority"
+                  name="priority"
+                  value={formData.priority}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="LOW">Low</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="HIGH">High</option>
+                </select>
+              </div>
+
+              <div className="field-group field-group-wide">
+                <label htmlFor="description">Description</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  rows={4}
+                  placeholder="Add a short project summary"
                 />
+              </div>
+
+              <div className="field-group">
+                <label htmlFor="startDate">Start Date</label>
+                <input type="date" id="startDate" name="startDate" value={formData.startDate} onChange={handleInputChange} />
+              </div>
+
+              <div className="field-group">
+                <label htmlFor="endDate">End Date</label>
+                <input type="date" id="endDate" name="endDate" value={formData.endDate} onChange={handleInputChange} />
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button
-                type="submit"
-                disabled={createLoading}
-                style={{
-                  padding: '10px 20px',
-                  backgroundColor: createLoading ? '#ccc' : '#4CAF50',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: createLoading ? 'not-allowed' : 'pointer',
-                  fontSize: '14px',
-                }}
-              >
-                {createLoading ? 'Creating...' : 'Create'}
-              </button>
-              <button
-                type="button"
-                onClick={handleCancel}
-                disabled={createLoading}
-                style={{
-                  padding: '10px 20px',
-                  backgroundColor: '#f44336',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: createLoading ? 'not-allowed' : 'pointer',
-                  fontSize: '14px',
-                  opacity: createLoading ? 0.6 : 1,
-                }}
-              >
+            <div className="project-form-actions">
+              <button type="button" className="secondary-button" onClick={handleCancel} disabled={createLoading}>
                 Cancel
+              </button>
+              <button type="submit" className="primary-button" disabled={createLoading}>
+                {createLoading ? 'Creating...' : 'Create Project'}
               </button>
             </div>
           </form>
-        </div>
+        </section>
       )}
 
       {submittedData && (
-        <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#c8e6c9', border: '1px solid #4CAF50', borderRadius: '4px' }}>
-          <h3>Project Created Successfully!</h3>
-          <p><strong>Project Name:</strong> {submittedData.name}</p>
-          <p><strong>Status:</strong> {submittedData.status}</p>
-          <p><strong>Priority:</strong> {submittedData.priority}</p>
+        <div className="project-success-banner">
+          <div>
+            <p className="section-kicker">Project created</p>
+            <h3>{submittedData.name}</h3>
+          </div>
+          <div className="project-success-meta">
+            <span className={`project-badge ${getStatusClass(submittedData.status)}`}>{submittedData.status}</span>
+            <span className={`project-priority ${getPriorityClass(submittedData.priority)}`}>{submittedData.priority}</span>
+          </div>
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+      {!loading && !error && projects.length === 0 && (
+        <div className="project-empty-state">
+          <h2>No projects yet</h2>
+          <p>Start by creating your first initiative and assign ownership.</p>
+        </div>
+      )}
+
+      <div className="project-card-grid">
         {projects.map((project) => (
-          <div
+          <article
             key={project.id}
+            className="project-card"
             onClick={() => handleProjectClick(project)}
-            style={{
-              padding: '20px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              backgroundColor: '#f9f9f9',
-              cursor: 'pointer',
-              transition: 'background-color 0.2s, box-shadow 0.2s',
-              textAlign: 'center',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#e8f5e9';
-              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#f9f9f9';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
+            onKeyDown={(event) => handleProjectKeyDown(event, project)}
+            role="button"
+            tabIndex={0}
           >
-            <h3>{`${project.id} - ${project.name}`}</h3>
-            {project.status && (
-              <p style={{ color: '#666', marginTop: '10px' }}>
-                <strong>Status:</strong> {project.status}
-              </p>
-            )}
-            {project.priority && (
-              <p style={{ color: '#666', marginTop: '10px' }}>
-                <strong>Priority:</strong> {project.priority}
-              </p>
-            )}
-            {project.description && (
-              <p style={{ color: '#666', marginTop: '10px', whiteSpace: 'pre-wrap' }}>
-                {project.description}
-              </p>
-            )}
-            {(project.startDate || project.endDate) && (
-              <p style={{ color: '#666', marginTop: '10px' }}>
-                <strong>Dates:</strong> {project.startDate || 'Not set'} - {project.endDate || 'Not set'}
-              </p>
-            )}
-          </div>
+            <div className="project-card-header">
+              <div>
+                <p className="project-card-id">Project {project.id}</p>
+                <h3>{project.name}</h3>
+              </div>
+              <span className={`project-badge ${getStatusClass(project.status)}`}>{project.status}</span>
+            </div>
+
+            <div className="project-card-meta">
+              <span className={`project-priority ${getPriorityClass(project.priority)}`}>{project.priority}</span>
+              <span>{project.department?.name || 'No department'}</span>
+            </div>
+
+            {project.description && <p className="project-card-description">{project.description}</p>}
+
+            <div className="project-card-details">
+              <div>
+                <span>Start</span>
+                <strong>{formatDate(project.startDate)}</strong>
+              </div>
+              <div>
+                <span>End</span>
+                <strong>{formatDate(project.endDate)}</strong>
+              </div>
+            </div>
+
+            <div className="project-card-footer">
+              <span>View details</span>
+              <span aria-hidden="true">→</span>
+            </div>
+          </article>
         ))}
       </div>
-    </div>
+    </main>
   );
 }
 
