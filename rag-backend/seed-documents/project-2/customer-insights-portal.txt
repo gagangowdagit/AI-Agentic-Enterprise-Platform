@@ -1,0 +1,17 @@
+Customer Insights Portal
+
+Objective
+This initiative creates a single executive experience for customer growth KPIs, retention trends, and product adoption metrics across the business.
+
+Key themes
+- Revenue and retention signals
+- Product usage and activation metrics
+- Executive-ready operational dashboards
+
+Go-live notes
+Leadership requested that the first release remain focused on the most significant KPI set. It should avoid overloading the dashboard with lower-value operational noise.
+
+Dependencies
+- Data freshness checks
+- Executive metric alignment review
+- Pipeline QA validation before beta cutover

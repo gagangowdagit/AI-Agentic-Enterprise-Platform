@@ -1,0 +1,18 @@
+Northstar Commerce Upgrade
+
+Overview
+The Northstar Commerce Upgrade program is focused on modernizing the checkout experience and stabilizing pricing logic before peak-season traffic. Current priorities include payment gateway failover, inventory synchronization, and a smoother customer pricing flow.
+
+Scope
+- Improve checkout resilience during gateway outage events
+- Reduce pricing latency under high-volume traffic
+- Validate rollback and support runbooks for release windows
+
+Dependencies
+- Pricing service migration
+- Customer support notifications
+- Payment orchestration validation
+
+Risk notes
+- Time-of-day traffic spikes remain the largest operational risk
+- Edge-case failover logic needs explicit QA validation before final approval

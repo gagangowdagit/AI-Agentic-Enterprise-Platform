@@ -1,0 +1,15 @@
+Budget Control Automation
+
+Scope
+The automation initiative is designed to improve approval routing, forecast variance visibility, and operating expense discipline.
+
+Objectives
+- Route spend exceptions to the correct stakeholders
+- Surface variance alerts before budget overruns occur
+- Standardize downstream reporting for monthly close cycles
+
+Approach
+Finance and operations will jointly review all exception pathways and ensure approval thresholds are tied to local operating plans.
+
+Success metric
+Effective control should reduce time-to-decision while improving budget accountability across teams.

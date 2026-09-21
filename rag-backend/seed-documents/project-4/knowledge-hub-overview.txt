@@ -1,0 +1,15 @@
+Enterprise Knowledge Hub
+
+Objective
+The Knowledge Hub consolidates product documentation, onboarding guides, and operational playbooks into a searchable enterprise workspace.
+
+Deliverables
+- Reusable onboarding templates
+- Central operational playbook library
+- Department-specific archive and search experience
+
+Key principle
+Knowledge should be easy to locate and simple to update when processes evolve.
+
+Current phase
+The project is in final archive cleanup and governance review before full adoption by all business units.

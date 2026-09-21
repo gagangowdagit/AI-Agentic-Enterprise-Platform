@@ -1,0 +1,17 @@
+Service Reliability Program
+
+Purpose
+The Service Reliability Program is designed to improve observability, alert quality, and service ownership across production teams.
+
+Primary goals
+- Stabilize SLO tracking and governance
+- Improve alert routing to reduce noisy incident traffic
+- Ensure cross-functional operational readiness for future launches
+
+Pillar areas
+- SLO governance
+- Incident rehearsal
+- Ownership mapping and service catalog updates
+
+Summary
+Operational findings from the most recent incident drill point to a need for clearer alert ownership and better playbook consistency during high-traffic periods.
