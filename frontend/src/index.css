@@ -57,6 +57,43 @@ body {
   color: #f2f2f2 !important;
 }
 
+.dark-mode .documents-project-selector button,
+.dark-mode .documents-page button,
+.dark-mode .analytics-project-button,
+.dark-mode .analytics-project-hide-button {
+  background: #1f2937 !important;
+  color: #dbeafe !important;
+  border-color: #3b4a66 !important;
+}
+
+.dark-mode .documents-project-selector button:hover,
+.dark-mode .documents-page button:hover,
+.dark-mode .analytics-project-button:hover,
+.dark-mode .analytics-project-hide-button:hover {
+  background: #2a3748 !important;
+}
+
+.dark-mode .documents-project-selector button:focus,
+.dark-mode .documents-page button:focus,
+.dark-mode .analytics-project-button:focus,
+.dark-mode .analytics-project-hide-button:focus {
+  outline: 2px solid rgba(125, 211, 252, 0.8);
+  outline-offset: 2px;
+}
+
+.dark-mode .documents-project-selector button[style*="backgroundColor: rgb(51, 65, 85)"] {
+  background: #334155 !important;
+  color: #f8fafc !important;
+  border-color: #7dd3fc !important;
+  box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.35) !important;
+}
+
+.dark-mode .documents-list-panel span[style*="backgroundColor: rgb(31, 41, 55)"] {
+  background: #1f2937 !important;
+  color: #dbeafe !important;
+  border-color: #3b4a66 !important;
+}
+
 .theme-toggle-row {
   display: flex;
   align-items: center;
@@ -817,6 +854,250 @@ body {
 .dark-mode .home-section-card:focus-visible {
   border-color: #777;
   background: #2e2e2e;
+}
+
+.dark-mode .department-page,
+.dark-mode .department-page *,
+.dark-mode .department-page h1,
+.dark-mode .department-page h2,
+.dark-mode .department-page h3,
+.dark-mode .department-page p,
+.dark-mode .department-page span,
+.dark-mode .department-page strong,
+.dark-mode .department-page label,
+.dark-mode .department-page button {
+  color: #f8fafc !important;
+}
+
+.dark-mode .department-panel,
+.dark-mode .department-selected-panel,
+.dark-mode .department-project-card,
+.dark-mode .department-project-details,
+.dark-mode .department-employee-row,
+.dark-mode .department-detail-stat,
+.dark-mode .department-card,
+.dark-mode .department-project-button,
+.dark-mode .department-team-toggle,
+.dark-mode .department-team-member {
+  background: #1f2937 !important;
+  border-color: #3b4a66 !important;
+  color: #f2f2f2 !important;
+}
+
+.dark-mode .department-project-card,
+.dark-mode .department-selected-panel,
+.dark-mode .department-project-details,
+.dark-mode .department-card,
+.dark-mode .department-panel,
+.dark-mode .department-employee-row,
+.dark-mode .department-team-member,
+.dark-mode .department-detail-stat {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18) !important;
+}
+
+.dark-mode .department-card {
+  background: #111827 !important;
+}
+
+.dark-mode .department-project-status {
+  background: #1e3a5f !important;
+  color: #dbeafe !important;
+}
+
+.dark-mode .department-project-button,
+.dark-mode .department-team-toggle {
+  background: #111827 !important;
+  color: #dbeafe !important;
+}
+
+.dark-mode .department-project-button:hover,
+.dark-mode .department-team-toggle:hover,
+.dark-mode .department-card:hover {
+  background: #243041 !important;
+}
+
+.dark-mode .department-project-button:focus,
+.dark-mode .department-team-toggle:focus,
+.dark-mode .department-card:focus {
+  outline: 2px solid rgba(125, 211, 252, 0.8);
+  outline-offset: 2px;
+}
+
+.dark-mode .documents-page,
+.dark-mode .documents-page *,
+.dark-mode .documents-page h1,
+.dark-mode .documents-page h2,
+.dark-mode .documents-page h3,
+.dark-mode .documents-page p,
+.dark-mode .documents-page label,
+.dark-mode .documents-page span,
+.dark-mode .documents-page strong,
+.dark-mode .documents-page div,
+.dark-mode .documents-header h1,
+.dark-mode .documents-header p,
+.dark-mode .documents-project-selector label,
+.dark-mode .documents-project-selector p,
+.dark-mode .documents-list-panel h2,
+.dark-mode .documents-list-panel p,
+.dark-mode .documents-list-panel div {
+  color: #f8fafc !important;
+}
+
+.dark-mode .documents-project-selector,
+.dark-mode .documents-list-panel > div,
+.dark-mode .documents-list-panel {
+  background: #242424 !important;
+  border-color: #444 !important;
+}
+
+.dark-mode .documents-project-selector {
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18) !important;
+}
+
+.dark-mode .documents-list-panel > div {
+  background: #1d1d1d !important;
+  border-color: #444 !important;
+}
+
+.dark-mode .documents-list-panel > div > div {
+  border-color: #444 !important;
+}
+
+.dark-mode .documents-list-panel > div span {
+  color: #d4d4d4 !important;
+}
+
+.dark-mode .documents-page input[type="file"] {
+  background: #1f2937 !important;
+  color: #f8fafc !important;
+  border: 1px solid #475569 !important;
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+
+.dark-mode .documents-page input[type="file"]::file-selector-button {
+  background: #334155 !important;
+  color: #e2e8f0 !important;
+  border: 1px solid #64748b !important;
+  border-radius: 6px;
+}
+
+.dark-mode .documents-page .documents-project-selector,
+.dark-mode .documents-page .documents-list-panel,
+.dark-mode .documents-page .documents-list-panel > div,
+.dark-mode .documents-page .documents-header,
+.dark-mode .documents-page .documents-project-selector > div,
+.dark-mode .documents-page .documents-project-selector label,
+.dark-mode .documents-page .documents-list-panel h2,
+.dark-mode .documents-page .documents-list-panel p,
+.dark-mode .documents-page .documents-list-panel div {
+  background-color: #171717 !important;
+  color: #f8fafc !important;
+}
+
+.dark-mode .documents-page .documents-list-panel > div {
+  background: #1d1d1d !important;
+}
+
+.dark-mode .documents-page .documents-list-panel > div > div,
+.dark-mode .documents-page .documents-list-panel > div > p,
+.dark-mode .documents-page .documents-list-panel > div > span,
+.dark-mode .documents-page .documents-list-panel > div > strong {
+  color: #f8fafc !important;
+}
+
+.analytics-page {
+  width: min(100% - 32px, 1180px);
+  margin: 0 auto;
+  padding-top: 28px;
+  color: #172033;
+}
+
+.analytics-kicker,
+.analytics-subtitle,
+.analytics-metric-label,
+.analytics-project-content,
+.analytics-project-meta,
+.analytics-status-row,
+.analytics-project-list-title,
+.analytics-status-title,
+.analytics-title,
+.analytics-project-name {
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.analytics-metric-card,
+.analytics-project-list,
+.analytics-status-panel,
+.analytics-project-item,
+.analytics-project-hide-button {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.dark-mode .analytics-page {
+  color: #f2f2f2;
+}
+
+.dark-mode .analytics-title,
+.dark-mode .analytics-project-list-title,
+.dark-mode .analytics-status-title,
+.dark-mode .analytics-project-name {
+  color: #f2f2f2 !important;
+}
+
+.dark-mode .analytics-kicker,
+.dark-mode .analytics-subtitle,
+.dark-mode .analytics-metric-label,
+.dark-mode .analytics-project-content,
+.dark-mode .analytics-project-meta,
+.dark-mode .analytics-status-row,
+.dark-mode .analytics-project-item span,
+.dark-mode .analytics-project-item strong {
+  color: #cfcfcf !important;
+}
+
+.dark-mode .analytics-metric-card,
+.dark-mode .analytics-project-list,
+.dark-mode .analytics-status-panel,
+.dark-mode .analytics-project-item,
+.dark-mode .analytics-project-hide-button {
+  border-color: #444 !important;
+  background: #242424 !important;
+  color: #f2f2f2 !important;
+}
+
+.dark-mode .analytics-metric-card {
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18) !important;
+}
+
+.dark-mode .analytics-metric-value,
+.dark-mode .analytics-status-row strong,
+.dark-mode .analytics-project-hide-button,
+.dark-mode .analytics-project-button {
+  color: #f2f2f2 !important;
+}
+
+.dark-mode .analytics-status-row {
+  border-bottom-color: #444 !important;
+}
+
+.dark-mode .analytics-project-button {
+  background: #2563eb !important;
+}
+
+.dark-mode .analytics-project-hide-button {
+  background: #1b1b1b !important;
+}
+
+.dark-mode .analytics-project-item {
+  background: #1d1d1d !important;
+}
+
+.dark-mode .analytics-metric-card:hover,
+.dark-mode .analytics-project-item:hover,
+.dark-mode .analytics-project-hide-button:hover,
+.dark-mode .analytics-project-button:hover {
+  border-color: #666 !important;
 }
 
 .meetings-page {

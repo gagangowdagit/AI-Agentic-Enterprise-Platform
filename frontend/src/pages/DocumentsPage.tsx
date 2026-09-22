@@ -142,19 +142,19 @@ function DocumentsPage() {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <div style={{ marginBottom: '30px' }}>
-        <h1 style={{ marginBottom: '10px', color: '#333' }}>Project Documents</h1>
-        <p style={{ color: '#666', margin: '0' }}>Manage documents for your selected project</p>
+    <div className="documents-page" style={{ padding: '20px' }}>
+      <div className="documents-header" style={{ marginBottom: '30px' }}>
+        <h1 style={{ marginBottom: '10px', color: '#172033' }}>Project Documents</h1>
+        <p style={{ color: '#64748b', margin: '0' }}>Manage documents for your selected project</p>
       </div>
 
-      <div style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
+      <div className="documents-project-selector" style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #dbe3ef' }}>
         <label
           style={{
             display: 'block',
             marginBottom: '12px',
             fontWeight: '600',
-            color: '#333',
+            color: '#172033',
             fontSize: '14px',
           }}
         >
@@ -162,7 +162,7 @@ function DocumentsPage() {
         </label>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           {projects.length === 0 ? (
-            <p style={{ margin: 0, color: '#666' }}>No projects available</p>
+            <p style={{ margin: 0, color: '#64748b' }}>No projects available</p>
           ) : (
             projects.map((project) => (
               <button
@@ -170,23 +170,24 @@ function DocumentsPage() {
                 onClick={() => setSelectedProjectId(String(project.id))}
                 style={{
                   padding: '10px 16px',
-                  backgroundColor: selectedProjectId === String(project.id) ? '#2196F3' : '#e0e0e0',
-                  color: selectedProjectId === String(project.id) ? 'white' : '#333',
-                  border: 'none',
+                  backgroundColor: selectedProjectId === String(project.id) ? '#334155' : '#1f2937',
+                  color: selectedProjectId === String(project.id) ? '#f8fafc' : '#dfe7f5',
+                  border: selectedProjectId === String(project.id) ? '1px solid #7dd3fc' : '1px solid #3b4a66',
                   borderRadius: '4px',
                   cursor: 'pointer',
                   fontSize: '14px',
-                  fontWeight: selectedProjectId === String(project.id) ? '600' : '500',
-                  transition: 'background-color 0.3s',
+                  fontWeight: selectedProjectId === String(project.id) ? '700' : '500',
+                  boxShadow: selectedProjectId === String(project.id) ? '0 0 0 1px rgba(125, 211, 252, 0.35)' : 'none',
+                  transition: 'all 0.2s ease',
                 }}
                 onMouseEnter={(e) => {
                   if (selectedProjectId !== String(project.id)) {
-                    e.currentTarget.style.backgroundColor = '#d0d0d0';
+                    e.currentTarget.style.backgroundColor = '#2a3748';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (selectedProjectId !== String(project.id)) {
-                    e.currentTarget.style.backgroundColor = '#e0e0e0';
+                    e.currentTarget.style.backgroundColor = '#1f2937';
                   }
                 }}
               >
@@ -202,17 +203,17 @@ function DocumentsPage() {
         style={{
           padding: '10px 20px',
           marginBottom: '20px',
-          backgroundColor: '#2196F3',
-          color: 'white',
-          border: 'none',
+          backgroundColor: '#1f2937',
+          color: '#93c5fd',
+          border: '1px solid #3b4a66',
           borderRadius: '4px',
           cursor: 'pointer',
           fontSize: '16px',
           fontWeight: '500',
           transition: 'background-color 0.3s',
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#1976D2')}
-        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#2196F3')}
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#2a3748')}
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1f2937')}
       >
         + Upload Document
       </button>
@@ -222,12 +223,12 @@ function DocumentsPage() {
           style={{
             marginBottom: '30px',
             padding: '30px',
-            border: '2px solid #2196F3',
+            border: '1px solid #475569',
             borderRadius: '8px',
-            backgroundColor: '#E3F2FD',
+            backgroundColor: '#111827',
           }}
         >
-          <h2 style={{ marginTop: '0', color: '#1976D2', marginBottom: '20px' }}>Upload New Document</h2>
+          <h2 style={{ marginTop: '0', color: '#dbeafe', marginBottom: '20px' }}>Upload New Document</h2>
           
           <div style={{ marginBottom: '20px' }}>
             <label
@@ -235,7 +236,7 @@ function DocumentsPage() {
                 display: 'block',
                 marginBottom: '10px',
                 fontWeight: '500',
-                color: '#333',
+                color: '#e2e8f0',
               }}
             >
               Select File
@@ -248,9 +249,11 @@ function DocumentsPage() {
                 display: 'block',
                 marginBottom: '15px',
                 padding: '8px',
-                border: '1px solid #999',
+                border: '1px solid #475569',
                 borderRadius: '4px',
                 cursor: 'pointer',
+                backgroundColor: '#1f2937',
+                color: '#f8fafc',
               }}
             />
           </div>
@@ -260,10 +263,10 @@ function DocumentsPage() {
               style={{
                 marginBottom: '20px',
                 padding: '15px',
-                backgroundColor: '#fff',
-                border: '1px solid #4CAF50',
+                backgroundColor: '#1f2937',
+                border: '1px solid #475569',
                 borderRadius: '4px',
-                color: '#333',
+                color: '#e2e8f0',
               }}
             >
               <strong>Selected File:</strong> {selectedFile.name}
@@ -320,14 +323,14 @@ function DocumentsPage() {
         </div>
       )}
 
-      <div style={{ marginTop: '30px' }}>
-        <h2 style={{ marginBottom: '20px', color: '#333' }}>Documents</h2>
+      <div className="documents-list-panel" style={{ marginTop: '30px' }}>
+        <h2 style={{ marginBottom: '20px', color: '#172033' }}>Documents</h2>
         <div
           style={{
             padding: '40px',
-            border: '2px dashed #ddd',
-            borderRadius: '4px',
-            backgroundColor: '#fafafa',
+            border: '1px dashed #94a3b8',
+            borderRadius: '8px',
+            backgroundColor: '#f8fafc',
             textAlign: 'center',
             minHeight: '300px',
             display: 'flex',
@@ -340,10 +343,10 @@ function DocumentsPage() {
             <p style={{ color: '#999', fontSize: '16px' }}>Loading documents...</p>
           ) : documents.filter((doc) => String(doc.projectId) === selectedProjectId).length === 0 ? (
             <>
-              <p style={{ color: '#999', fontSize: '18px', marginBottom: '10px' }}>
+              <p style={{ color: '#64748b', fontSize: '18px', marginBottom: '10px' }}>
                 📁 No documents uploaded yet
               </p>
-              <p style={{ color: '#bbb', fontSize: '14px', margin: '0' }}>
+              <p style={{ color: '#94a3b8', fontSize: '14px', margin: '0' }}>
                 Documents for this project will appear here after upload
               </p>
             </>
@@ -356,9 +359,9 @@ function DocumentsPage() {
                   gap: '20px',
                   marginBottom: '20px',
                   paddingBottom: '15px',
-                  borderBottom: '2px solid #ddd',
+                  borderBottom: '1px solid #dbe3ef',
                   fontWeight: '600',
-                  color: '#333',
+                  color: '#172033',
                   fontSize: '14px',
                 }}
               >
@@ -379,20 +382,20 @@ function DocumentsPage() {
                       gridTemplateColumns: '2fr 100px 100px 120px 150px 160px',
                       gap: '20px',
                       padding: '12px 0',
-                      borderBottom: '1px solid #eee',
+                      borderBottom: '1px solid #e2e8f0',
                       alignItems: 'center',
                       fontSize: '14px',
                     }}
                   >
-                    <div style={{ color: '#333' }}>📄 {doc.fileName}</div>
-                    <div style={{ color: '#666', fontSize: '12px' }}>
-                      <span style={{ backgroundColor: '#f0f0f0', padding: '2px 6px', borderRadius: '3px' }}>
+                    <div style={{ color: '#172033' }}>📄 {doc.fileName}</div>
+                    <div style={{ color: '#64748b', fontSize: '12px' }}>
+                      <span style={{ backgroundColor: '#1f2937', padding: '2px 6px', borderRadius: '3px', color: '#dbeafe', border: '1px solid #3b4a66' }}>
                         {getFileExtension(doc.fileName)}
                       </span>
                     </div>
-                    <div style={{ color: '#999', fontSize: '13px' }}>{formatFileSize(doc.fileSize)}</div>
-                    <div style={{ color: '#666', fontSize: '13px' }}>{doc.projectId}</div>
-                    <div style={{ color: '#999', fontSize: '13px' }}>{doc.uploadedAt}</div>
+                    <div style={{ color: '#64748b', fontSize: '13px' }}>{formatFileSize(doc.fileSize)}</div>
+                    <div style={{ color: '#64748b', fontSize: '13px' }}>{doc.projectId}</div>
+                    <div style={{ color: '#64748b', fontSize: '13px' }}>{doc.uploadedAt}</div>
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                       <button
                         onClick={() => handleDownloadDocument(doc.id)}

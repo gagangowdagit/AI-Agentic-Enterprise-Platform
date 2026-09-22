@@ -140,8 +140,8 @@ function DepartmentsPage() {
   };
 
   return (
-    <main style={{ padding: '24px 20px', maxWidth: '1100px', margin: '0 auto' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '24px' }}>
+    <main className="department-page" style={{ padding: '24px 20px', maxWidth: '1100px', margin: '0 auto' }}>
+      <header className="department-header" style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '24px' }}>
         <div>
           <h1 style={{ margin: '0 0 8px', color: '#333' }}>Departments</h1>
           <p style={{ margin: 0, color: '#666' }}>Organize your organization by department.</p>
@@ -158,7 +158,7 @@ function DepartmentsPage() {
       {error && <p role="alert" style={errorStyle}>{error}</p>}
 
       {showForm && (
-        <form onSubmit={handleSubmit} style={{ marginBottom: '28px', padding: '20px', border: '1px solid #ccc', borderRadius: '6px', backgroundColor: '#f5f5f5' }}>
+        <form className="department-panel" onSubmit={handleSubmit} style={{ marginBottom: '28px', padding: '20px', border: '1px solid #ccc', borderRadius: '6px', backgroundColor: '#f5f5f5' }}>
           <h2 style={{ marginTop: 0, color: '#333' }}>Create New Department</h2>
           {createError && <p role="alert" style={errorStyle}>{createError}</p>}
           <label style={labelStyle} htmlFor="department-name">Department name</label>
@@ -173,7 +173,7 @@ function DepartmentsPage() {
       )}
 
       {showEmployeeForm && (
-        <form onSubmit={handleEmployeeSubmit} style={{ marginBottom: '28px', padding: '20px', border: '1px solid #ccc', borderRadius: '6px', backgroundColor: '#f5f5f5' }}>
+        <form className="department-panel" onSubmit={handleEmployeeSubmit} style={{ marginBottom: '28px', padding: '20px', border: '1px solid #ccc', borderRadius: '6px', backgroundColor: '#f5f5f5' }}>
           <h2 style={{ marginTop: 0, color: '#333' }}>Create New Employee</h2>
           {employeeError && <p role="alert" style={errorStyle}>{employeeError}</p>}
           <label style={labelStyle} htmlFor="employee-first-name">First name</label>
@@ -200,7 +200,7 @@ function DepartmentsPage() {
       {!loading && !error && departments.length > 0 && (
         <>
           {selectedDepartment && (
-            <section aria-live="polite" style={{ marginBottom: '20px', padding: '16px 20px', border: '2px solid #4CAF50', borderRadius: '8px', backgroundColor: '#f7fff7' }}>
+            <section className="department-selected-panel" aria-live="polite" style={{ marginBottom: '20px', padding: '16px 20px', border: '2px solid #4CAF50', borderRadius: '8px', backgroundColor: '#f7fff7' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'flex-start', flexWrap: 'wrap', marginBottom: '18px' }}>
                 <div>
                   <p style={{ margin: '0 0 8px', color: '#1976D2', fontSize: '12px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Team</p>
@@ -220,7 +220,7 @@ function DepartmentsPage() {
                     employees
                       .filter((employee) => employee.department?.id === selectedDepartment.id)
                       .map((employee) => (
-                        <div key={employee.id} style={employeeRowStyle}>
+                        <div key={employee.id} className="department-employee-row" style={employeeRowStyle}>
                           <strong>{employee.firstName} {employee.lastName}</strong>
                           <span>{employee.role}</span>
                           {employee.email && <span>{employee.email}</span>}
@@ -244,9 +244,10 @@ function DepartmentsPage() {
                     const isSelectedProject = selectedProjectId === project.id;
 
                     return (
-                      <div key={project.id} style={{ border: '1px solid #d9e7d9', borderRadius: '8px', backgroundColor: '#fff', overflow: 'hidden' }}>
+                      <div key={project.id} className="department-project-card" style={{ border: '1px solid #d9e7d9', borderRadius: '8px', backgroundColor: '#fff', overflow: 'hidden' }}>
                         <button
                           type="button"
+                          className="department-project-button"
                           onClick={() => setSelectedProjectId(project.id)}
                           style={{
                             width: '100%',
@@ -264,7 +265,7 @@ function DepartmentsPage() {
                               <div style={{ fontSize: '12px', color: '#1976D2', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>Project</div>
                               <strong style={{ fontSize: '18px' }}>{project.name}</strong>
                             </div>
-                            <span style={{ padding: '6px 10px', borderRadius: '999px', backgroundColor: '#e0f2fe', color: '#075985', fontSize: '12px', fontWeight: 700 }}>
+                            <span className="department-project-status" style={{ padding: '6px 10px', borderRadius: '999px', backgroundColor: '#e0f2fe', color: '#075985', fontSize: '12px', fontWeight: 700 }}>
                               {project.status}
                             </span>
                           </div>
@@ -296,7 +297,7 @@ function DepartmentsPage() {
                             ) : (
                               <div style={{ display: 'grid', gap: '8px' }}>
                                 {projectTeamMembers.map((member) => (
-                                  <div key={member.id} style={{ padding: '10px 12px', border: '1px solid #e2e8f0', borderRadius: '6px', backgroundColor: '#f8fafc', color: '#334155' }}>
+                                  <div key={member.id} className="department-team-member" style={{ padding: '10px 12px', border: '1px solid #e2e8f0', borderRadius: '6px', backgroundColor: '#f8fafc', color: '#334155' }}>
                                     <strong>{member.firstName} {member.lastName}</strong>
                                     <div style={{ marginTop: '4px', color: '#475569' }}>{member.role}</div>
                                   </div>
@@ -312,25 +313,25 @@ function DepartmentsPage() {
               </div>
 
               {selectedProject && (
-                <div style={{ marginTop: '18px', border: '1px solid #dbe3ef', borderRadius: '10px', backgroundColor: '#fff', padding: '18px' }}>
+                <div className="department-project-details" style={{ marginTop: '18px', border: '1px solid #dbe3ef', borderRadius: '10px', backgroundColor: '#fff', padding: '18px' }}>
                   <p style={{ margin: '0 0 8px', color: '#1976D2', fontSize: '12px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Project details</p>
                   <h3 style={{ margin: '0 0 12px', color: '#333', fontSize: '22px' }}>{selectedProject.name}</h3>
                   <p style={{ margin: '0 0 18px', color: '#475569', lineHeight: 1.6 }}>{selectedProject.description || 'No description provided for this project.'}</p>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px' }}>
-                    <div style={{ padding: '12px', border: '1px solid #edf2f7', borderRadius: '8px', backgroundColor: '#f8fafc' }}>
+                    <div className="department-detail-stat" style={{ padding: '12px', border: '1px solid #edf2f7', borderRadius: '8px', backgroundColor: '#f8fafc' }}>
                       <div style={{ color: '#64748b', fontSize: '11px', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '6px' }}>Status</div>
                       <strong>{selectedProject.status}</strong>
                     </div>
-                    <div style={{ padding: '12px', border: '1px solid #edf2f7', borderRadius: '8px', backgroundColor: '#f8fafc' }}>
+                    <div className="department-detail-stat" style={{ padding: '12px', border: '1px solid #edf2f7', borderRadius: '8px', backgroundColor: '#f8fafc' }}>
                       <div style={{ color: '#64748b', fontSize: '11px', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '6px' }}>Priority</div>
                       <strong>{selectedProject.priority}</strong>
                     </div>
-                    <div style={{ padding: '12px', border: '1px solid #edf2f7', borderRadius: '8px', backgroundColor: '#f8fafc' }}>
+                    <div className="department-detail-stat" style={{ padding: '12px', border: '1px solid #edf2f7', borderRadius: '8px', backgroundColor: '#f8fafc' }}>
                       <div style={{ color: '#64748b', fontSize: '11px', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '6px' }}>Start date</div>
                       <strong>{selectedProject.startDate || 'Not set'}</strong>
                     </div>
-                    <div style={{ padding: '12px', border: '1px solid #edf2f7', borderRadius: '8px', backgroundColor: '#f8fafc' }}>
+                    <div className="department-detail-stat" style={{ padding: '12px', border: '1px solid #edf2f7', borderRadius: '8px', backgroundColor: '#f8fafc' }}>
                       <div style={{ color: '#64748b', fontSize: '11px', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '6px' }}>End date</div>
                       <strong>{selectedProject.endDate || 'Not set'}</strong>
                     </div>
@@ -344,6 +345,7 @@ function DepartmentsPage() {
             <button
               key={department.id}
               type="button"
+              className="department-card"
               aria-pressed={selectedDepartment?.id === department.id}
               onClick={() => handleDepartmentSelect(department)}
               style={{ ...departmentCardStyle, borderColor: selectedDepartment?.id === department.id ? '#4CAF50' : '#ddd' }}
