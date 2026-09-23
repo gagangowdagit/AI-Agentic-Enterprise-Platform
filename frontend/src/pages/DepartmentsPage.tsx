@@ -275,12 +275,13 @@ function DepartmentsPage() {
                           <span style={{ color: '#475569', fontWeight: 600 }}>{project.priority}</span>
                           <button
                             type="button"
+                            className="department-team-toggle"
                             onClick={() => handleProjectTeamToggle(project)}
                             style={{
                               padding: '8px 12px',
                               border: '1px solid #dbe3ef',
                               borderRadius: '6px',
-                              backgroundColor: '#fff',
+                              backgroundColor: '#f8fafc',
                               color: '#172033',
                               cursor: 'pointer',
                               fontWeight: 600,

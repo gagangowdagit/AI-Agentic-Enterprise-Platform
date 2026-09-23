@@ -742,6 +742,88 @@ body {
   border-color: #3a3a3a;
 }
 
+.dark-mode .project-details-page {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+.dark-mode .project-details-page *,
+.dark-mode .project-details-page p,
+.dark-mode .project-details-page h1,
+.dark-mode .project-details-page h2,
+.dark-mode .project-details-page h3,
+.dark-mode .project-details-page strong,
+.dark-mode .project-details-page span,
+.dark-mode .project-details-page label,
+.dark-mode .project-details-page button,
+.dark-mode .project-details-page select,
+.dark-mode .project-details-page input,
+.dark-mode .project-details-page textarea {
+  color: #f8fafc !important;
+}
+
+.dark-mode .project-details-page main,
+.dark-mode .project-details-page section,
+.dark-mode .project-details-page aside,
+.dark-mode .project-details-page header,
+.dark-mode .project-details-page div,
+.dark-mode .project-details-page article,
+.dark-mode .project-details-page nav,
+.dark-mode .project-details-page table,
+.dark-mode .project-details-page td,
+.dark-mode .project-details-page th,
+.dark-mode .project-details-page tr,
+.dark-mode .project-details-page ul,
+.dark-mode .project-details-page li {
+  background-color: #111827 !important;
+  border-color: #334155 !important;
+}
+
+.dark-mode .project-details-page .project-details-sidebar,
+.dark-mode .project-details-page .project-details-nav,
+.dark-mode .project-details-page .project-details-panel,
+.dark-mode .project-details-page .project-details-header,
+.dark-mode .project-details-page .project-details-form-panel,
+.dark-mode .project-details-page .project-details-empty,
+.dark-mode .project-details-page .project-details-table,
+.dark-mode .project-details-page .project-details-table-header,
+.dark-mode .project-details-page .project-details-table-row {
+  background: #111827 !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+.dark-mode .project-details-page .project-details-sidebar {
+  background: #0b1220 !important;
+}
+
+.dark-mode .project-details-page .project-details-nav-item {
+  color: #cbd5e1 !important;
+}
+
+.dark-mode .project-details-page .project-details-nav-item.active {
+  background: #1e293b !important;
+  color: #7dd3fc !important;
+}
+
+.dark-mode .project-details-page input,
+.dark-mode .project-details-page select,
+.dark-mode .project-details-page textarea {
+  background: #0f172a !important;
+  border-color: #475569 !important;
+  color: #f8fafc !important;
+}
+
+.dark-mode .project-details-page input::placeholder,
+.dark-mode .project-details-page textarea::placeholder {
+  color: #cbd5e1 !important;
+}
+
+.dark-mode .project-details-page .project-details-empty,
+.dark-mode .project-details-page .project-details-form-panel {
+  background: #0f172a !important;
+}
+
 .home-page {
   width: min(100% - 40px, 1120px);
   margin: 0 auto;
@@ -908,6 +990,35 @@ body {
 .dark-mode .department-team-toggle {
   background: #111827 !important;
   color: #dbeafe !important;
+  border-color: #3b4a66 !important;
+}
+
+.dark-mode .department-team-toggle {
+  background: #0f172a !important;
+  color: #e2e8f0 !important;
+}
+
+.dark-mode .department-panel input,
+.dark-mode .department-panel textarea,
+.dark-mode .department-panel select,
+.dark-mode .department-panel label,
+.dark-mode .department-panel h2,
+.dark-mode .department-panel p,
+.dark-mode .department-panel button {
+  color: #e2e8f0 !important;
+}
+
+.dark-mode .department-panel input,
+.dark-mode .department-panel textarea,
+.dark-mode .department-panel select {
+  background: #0f172a !important;
+  border-color: #475569 !important;
+  color: #f8fafc !important;
+}
+
+.dark-mode .department-panel input::placeholder,
+.dark-mode .department-panel textarea::placeholder {
+  color: #cbd5e1 !important;
 }
 
 .dark-mode .department-project-button:hover,
@@ -1656,9 +1767,31 @@ body {
 }
 
 .dark-mode .field-group input,
-.dark-mode .field-group select {
-  background: #1b1b1b;
-  color: #f2f2f2;
+.dark-mode .field-group select,
+.dark-mode .field-group textarea,
+.dark-mode input,
+.dark-mode select,
+.dark-mode textarea {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #475569 !important;
+}
+
+.dark-mode input::placeholder,
+.dark-mode textarea::placeholder,
+.dark-mode select::placeholder {
+  color: #cbd5e1 !important;
+}
+
+.dark-mode .field-group input:focus,
+.dark-mode .field-group select:focus,
+.dark-mode .field-group textarea:focus,
+.dark-mode input:focus,
+.dark-mode select:focus,
+.dark-mode textarea:focus {
+  border-color: #7dd3fc !important;
+  outline: 2px solid rgba(125, 211, 252, 0.75) !important;
+  outline-offset: 2px;
 }
 
 @media (max-width: 820px) {

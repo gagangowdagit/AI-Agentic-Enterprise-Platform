@@ -187,8 +187,8 @@ function ProjectDetailsPage() {
   const formatValue = (value?: string) => value || 'Not set';
 
   return (
-    <main style={{ display: 'flex', gap: '32px', width: '100%', minHeight: '100vh', padding: '32px', backgroundColor: '#fff' }}>
-      <aside style={{ width: '240px', flexShrink: 0, borderRight: '1px solid #e0e0e0', paddingRight: '24px' }}>
+    <main className="project-details-page" style={{ display: 'flex', gap: '32px', width: '100%', minHeight: '100vh', padding: '32px', backgroundColor: '#fff' }}>
+      <aside className="project-details-sidebar" style={{ width: '240px', flexShrink: 0, borderRight: '1px solid #e0e0e0', paddingRight: '24px' }}>
         <button
           type="button"
           onClick={() => navigate('/projects')}
@@ -196,11 +196,12 @@ function ProjectDetailsPage() {
         >
           ← Back to Projects
         </button>
-        <nav aria-label="Project sections">
+        <nav className="project-details-nav" aria-label="Project sections">
           {sections.map((section) => (
             <button
               key={section}
               type="button"
+              className={activeSection === section ? 'project-details-nav-item active' : 'project-details-nav-item'}
               onClick={() => setActiveSection(section)}
               style={{
                 display: 'block',
@@ -232,7 +233,7 @@ function ProjectDetailsPage() {
 
         {!loading && !error && project && (
           <>
-            <header style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            <header className="project-details-header" style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
               <div>
                 <p style={{ margin: '0 0 8px', color: '#666', fontSize: '14px' }}>Project {project.id}</p>
                 <h1 style={{ margin: 0, color: '#333' }}>{project.name}</h1>
@@ -256,7 +257,7 @@ function ProjectDetailsPage() {
             </header>
 
             {activeSection === 'Overview' ? (
-              <div style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '24px', backgroundColor: '#fff' }}>
+              <div className="project-details-panel" style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '24px', backgroundColor: '#fff' }}>
                 <h2 style={{ marginTop: 0, color: '#333' }}>Overview</h2>
                 <p style={{ color: '#666', whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
                   {formatValue(project.description)}
@@ -359,7 +360,7 @@ function ProjectDetailsPage() {
                 }}
               />
             ) : (
-              <div style={{ padding: '40px 24px', border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#f9f9f9', textAlign: 'center' }}>
+              <div className="project-details-empty" style={{ padding: '40px 24px', border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#f9f9f9', textAlign: 'center' }}>
                 <h2 style={{ marginTop: 0, color: '#333' }}>{activeSection}</h2>
                 <p style={{ marginBottom: 0, color: '#666' }}>Coming soon</p>
               </div>
@@ -422,7 +423,7 @@ function TeamSection({
       </div>
 
       {addFormOpen && (
-        <div style={{ display: 'flex', alignItems: 'end', gap: '12px', flexWrap: 'wrap', marginBottom: '20px', padding: '16px', border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#f9f9f9' }}>
+        <div className="project-details-form-panel" style={{ display: 'flex', alignItems: 'end', gap: '12px', flexWrap: 'wrap', marginBottom: '20px', padding: '16px', border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#f9f9f9' }}>
           <label style={{ display: 'grid', gap: '6px', color: '#555', fontSize: '14px' }}>
             Employee
             <select value={selectedEmployeeId} onChange={(event) => setSelectedEmployeeId(event.target.value)} disabled={mutationLoading} style={{ minWidth: '260px', padding: '9px', border: '1px solid #bbb', borderRadius: '4px', backgroundColor: 'white' }}>
@@ -462,7 +463,7 @@ function TeamSection({
       ) : (
         <div style={{ overflowX: 'auto', border: '1px solid #ddd', borderRadius: '8px' }}>
           <div style={{ minWidth: hasTaskSummaries ? '940px' : '780px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: hasTaskSummaries ? 'minmax(180px, 1.5fr) minmax(190px, 1.5fr) minmax(140px, 1fr) minmax(160px, 1fr) minmax(180px, 1.2fr) 90px' : 'minmax(180px, 1.5fr) minmax(190px, 1.5fr) minmax(140px, 1fr) minmax(160px, 1fr) 90px', gap: '16px', padding: '14px 18px', borderBottom: '2px solid #ddd', fontWeight: '600', color: '#333', fontSize: '13px' }}>
+            <div className="project-details-table-header" style={{ display: 'grid', gridTemplateColumns: hasTaskSummaries ? 'minmax(180px, 1.5fr) minmax(190px, 1.5fr) minmax(140px, 1fr) minmax(160px, 1fr) minmax(180px, 1.2fr) 90px' : 'minmax(180px, 1.5fr) minmax(190px, 1.5fr) minmax(140px, 1fr) minmax(160px, 1fr) 90px', gap: '16px', padding: '14px 18px', borderBottom: '2px solid #ddd', fontWeight: '600', color: '#333', fontSize: '13px' }}>
               <div>Name</div>
               <div>Email</div>
               <div>Role</div>
@@ -471,7 +472,7 @@ function TeamSection({
               <div>Actions</div>
             </div>
             {members.map((member) => (
-              <div key={member.id} style={{ display: 'grid', gridTemplateColumns: hasTaskSummaries ? 'minmax(180px, 1.5fr) minmax(190px, 1.5fr) minmax(140px, 1fr) minmax(160px, 1fr) minmax(180px, 1.2fr) 90px' : 'minmax(180px, 1.5fr) minmax(190px, 1.5fr) minmax(140px, 1fr) minmax(160px, 1fr) 90px', gap: '16px', padding: '16px 18px', borderBottom: '1px solid #eee', alignItems: 'center', color: '#555', fontSize: '14px' }}>
+              <div key={member.id} className="project-details-table-row" style={{ display: 'grid', gridTemplateColumns: hasTaskSummaries ? 'minmax(180px, 1.5fr) minmax(190px, 1.5fr) minmax(140px, 1fr) minmax(160px, 1fr) minmax(180px, 1.2fr) 90px' : 'minmax(180px, 1.5fr) minmax(190px, 1.5fr) minmax(140px, 1fr) minmax(160px, 1fr) 90px', gap: '16px', padding: '16px 18px', borderBottom: '1px solid #eee', alignItems: 'center', color: '#555', fontSize: '14px' }}>
                 <div style={{ color: '#333', fontWeight: '600' }}>{member.firstName} {member.lastName}</div>
                 <div style={{ overflowWrap: 'anywhere' }}>{member.email}</div>
                 <div>{member.role}</div>
