@@ -105,14 +105,14 @@ function NovaAIPage() {
   return (
     <main className="nova-page" style={{ maxWidth: '900px', margin: '0 auto', padding: '24px 20px' }}>
       <header style={{ marginBottom: '24px' }}>
-        <p style={{ margin: '0 0 6px', color: '#93c5fd', fontWeight: '700', letterSpacing: '0.08em', textTransform: 'uppercase', fontSize: '12px' }}>
+        <p style={{ margin: '0 0 6px', color: '#4f8ef7', fontWeight: '700', letterSpacing: '0.08em', textTransform: 'uppercase', fontSize: '12px' }}>
           Nova AI
         </p>
-        <h1 style={{ margin: 0, color: '#f8fafc', fontSize: '32px' }}>Ask your project knowledge base</h1>
+        <h1 style={{ margin: 0, color: '#1e3a5f', fontSize: '32px' }}>Ask your project knowledge base</h1>
       </header>
 
-      <section className="nova-panel" style={{ border: '1px solid #475569', borderRadius: '8px', backgroundColor: '#111827', padding: '18px' }}>
-        <label htmlFor="nova-project" style={{ display: 'block', marginBottom: '8px', color: '#e2e8f0', fontWeight: '600' }}>
+      <section className="nova-panel" style={{ border: '1px solid #dceeff', borderRadius: '12px', backgroundColor: '#f9fbff', padding: '18px', boxShadow: '0 8px 24px rgba(148, 163, 184, 0.12)' }}>
+        <label htmlFor="nova-project" style={{ display: 'block', marginBottom: '8px', color: '#355985', fontWeight: '600' }}>
           Project
         </label>
         <select
@@ -120,7 +120,7 @@ function NovaAIPage() {
           value={selectedProjectId}
           onChange={(event) => setSelectedProjectId(event.target.value)}
           disabled={loadingProjects || sending || projects.length === 0}
-          style={{ width: '100%', padding: '11px 12px', border: '1px solid #475569', borderRadius: '6px', backgroundColor: '#1f2937', color: '#f8fafc', fontSize: '15px' }}
+          style={{ width: '100%', padding: '11px 12px', border: '1px solid #d5e6ff', borderRadius: '8px', backgroundColor: '#ffffff', color: '#1f3351', fontSize: '15px' }}
         >
           {loadingProjects && <option>Loading projects...</option>}
           {!loadingProjects && projects.length === 0 && <option>No projects available</option>}
@@ -131,22 +131,22 @@ function NovaAIPage() {
         </select>
       </section>
 
-      <section aria-live="polite" className="nova-chat-panel" style={{ minHeight: '360px', margin: '20px 0', padding: '20px', border: '1px solid #475569', borderRadius: '8px', backgroundColor: '#111827' }}>
+      <section aria-live="polite" className="nova-chat-panel" style={{ minHeight: '360px', margin: '20px 0', padding: '20px', border: '1px solid #dceeff', borderRadius: '12px', backgroundColor: '#f3f8ff', boxShadow: '0 8px 20px rgba(148, 163, 184, 0.08)' }}>
         {messages.length === 0 ? (
-          <p style={{ margin: 0, color: '#cbd5e1', textAlign: 'center', paddingTop: '130px' }}>Ask a question about the selected project.</p>
+          <p style={{ margin: 0, color: '#4b6784', textAlign: 'center', paddingTop: '130px' }}>Ask a question about the selected project.</p>
         ) : (
           messages.map((message) => (
             <div key={message.id} style={{ display: 'flex', justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start', marginBottom: '14px' }}>
-              <div style={{ maxWidth: '78%', padding: '12px 14px', borderRadius: '8px', backgroundColor: message.role === 'user' ? '#2563eb' : '#1f2937', color: message.role === 'user' ? 'white' : '#f8fafc', whiteSpace: 'pre-wrap', lineHeight: 1.5, border: '1px solid #374151' }}>
+              <div style={{ maxWidth: '78%', padding: '12px 14px', borderRadius: '14px', backgroundColor: message.role === 'user' ? '#dfeeff' : '#ffffff', color: '#1e3a5f', whiteSpace: 'pre-wrap', lineHeight: 1.5, border: '1px solid #d8e9ff', boxShadow: '0 4px 12px rgba(148, 163, 184, 0.08)' }}>
                 {message.content}
               </div>
             </div>
           ))
         )}
-        {sending && <p style={{ margin: '8px 0 0', color: '#cbd5e1' }}>Nova AI is thinking...</p>}
+        {sending && <p style={{ margin: '8px 0 0', color: '#496b8c' }}>Nova AI is thinking...</p>}
       </section>
 
-      {error && <p role="alert" style={{ margin: '0 0 14px', padding: '12px', border: '1px solid #fca5a5', borderRadius: '6px', backgroundColor: '#3b1f1f', color: '#fecaca' }}>{error}</p>}
+      {error && <p role="alert" style={{ margin: '0 0 14px', padding: '12px', border: '1px solid #f7d1d1', borderRadius: '8px', backgroundColor: '#fff4f4', color: '#b42318' }}>{error}</p>}
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px', alignItems: 'stretch' }}>
         <label htmlFor="nova-query" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', border: 0 }}>
@@ -158,9 +158,9 @@ function NovaAIPage() {
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Ask a question..."
           disabled={sending || !selectedProjectId}
-          style={{ flex: 1, minWidth: 0, padding: '13px 14px', border: '1px solid #475569', borderRadius: '6px', backgroundColor: '#1f2937', color: '#f8fafc', fontSize: '15px' }}
+          style={{ flex: 1, minWidth: 0, padding: '13px 14px', border: '1px solid #d5e6ff', borderRadius: '8px', backgroundColor: '#ffffff', color: '#1f3351', fontSize: '15px' }}
         />
-        <button type="submit" disabled={sending || !selectedProjectId || !query.trim()} style={{ padding: '0 22px', border: 0, borderRadius: '6px', backgroundColor: sending || !selectedProjectId || !query.trim() ? '#475569' : '#172033', color: 'white', fontWeight: '700', cursor: sending || !selectedProjectId || !query.trim() ? 'not-allowed' : 'pointer' }}>
+        <button type="submit" disabled={sending || !selectedProjectId || !query.trim()} style={{ padding: '0 22px', border: 0, borderRadius: '8px', backgroundColor: sending || !selectedProjectId || !query.trim() ? '#dfeaff' : '#8ec5ff', color: '#12335d', fontWeight: '700', cursor: sending || !selectedProjectId || !query.trim() ? 'not-allowed' : 'pointer', boxShadow: '0 6px 14px rgba(142, 197, 255, 0.35)' }}>
           {sending ? 'Sending...' : 'Send'}
         </button>
       </form>

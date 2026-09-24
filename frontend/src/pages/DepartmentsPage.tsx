@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { createDepartment, createEmployee, getDepartments, getEmployees } from '../services/departmentApi';
 import type { Department, Employee } from '../services/departmentApi';
 import { getProjects } from '../services/projectApi';
@@ -7,6 +8,7 @@ import { getProjectTeam } from '../services/teamApi';
 import type { TeamMember } from '../services/teamApi';
 
 function DepartmentsPage() {
+  const location = useLocation();
   const [departments, setDepartments] = useState<Department[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,6 +56,21 @@ function DepartmentsPage() {
 
     loadDepartments();
   }, []);
+
+  useEffect(() => {
+    const focus = (location.state as { analyticsFocus?: 'totalDepartments' | 'totalEmployees' } | null)?.analyticsFocus;
+    if (!focus || departments.length === 0) {
+      return;
+    }
+
+    const firstDepartment = departments[0];
+    setSelectedDepartment(firstDepartment);
+    setExpandedDepartmentId(firstDepartment.id);
+
+    if (focus === 'totalEmployees') {
+      setSelectedProjectId(null);
+    }
+  }, [departments, location.state]);
 
   const departmentProjects = selectedDepartment
     ? projects.filter((project) => project.department?.id === selectedDepartment.id)

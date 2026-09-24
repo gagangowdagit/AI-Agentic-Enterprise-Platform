@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCompanyAnalytics, type CompanyAnalytics } from '../services/companyAnalyticsApi';
+import {
+  getCompanyAnalytics,
+  getDepartmentBreakdown,
+  getEmployeeBreakdown,
+  type CompanyAnalytics,
+  type DepartmentAnalytics,
+  type EmployeeAnalytics,
+} from '../services/companyAnalyticsApi';
 import { getProjects, type Project } from '../services/projectApi';
 
 const metricCards = [
@@ -71,6 +78,11 @@ function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedStatus, setExpandedStatus] = useState<StatusKey | null>(null);
+  const [expandedMetric, setExpandedMetric] = useState<'totalDepartments' | 'totalEmployees' | null>(null);
+  const [departmentBreakdown, setDepartmentBreakdown] = useState<DepartmentAnalytics[]>([]);
+  const [employeeBreakdown, setEmployeeBreakdown] = useState<EmployeeAnalytics[]>([]);
+  const [detailLoading, setDetailLoading] = useState<'totalDepartments' | 'totalEmployees' | null>(null);
+  const [detailError, setDetailError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadAnalytics = async () => {
@@ -90,6 +102,34 @@ function AnalyticsPage() {
 
   const handleMetricClick = async (metricKey: string) => {
     const statusKey = getStatusKeyForMetric(metricKey);
+
+    if (metricKey === 'totalDepartments' || metricKey === 'totalEmployees') {
+      if (expandedMetric === metricKey) {
+        setExpandedMetric(null);
+        return;
+      }
+
+      try {
+        setDetailLoading(metricKey);
+        setDetailError(null);
+
+        if (metricKey === 'totalDepartments' && departmentBreakdown.length === 0) {
+          setDepartmentBreakdown(await getDepartmentBreakdown());
+        }
+
+        if (metricKey === 'totalEmployees' && employeeBreakdown.length === 0) {
+          setEmployeeBreakdown(await getEmployeeBreakdown());
+        }
+
+        setExpandedMetric(metricKey);
+      } catch (loadError) {
+        setDetailError(loadError instanceof Error ? loadError.message : 'Failed to load details');
+      } finally {
+        setDetailLoading(null);
+      }
+      return;
+    }
+
     if (!statusKey) {
       return;
     }
@@ -119,6 +159,102 @@ function AnalyticsPage() {
     } finally {
       setStatusLoading((current) => ({ ...current, [statusKey]: false }));
     }
+  };
+
+  const handleViewMore = (metricKey: 'totalDepartments' | 'totalEmployees') => {
+    navigate('/departments', {
+      state: { analyticsFocus: metricKey },
+    });
+  };
+
+  const renderMetricDetailList = (metricKey: 'totalDepartments' | 'totalEmployees') => {
+    const isLoading = detailLoading === metricKey;
+    const items = metricKey === 'totalDepartments' ? departmentBreakdown : employeeBreakdown;
+
+    return (
+      <section className="analytics-project-list" style={{ padding: '22px', border: '1px solid #dbe3ef', borderRadius: '8px', background: '#f8fafc', marginBottom: '24px' }}>
+        <div className="analytics-project-list-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', gap: '16px' }}>
+          <h2 className="analytics-project-list-title" style={{ margin: 0, color: '#172033' }}>
+            {metricKey === 'totalDepartments' ? 'Department overview' : 'Employee overview'}
+          </h2>
+          <button
+            type="button"
+            className="analytics-project-hide-button"
+            onClick={() => setExpandedMetric(null)}
+            style={{ border: '1px solid #3b4a66', background: '#1f2937', color: '#93c5fd', borderRadius: '6px', padding: '8px 12px', cursor: 'pointer' }}
+          >
+            Hide details
+          </button>
+        </div>
+
+        {isLoading && <p className="analytics-project-content">Loading {metricKey === 'totalDepartments' ? 'departments' : 'employees'}...</p>}
+        {!isLoading && detailError && <p className="analytics-project-content analytics-project-error" role="alert" style={{ color: '#c62828' }}>{detailError}</p>}
+
+        {!isLoading && !detailError && items.length === 0 && (
+          <p className="analytics-project-content">No {metricKey === 'totalDepartments' ? 'departments' : 'employees'} available.</p>
+        )}
+
+        {!isLoading && !detailError && items.length > 0 && (
+          <div className="analytics-project-items" style={{ display: 'grid', gap: '12px' }}>
+            {items.slice(0, 4).map((item) => {
+              if (metricKey === 'totalDepartments') {
+                const department = item as DepartmentAnalytics;
+                return (
+                  <div key={department.id} className="analytics-project-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', padding: '14px 16px', border: '1px solid #dbe3ef', borderRadius: '8px', background: '#fff' }}>
+                    <div>
+                      <h3 className="analytics-project-name" style={{ margin: '0 0 8px', color: '#172033', fontSize: '18px' }}>{department.name}</h3>
+                      <div className="analytics-project-meta" style={{ display: 'flex', gap: '18px', flexWrap: 'wrap', color: '#334155', fontSize: '14px' }}>
+                        <span><strong>Projects:</strong> {department.projectCount}</span>
+                        <span><strong>Employees:</strong> {department.employeeCount}</span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="analytics-project-button"
+                      onClick={() => navigate('/departments', { state: { analyticsFocus: 'totalDepartments' } })}
+                      style={{ border: '1px solid #3b4a66', borderRadius: '6px', background: '#1f2937', color: '#93c5fd', padding: '9px 14px', cursor: 'pointer', fontWeight: '600' }}
+                    >
+                      View more details
+                    </button>
+                  </div>
+                );
+              }
+
+              const employee = item as EmployeeAnalytics;
+              return (
+                <div key={employee.id} className="analytics-project-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', padding: '14px 16px', border: '1px solid #dbe3ef', borderRadius: '8px', background: '#fff' }}>
+                  <div>
+                    <h3 className="analytics-project-name" style={{ margin: '0 0 8px', color: '#172033', fontSize: '18px' }}>{employee.firstName} {employee.lastName}</h3>
+                    <div className="analytics-project-meta" style={{ display: 'flex', gap: '18px', flexWrap: 'wrap', color: '#334155', fontSize: '14px' }}>
+                      <span><strong>Role:</strong> {employee.role}</span>
+                      <span><strong>Department:</strong> {employee.departmentName}</span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className="analytics-project-button"
+                    onClick={() => navigate('/departments', { state: { analyticsFocus: 'totalEmployees' } })}
+                    style={{ border: '1px solid #3b4a66', borderRadius: '6px', background: '#1f2937', color: '#93c5fd', padding: '9px 14px', cursor: 'pointer', fontWeight: '600' }}
+                  >
+                    View more details
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        <div style={{ marginTop: '18px' }}>
+          <button
+            type="button"
+            onClick={() => handleViewMore(metricKey)}
+            style={{ border: '1px solid #93c5fd', borderRadius: '6px', background: '#eff6ff', color: '#1d4ed8', padding: '10px 14px', cursor: 'pointer', fontWeight: '700' }}
+          >
+            View complete details
+          </button>
+        </div>
+      </section>
+    );
   };
 
   const renderProjectsList = (statusKey: StatusKey) => {
@@ -193,7 +329,8 @@ function AnalyticsPage() {
           <section className="analytics-metrics" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '28px' }}>
             {metricCards.map((metric) => {
               const statusKey = getStatusKeyForMetric(metric.key);
-              const isInteractive = Boolean(statusKey);
+              const isDetailMetric = metric.key === 'totalDepartments' || metric.key === 'totalEmployees';
+              const isInteractive = Boolean(statusKey || isDetailMetric);
 
               return (
                 <article
@@ -206,7 +343,9 @@ function AnalyticsPage() {
                     background: '#fff',
                     cursor: isInteractive ? 'pointer' : 'default',
                     transition: 'all 0.2s ease',
-                    boxShadow: isInteractive && expandedStatus === statusKey ? '0 8px 20px rgba(37, 99, 235, 0.08)' : 'none',
+                    boxShadow: isInteractive && (expandedStatus === statusKey || expandedMetric === metric.key)
+                      ? '0 8px 20px rgba(37, 99, 235, 0.08)'
+                      : 'none',
                   }}
                   onClick={isInteractive ? () => handleMetricClick(metric.key) : undefined}
                 >
@@ -218,6 +357,7 @@ function AnalyticsPage() {
           </section>
 
           {expandedStatus && renderProjectsList(expandedStatus)}
+          {expandedMetric && renderMetricDetailList(expandedMetric)}
 
           <section className="analytics-status-panel" style={{ padding: '22px', border: '1px solid #dbe3ef', borderRadius: '8px', background: '#f8fafc' }}>
             <h2 className="analytics-status-title" style={{ marginTop: 0, color: '#172033' }}>Project status</h2>
