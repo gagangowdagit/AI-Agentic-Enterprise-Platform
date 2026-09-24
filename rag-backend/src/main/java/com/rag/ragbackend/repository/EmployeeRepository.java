@@ -10,4 +10,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     List<Employee> findByProjectId(Integer projectId);
 
     List<Employee> findByDepartmentId(Integer departmentId);
+
+    long countByDepartmentId(Integer departmentId);
 }

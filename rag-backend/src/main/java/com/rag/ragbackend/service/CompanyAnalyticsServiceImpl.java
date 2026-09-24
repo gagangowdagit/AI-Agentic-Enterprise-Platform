@@ -1,10 +1,16 @@
 package com.rag.ragbackend.service;
 
 import com.rag.ragbackend.dto.CompanyAnalyticsResponse;
+import com.rag.ragbackend.dto.DepartmentAnalyticsResponse;
+import com.rag.ragbackend.dto.EmployeeAnalyticsResponse;
+import com.rag.ragbackend.entity.Department;
 import com.rag.ragbackend.repository.DepartmentRepository;
 import com.rag.ragbackend.repository.EmployeeRepository;
 import com.rag.ragbackend.repository.ProjectRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CompanyAnalyticsServiceImpl implements CompanyAnalyticsService {
@@ -38,5 +44,25 @@ public class CompanyAnalyticsServiceImpl implements CompanyAnalyticsService {
                 completedProjects,
                 inProgressProjects,
                 pendingProjects);
+    }
+
+    @Override
+    public List<DepartmentAnalyticsResponse> getDepartmentBreakdown() {
+        List<DepartmentAnalyticsResponse> breakdown = new ArrayList<>();
+
+        for (Department department : departmentRepository.findAll()) {
+            long projectCount = projectRepository.countByDepartmentId(department.getId());
+            long employeeCount = employeeRepository.countByDepartmentId(department.getId());
+            breakdown.add(DepartmentAnalyticsResponse.from(department, projectCount, employeeCount));
+        }
+
+        return breakdown;
+    }
+
+    @Override
+    public List<EmployeeAnalyticsResponse> getEmployeeBreakdown() {
+        return employeeRepository.findAll().stream()
+                .map(EmployeeAnalyticsResponse::from)
+                .toList();
     }
 }
