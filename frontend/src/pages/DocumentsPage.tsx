@@ -142,54 +142,24 @@ function DocumentsPage() {
   };
 
   return (
-    <div className="documents-page" style={{ padding: '20px' }}>
-      <div className="documents-header" style={{ marginBottom: '30px' }}>
-        <h1 style={{ marginBottom: '10px', color: '#172033' }}>Project Documents</h1>
-        <p style={{ color: '#64748b', margin: '0' }}>Manage documents for your selected project</p>
+    <div className="documents-page">
+      <div className="documents-header">
+        <h1>Project Documents</h1>
+        <p>Manage documents for your selected project</p>
       </div>
 
-      <div className="documents-project-selector" style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #dbe3ef' }}>
-        <label
-          style={{
-            display: 'block',
-            marginBottom: '12px',
-            fontWeight: '600',
-            color: '#172033',
-            fontSize: '14px',
-          }}
-        >
-          Select Project:
-        </label>
-        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+      <div className="documents-project-selector">
+        <label className="documents-project-selector-label">Select Project:</label>
+        <div className="documents-project-selector-list">
           {projects.length === 0 ? (
-            <p style={{ margin: 0, color: '#64748b' }}>No projects available</p>
+            <p className="documents-empty-projects">No projects available</p>
           ) : (
             projects.map((project) => (
               <button
                 key={project.id}
+                type="button"
+                className={selectedProjectId === String(project.id) ? 'documents-project-button active' : 'documents-project-button'}
                 onClick={() => setSelectedProjectId(String(project.id))}
-                style={{
-                  padding: '10px 16px',
-                  backgroundColor: selectedProjectId === String(project.id) ? '#334155' : '#1f2937',
-                  color: selectedProjectId === String(project.id) ? '#f8fafc' : '#dfe7f5',
-                  border: selectedProjectId === String(project.id) ? '1px solid #7dd3fc' : '1px solid #3b4a66',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: selectedProjectId === String(project.id) ? '700' : '500',
-                  boxShadow: selectedProjectId === String(project.id) ? '0 0 0 1px rgba(125, 211, 252, 0.35)' : 'none',
-                  transition: 'all 0.2s ease',
-                }}
-                onMouseEnter={(e) => {
-                  if (selectedProjectId !== String(project.id)) {
-                    e.currentTarget.style.backgroundColor = '#2a3748';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (selectedProjectId !== String(project.id)) {
-                    e.currentTarget.style.backgroundColor = '#1f2937';
-                  }
-                }}
               >
                 {project.name}
               </button>
@@ -198,173 +168,50 @@ function DocumentsPage() {
         </div>
       </div>
 
-      <button
-        onClick={handleUploadDocument}
-        style={{
-          padding: '10px 20px',
-          marginBottom: '20px',
-          backgroundColor: '#1f2937',
-          color: '#93c5fd',
-          border: '1px solid #3b4a66',
-          borderRadius: '4px',
-          cursor: 'pointer',
-          fontSize: '16px',
-          fontWeight: '500',
-          transition: 'background-color 0.3s',
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#2a3748')}
-        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1f2937')}
-      >
+      <button type="button" className="documents-upload-button" onClick={handleUploadDocument}>
         + Upload Document
       </button>
 
       {showUploadForm && (
-        <div
-          style={{
-            marginBottom: '30px',
-            padding: '30px',
-            border: '1px solid #475569',
-            borderRadius: '8px',
-            backgroundColor: '#111827',
-          }}
-        >
-          <h2 style={{ marginTop: '0', color: '#dbeafe', marginBottom: '20px' }}>Upload New Document</h2>
-          
-          <div style={{ marginBottom: '20px' }}>
-            <label
-              style={{
-                display: 'block',
-                marginBottom: '10px',
-                fontWeight: '500',
-                color: '#e2e8f0',
-              }}
-            >
-              Select File
-            </label>
+        <div className="documents-upload-form">
+          <h2>Upload New Document</h2>
+
+          <div className="documents-upload-field">
+            <label className="documents-upload-label">Select File</label>
             <input
               ref={fileInputRef}
               type="file"
+              className="documents-upload-input"
               onChange={handleFileSelect}
-              style={{
-                display: 'block',
-                marginBottom: '15px',
-                padding: '8px',
-                border: '1px solid #475569',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                backgroundColor: '#1f2937',
-                color: '#f8fafc',
-              }}
             />
           </div>
 
-          {selectedFile && (
-            <div
-              style={{
-                marginBottom: '20px',
-                padding: '15px',
-                backgroundColor: '#1f2937',
-                border: '1px solid #475569',
-                borderRadius: '4px',
-                color: '#e2e8f0',
-              }}
-            >
-              <strong>Selected File:</strong> {selectedFile.name}
-            </div>
-          )}
+          {selectedFile && <div className="documents-selected-file"><strong>Selected File:</strong> {selectedFile.name}</div>}
 
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button
-              onClick={handleUploadFile}
-              disabled={!selectedFile}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: selectedFile ? '#4CAF50' : '#ccc',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: selectedFile ? 'pointer' : 'not-allowed',
-                fontSize: '14px',
-                fontWeight: '500',
-                transition: 'background-color 0.3s',
-              }}
-              onMouseEnter={(e) => {
-                if (selectedFile) {
-                  e.currentTarget.style.backgroundColor = '#45a049';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (selectedFile) {
-                  e.currentTarget.style.backgroundColor = '#4CAF50';
-                }
-              }}
-            >
+          <div className="documents-upload-actions">
+            <button type="button" className="documents-primary-action" onClick={handleUploadFile} disabled={!selectedFile}>
               Upload
             </button>
-            <button
-              onClick={handleCancelUpload}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: '#f44336',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '500',
-                transition: 'background-color 0.3s',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#d32f2f')}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#f44336')}
-            >
+            <button type="button" className="documents-secondary-action" onClick={handleCancelUpload}>
               Cancel
             </button>
           </div>
         </div>
       )}
 
-      <div className="documents-list-panel" style={{ marginTop: '30px' }}>
-        <h2 style={{ marginBottom: '20px', color: '#172033' }}>Documents</h2>
-        <div
-          style={{
-            padding: '40px',
-            border: '1px dashed #94a3b8',
-            borderRadius: '8px',
-            backgroundColor: '#f8fafc',
-            textAlign: 'center',
-            minHeight: '300px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
+      <div className="documents-list-panel">
+        <h2>Documents</h2>
+        <div className="documents-table-shell">
           {isLoading ? (
-            <p style={{ color: '#999', fontSize: '16px' }}>Loading documents...</p>
+            <p className="documents-loading-text">Loading documents...</p>
           ) : documents.filter((doc) => String(doc.projectId) === selectedProjectId).length === 0 ? (
-            <>
-              <p style={{ color: '#64748b', fontSize: '18px', marginBottom: '10px' }}>
-                📁 No documents uploaded yet
-              </p>
-              <p style={{ color: '#94a3b8', fontSize: '14px', margin: '0' }}>
-                Documents for this project will appear here after upload
-              </p>
-            </>
+            <div className="documents-empty-state">
+              <p>📁 No documents uploaded yet</p>
+              <p>Documents for this project will appear here after upload</p>
+            </div>
           ) : (
-            <div style={{ width: '100%', textAlign: 'left' }}>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '2fr 100px 100px 120px 150px 160px',
-                  gap: '20px',
-                  marginBottom: '20px',
-                  paddingBottom: '15px',
-                  borderBottom: '1px solid #dbe3ef',
-                  fontWeight: '600',
-                  color: '#172033',
-                  fontSize: '14px',
-                }}
-              >
+            <div className="documents-table">
+              <div className="documents-table-header">
                 <div>Document Name</div>
                 <div>Type</div>
                 <div>Size</div>
@@ -375,59 +222,19 @@ function DocumentsPage() {
               {documents
                 .filter((doc) => String(doc.projectId) === selectedProjectId)
                 .map((doc) => (
-                  <div
-                    key={doc.id}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '2fr 100px 100px 120px 150px 160px',
-                      gap: '20px',
-                      padding: '12px 0',
-                      borderBottom: '1px solid #e2e8f0',
-                      alignItems: 'center',
-                      fontSize: '14px',
-                    }}
-                  >
-                    <div style={{ color: '#172033' }}>📄 {doc.fileName}</div>
-                    <div style={{ color: '#64748b', fontSize: '12px' }}>
-                      <span style={{ backgroundColor: '#1f2937', padding: '2px 6px', borderRadius: '3px', color: '#dbeafe', border: '1px solid #3b4a66' }}>
-                        {getFileExtension(doc.fileName)}
-                      </span>
+                  <div key={doc.id} className="documents-table-row">
+                    <div className="documents-file-name">📄 {doc.fileName}</div>
+                    <div className="documents-file-type">
+                      <span>{getFileExtension(doc.fileName)}</span>
                     </div>
-                    <div style={{ color: '#64748b', fontSize: '13px' }}>{formatFileSize(doc.fileSize)}</div>
-                    <div style={{ color: '#64748b', fontSize: '13px' }}>{doc.projectId}</div>
-                    <div style={{ color: '#64748b', fontSize: '13px' }}>{doc.uploadedAt}</div>
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                      <button
-                        onClick={() => handleDownloadDocument(doc.id)}
-                        style={{
-                          padding: '6px 10px',
-                          backgroundColor: '#4CAF50',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '12px',
-                          fontWeight: '500',
-                        }}
-                      >
+                    <div className="documents-file-meta">{formatFileSize(doc.fileSize)}</div>
+                    <div className="documents-file-meta">{doc.projectId}</div>
+                    <div className="documents-file-meta">{doc.uploadedAt}</div>
+                    <div className="documents-action-buttons">
+                      <button type="button" className="documents-download-button" onClick={() => handleDownloadDocument(doc.id)}>
                         Open/Download
                       </button>
-                      <button
-                        onClick={() => handleDeleteDocument(doc.id)}
-                        style={{
-                          padding: '6px 10px',
-                          backgroundColor: '#ff5252',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '12px',
-                          fontWeight: '500',
-                          transition: 'background-color 0.3s',
-                        }}
-                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#ff1744')}
-                        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#ff5252')}
-                      >
+                      <button type="button" className="documents-delete-button" onClick={() => handleDeleteDocument(doc.id)}>
                         Delete
                       </button>
                     </div>

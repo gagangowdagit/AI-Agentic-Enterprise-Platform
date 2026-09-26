@@ -259,6 +259,14 @@ function DepartmentsPage() {
                   departmentProjects.map((project) => {
                     const projectTeamMembers = projectTeamMap[project.id] ?? [];
                     const isSelectedProject = selectedProjectId === project.id;
+                    const hasLoadedProjectTeam = projectTeamMap[project.id] !== undefined;
+                    const teamButtonLabel = teamMembersLoading[project.id]
+                      ? 'Loading...'
+                      : expandedProjectId === project.id
+                        ? `Hide team (${projectTeamMembers.length})`
+                        : hasLoadedProjectTeam
+                          ? `${projectTeamMembers.length} team member${projectTeamMembers.length === 1 ? '' : 's'}`
+                          : 'View team members';
 
                     return (
                       <div key={project.id} className="department-project-card" style={{ border: '1px solid #d9e7d9', borderRadius: '8px', backgroundColor: '#fff', overflow: 'hidden' }}>
@@ -304,7 +312,7 @@ function DepartmentsPage() {
                               fontWeight: 600,
                             }}
                           >
-                            {teamMembersLoading[project.id] ? 'Loading...' : `${projectTeamMembers.length} team member${projectTeamMembers.length === 1 ? '' : 's'}`}
+                            {teamButtonLabel}
                           </button>
                         </div>
 

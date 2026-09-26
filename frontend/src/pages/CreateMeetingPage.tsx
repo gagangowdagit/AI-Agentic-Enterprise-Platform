@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createMeeting, getMeetingById, type AgendaItem, type CreateMeetingRequest, updateMeeting } from '../services/meetingApi';
 import { getProjects, type Project } from '../services/projectApi';
-import { getEmployees, type Employee } from '../services/departmentApi';
+import { getDepartments, getEmployees, type Department, type Employee } from '../services/departmentApi';
 
 interface MeetingFormState {
   title: string;
@@ -60,6 +60,7 @@ function CreateMeetingPage() {
   const isEditMode = Boolean(meetingId);
   const [formData, setFormData] = useState<MeetingFormState>(initialState);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedParticipantIds, setSelectedParticipantIds] = useState<number[]>([]);
   const [participantQuery, setParticipantQuery] = useState('');
@@ -71,9 +72,10 @@ function CreateMeetingPage() {
   useEffect(() => {
     const fetchDependencies = async () => {
       try {
-        const [projectData, employeeData] = await Promise.all([getProjects(), getEmployees()]);
+        const [projectData, employeeData, departmentData] = await Promise.all([getProjects(), getEmployees(), getDepartments()]);
         setProjects(projectData);
         setEmployees(employeeData);
+        setDepartments(departmentData);
 
         if (!isEditMode || !meetingId) {
           return;
@@ -113,6 +115,23 @@ function CreateMeetingPage() {
     });
   }, [employees, participantQuery]);
 
+  const employeesByDepartment = useMemo(() => {
+    const groupedEmployees = new Map<number, Employee[]>();
+
+    employees.forEach((employee) => {
+      const departmentId = employee.department?.id;
+      if (!departmentId) {
+        return;
+      }
+
+      const deptEmployees = groupedEmployees.get(departmentId) ?? [];
+      deptEmployees.push(employee);
+      groupedEmployees.set(departmentId, deptEmployees);
+    });
+
+    return groupedEmployees;
+  }, [employees]);
+
   const selectedParticipants = useMemo(
     () => employees.filter((employee) => selectedParticipantIds.includes(employee.id)),
     [employees, selectedParticipantIds],
@@ -130,6 +149,30 @@ function CreateMeetingPage() {
       }
 
       return [...current, employeeId];
+    });
+    setFieldErrors((current) => ({ ...current, participants: '' }));
+  };
+
+  const toggleDepartmentParticipants = (departmentId: number) => {
+    const deptEmployees = employeesByDepartment.get(departmentId) ?? [];
+
+    if (deptEmployees.length === 0) {
+      return;
+    }
+
+    const deptEmployeeIds = deptEmployees.map((employee) => employee.id);
+    const allSelected = deptEmployeeIds.every((employeeId) => selectedParticipantIds.includes(employeeId));
+
+    setSelectedParticipantIds((current) => {
+      const selectedSet = new Set(current);
+
+      if (allSelected) {
+        deptEmployeeIds.forEach((employeeId) => selectedSet.delete(employeeId));
+      } else {
+        deptEmployeeIds.forEach((employeeId) => selectedSet.add(employeeId));
+      }
+
+      return [...selectedSet];
     });
     setFieldErrors((current) => ({ ...current, participants: '' }));
   };
@@ -390,31 +433,62 @@ function CreateMeetingPage() {
 
             <div className="field-group full-width participant-field">
               <label>Participants</label>
-              <input
-                type="text"
-                value={participantQuery}
-                onChange={(event) => setParticipantQuery(event.target.value)}
-                placeholder="Search employees..."
-              />
 
-              <div className="participants-list">
-                {filteredEmployees.length === 0 ? (
-                  <span className="participant-empty">No employees found.</span>
-                ) : (
-                  filteredEmployees.map((employee) => {
-                    const isSelected = selectedParticipantIds.includes(employee.id);
-                    return (
-                      <button
-                        type="button"
-                        key={employee.id}
-                        className={isSelected ? 'participant-chip selected' : 'participant-chip'}
-                        onClick={() => toggleParticipant(employee.id)}
-                      >
-                        {employee.firstName} {employee.lastName}
-                      </button>
-                    );
-                  })
-                )}
+              <div className="participant-section">
+                <h3>Add by name</h3>
+                <input
+                  type="text"
+                  value={participantQuery}
+                  onChange={(event) => setParticipantQuery(event.target.value)}
+                  placeholder="Search employees..."
+                />
+
+                <div className="participants-list">
+                  {filteredEmployees.length === 0 ? (
+                    <span className="participant-empty">No employees found.</span>
+                  ) : (
+                    filteredEmployees.map((employee) => {
+                      const isSelected = selectedParticipantIds.includes(employee.id);
+                      return (
+                        <button
+                          type="button"
+                          key={employee.id}
+                          className={isSelected ? 'participant-chip selected' : 'participant-chip'}
+                          onClick={() => toggleParticipant(employee.id)}
+                        >
+                          {employee.firstName} {employee.lastName}
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+
+              <div className="participant-section">
+                <h3>Add by department</h3>
+                <div className="department-selector-list">
+                  {departments.length === 0 ? (
+                    <span className="participant-empty">No departments available.</span>
+                  ) : (
+                    departments.map((department) => {
+                      const deptEmployees = employeesByDepartment.get(department.id) ?? [];
+                      const selectedCount = deptEmployees.filter((employee) => selectedParticipantIds.includes(employee.id)).length;
+                      const isDepartmentSelected = deptEmployees.length > 0 && deptEmployees.every((employee) => selectedParticipantIds.includes(employee.id));
+
+                      return (
+                        <button
+                          key={department.id}
+                          type="button"
+                          className={isDepartmentSelected ? 'department-option selected' : 'department-option'}
+                          onClick={() => toggleDepartmentParticipants(department.id)}
+                        >
+                          <span>{department.name}</span>
+                          <small>{selectedCount}/{deptEmployees.length}</small>
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
               </div>
 
               <div className="selected-participants-wrap">

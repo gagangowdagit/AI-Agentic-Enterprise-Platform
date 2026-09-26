@@ -181,7 +181,6 @@ function AnalyticsPage() {
             type="button"
             className="analytics-project-hide-button"
             onClick={() => setExpandedMetric(null)}
-            style={{ border: '1px solid #3b4a66', background: '#1f2937', color: '#93c5fd', borderRadius: '6px', padding: '8px 12px', cursor: 'pointer' }}
           >
             Hide details
           </button>
@@ -212,7 +211,6 @@ function AnalyticsPage() {
                       type="button"
                       className="analytics-project-button"
                       onClick={() => navigate('/departments', { state: { analyticsFocus: 'totalDepartments' } })}
-                      style={{ border: '1px solid #3b4a66', borderRadius: '6px', background: '#1f2937', color: '#93c5fd', padding: '9px 14px', cursor: 'pointer', fontWeight: '600' }}
                     >
                       View more details
                     </button>
@@ -234,7 +232,6 @@ function AnalyticsPage() {
                     type="button"
                     className="analytics-project-button"
                     onClick={() => navigate('/departments', { state: { analyticsFocus: 'totalEmployees' } })}
-                    style={{ border: '1px solid #3b4a66', borderRadius: '6px', background: '#1f2937', color: '#93c5fd', padding: '9px 14px', cursor: 'pointer', fontWeight: '600' }}
                   >
                     View more details
                   </button>
@@ -272,7 +269,6 @@ function AnalyticsPage() {
             type="button"
             className="analytics-project-hide-button"
             onClick={() => setExpandedStatus(null)}
-            style={{ border: '1px solid #3b4a66', background: '#1f2937', color: '#93c5fd', borderRadius: '6px', padding: '8px 12px', cursor: 'pointer' }}
           >
             Hide list
           </button>
@@ -301,7 +297,6 @@ function AnalyticsPage() {
                   type="button"
                   className="analytics-project-button"
                   onClick={() => navigate(`/projects/${project.id}`)}
-                  style={{ border: '1px solid #3b4a66', borderRadius: '6px', background: '#1f2937', color: '#93c5fd', padding: '9px 14px', cursor: 'pointer', fontWeight: '600' }}
                 >
                   View more details
                 </button>

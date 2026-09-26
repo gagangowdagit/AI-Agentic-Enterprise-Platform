@@ -1,9 +1,105 @@
-import { useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getProjects, createProject } from '../services/projectApi';
 import type { Project, ProjectPriority } from '../services/projectApi';
 import { getDepartments } from '../services/departmentApi';
 import type { Department } from '../services/departmentApi';
+
+const healthFilterOptions = [
+  { key: 'all', label: 'All projects' },
+  { key: 'overdue', label: 'Overdue' },
+  { key: 'high-priority', label: 'High priority' },
+  { key: 'blocked', label: 'Blocked' },
+  { key: 'delayed', label: 'Delayed' },
+  { key: 'at-risk', label: 'At risk' },
+] as const;
+
+type ProjectHealthFilter = (typeof healthFilterOptions)[number]['key'];
+
+const parseProjectDate = (value?: string) => {
+  if (!value) {
+    return null;
+  }
+
+  const parsedDate = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return null;
+  }
+
+  return parsedDate;
+};
+
+const isProjectOverdue = (project: Project) => {
+  if (project.status.toLowerCase().includes('complete') || !project.endDate) {
+    return false;
+  }
+
+  const endDate = parseProjectDate(project.endDate);
+  if (!endDate) {
+    return false;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return endDate < today;
+};
+
+const isProjectDelayed = (project: Project) => {
+  if (project.status.toLowerCase().includes('complete') || !project.endDate) {
+    return false;
+  }
+
+  const endDate = parseProjectDate(project.endDate);
+  if (!endDate) {
+    return false;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const daysRemaining = Math.ceil((endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  return daysRemaining >= 0 && daysRemaining <= 7;
+};
+
+const isProjectBlocked = (project: Project) => {
+  const status = project.status.toLowerCase();
+  if (status.includes('complete')) {
+    return false;
+  }
+
+  if (status.includes('pending') || status.includes('blocked')) {
+    return true;
+  }
+
+  return project.priority === 'HIGH' && isProjectOverdue(project);
+};
+
+const getProjectHealth = (project: Project) => {
+  if (project.status.toLowerCase().includes('complete')) {
+    return { label: 'On track', tone: 'healthy', note: 'Completed or closed successfully' };
+  }
+
+  if (isProjectBlocked(project)) {
+    return { label: 'Blocked', tone: 'blocked', note: 'Requires immediate review' };
+  }
+
+  if (isProjectOverdue(project)) {
+    return { label: 'Overdue', tone: 'overdue', note: 'Past delivery date' };
+  }
+
+  if (isProjectDelayed(project)) {
+    return { label: 'Delayed', tone: 'delayed', note: 'Due within 7 days' };
+  }
+
+  if (project.priority === 'HIGH') {
+    return { label: 'High priority', tone: 'priority', note: 'Critical initiative' };
+  }
+
+  if (project.status.toLowerCase().includes('active')) {
+    return { label: 'On track', tone: 'healthy', note: 'Running as planned' };
+  }
+
+  return { label: 'At risk', tone: 'risk', note: 'Needs attention' };
+};
 
 interface FormData {
   name: string;
@@ -31,6 +127,8 @@ function ProjectsPage() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedHealthFilter, setSelectedHealthFilter] = useState<ProjectHealthFilter>('all');
 
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -164,6 +262,68 @@ function ProjectsPage() {
     if (normalizedPriority === 'medium') return 'project-priority-medium';
     return 'project-priority-low';
   };
+
+  const projectHealthSummary = useMemo(() => {
+    const summary = {
+      total: projects.length,
+      overdue: 0,
+      highPriority: 0,
+      blocked: 0,
+      delayed: 0,
+      atRisk: 0,
+    };
+
+    projects.forEach((project) => {
+      if (isProjectOverdue(project)) summary.overdue += 1;
+      if (project.priority === 'HIGH') summary.highPriority += 1;
+      if (isProjectBlocked(project)) summary.blocked += 1;
+      if (isProjectDelayed(project)) summary.delayed += 1;
+      if (getProjectHealth(project).label === 'At risk') summary.atRisk += 1;
+    });
+
+    return summary;
+  }, [projects]);
+
+  const visibleProjects = useMemo(() => {
+    const searchValue = searchTerm.trim().toLowerCase();
+
+    return projects.filter((project) => {
+      const matchesSearch = !searchValue
+        || project.name.toLowerCase().includes(searchValue)
+        || project.description?.toLowerCase().includes(searchValue)
+        || project.department?.name.toLowerCase().includes(searchValue);
+
+      if (!matchesSearch) {
+        return false;
+      }
+
+      if (selectedHealthFilter === 'all') {
+        return true;
+      }
+
+      if (selectedHealthFilter === 'overdue') {
+        return isProjectOverdue(project);
+      }
+
+      if (selectedHealthFilter === 'high-priority') {
+        return project.priority === 'HIGH';
+      }
+
+      if (selectedHealthFilter === 'blocked') {
+        return isProjectBlocked(project);
+      }
+
+      if (selectedHealthFilter === 'delayed') {
+        return isProjectDelayed(project);
+      }
+
+      if (selectedHealthFilter === 'at-risk') {
+        return getProjectHealth(project).label === 'At risk';
+      }
+
+      return true;
+    });
+  }, [projects, searchTerm, selectedHealthFilter]);
 
   return (
     <main className="project-page">
@@ -320,48 +480,125 @@ function ProjectsPage() {
         </div>
       )}
 
+      {!loading && !error && projects.length > 0 && (
+        <section className="project-health-panel" aria-label="Project health overview">
+          <div className="project-health-header">
+            <div>
+              <p className="section-kicker">Project health</p>
+              <h2>Portfolio overview</h2>
+            </div>
+            <div className="project-search-wrap">
+              <label htmlFor="project-search" className="sr-only">Search projects</label>
+              <input
+                id="project-search"
+                type="search"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Search projects, teams, or owners"
+              />
+            </div>
+          </div>
+
+          <div className="project-health-summary-grid">
+            <div className="project-health-metric">
+              <span>Total</span>
+              <strong>{projectHealthSummary.total}</strong>
+            </div>
+            <div className="project-health-metric project-health-metric-overdue">
+              <span>Overdue</span>
+              <strong>{projectHealthSummary.overdue}</strong>
+            </div>
+            <div className="project-health-metric project-health-metric-priority">
+              <span>High priority</span>
+              <strong>{projectHealthSummary.highPriority}</strong>
+            </div>
+            <div className="project-health-metric project-health-metric-blocked">
+              <span>Blocked</span>
+              <strong>{projectHealthSummary.blocked}</strong>
+            </div>
+            <div className="project-health-metric project-health-metric-delayed">
+              <span>Delayed</span>
+              <strong>{projectHealthSummary.delayed}</strong>
+            </div>
+            <div className="project-health-metric project-health-metric-risk">
+              <span>At risk</span>
+              <strong>{projectHealthSummary.atRisk}</strong>
+            </div>
+          </div>
+
+          <div className="project-health-filters" aria-label="Project health filters">
+            {healthFilterOptions.map((filterOption) => (
+              <button
+                key={filterOption.key}
+                type="button"
+                className={selectedHealthFilter === filterOption.key ? 'project-health-filter active' : 'project-health-filter'}
+                onClick={() => setSelectedHealthFilter(filterOption.key)}
+              >
+                {filterOption.label}
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {!loading && !error && visibleProjects.length === 0 && (
+        <div className="project-empty-state project-empty-state-search">
+          <h2>No matching projects</h2>
+          <p>Try another keyword or switch the project health filter.</p>
+        </div>
+      )}
+
       <div className="project-card-grid">
-        {projects.map((project) => (
-          <article
-            key={project.id}
-            className="project-card"
-            onClick={() => handleProjectClick(project)}
-            onKeyDown={(event) => handleProjectKeyDown(event, project)}
-            role="button"
-            tabIndex={0}
-          >
-            <div className="project-card-header">
-              <div>
-                <p className="project-card-id">Project {project.id}</p>
-                <h3>{project.name}</h3>
+        {visibleProjects.map((project) => {
+          const health = getProjectHealth(project);
+
+          return (
+            <article
+              key={project.id}
+              className="project-card"
+              onClick={() => handleProjectClick(project)}
+              onKeyDown={(event) => handleProjectKeyDown(event, project)}
+              role="button"
+              tabIndex={0}
+            >
+              <div className="project-card-header">
+                <div>
+                  <p className="project-card-id">Project {project.id}</p>
+                  <h3>{project.name}</h3>
+                </div>
+                <span className={`project-badge ${getStatusClass(project.status)}`}>{project.status}</span>
               </div>
-              <span className={`project-badge ${getStatusClass(project.status)}`}>{project.status}</span>
-            </div>
 
-            <div className="project-card-meta">
-              <span className={`project-priority ${getPriorityClass(project.priority)}`}>{project.priority}</span>
-              <span>{project.department?.name || 'No department'}</span>
-            </div>
-
-            {project.description && <p className="project-card-description">{project.description}</p>}
-
-            <div className="project-card-details">
-              <div>
-                <span>Start</span>
-                <strong>{formatDate(project.startDate)}</strong>
+              <div className="project-card-meta">
+                <span className={`project-priority ${getPriorityClass(project.priority)}`}>{project.priority}</span>
+                <span>{project.department?.name || 'No department'}</span>
               </div>
-              <div>
-                <span>End</span>
-                <strong>{formatDate(project.endDate)}</strong>
-              </div>
-            </div>
 
-            <div className="project-card-footer">
-              <span>View details</span>
-              <span aria-hidden="true">→</span>
-            </div>
-          </article>
-        ))}
+              <div className="project-health-row">
+                <span className={`project-health-badge project-health-badge-${health.tone}`}>{health.label}</span>
+                <span className="project-health-note">{health.note}</span>
+              </div>
+
+              {project.description && <p className="project-card-description">{project.description}</p>}
+
+              <div className="project-card-details">
+                <div>
+                  <span>Start</span>
+                  <strong>{formatDate(project.startDate)}</strong>
+                </div>
+                <div>
+                  <span>End</span>
+                  <strong>{formatDate(project.endDate)}</strong>
+                </div>
+              </div>
+
+              <div className="project-card-footer">
+                <span>View details</span>
+                <span aria-hidden="true">→</span>
+              </div>
+            </article>
+          );
+        })}
       </div>
     </main>
   );

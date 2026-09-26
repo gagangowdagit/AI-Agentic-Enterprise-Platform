@@ -266,10 +266,10 @@ function MeetingDetailsPage() {
           <div className="field-group full-width">
             <label>Agenda</label>
             {meeting.agendaItems && meeting.agendaItems.length > 0 ? (
-              <ol style={{ margin: '0', paddingLeft: '20px', display: 'grid', gap: '8px', color: '#172033' }}>
+              <ol className="meeting-agenda-list">
                 {meeting.agendaItems.map((item, index) => (
                   <li key={`${item.id ?? index}-${item.title}`}>
-                    <span style={{ fontWeight: 600 }}>{String(index + 1).padStart(2, '0')}</span> {item.title}
+                    <span className="meeting-agenda-index">{String(index + 1).padStart(2, '0')}</span> {item.title}
                   </li>
                 ))}
               </ol>
@@ -281,12 +281,12 @@ function MeetingDetailsPage() {
           <div className="field-group full-width">
             <label>Participants ({meeting.participants?.length ?? meeting.participantIds?.length ?? 0})</label>
             {meeting.participants && meeting.participants.length > 0 ? (
-              <div style={{ display: 'grid', gap: '10px' }}>
+              <div className="meeting-participants-list">
                 {meeting.participants.map((participant) => (
-                  <div key={participant.id} style={{ border: '1px solid #dbe3ef', borderRadius: '12px', padding: '12px 14px', background: '#f8fafc' }}>
+                  <div key={participant.id} className="meeting-participant-item">
                     <strong>{participant.firstName} {participant.lastName}</strong>
-                    <div style={{ color: '#475569', fontSize: '14px', marginTop: '4px' }}>{participant.role || 'Team Member'}</div>
-                    <div style={{ color: '#475569', fontSize: '14px' }}>{participant.email}</div>
+                    <div className="meeting-participant-meta meeting-participant-role">{participant.role || 'Team Member'}</div>
+                    <div className="meeting-participant-meta">{participant.email}</div>
                   </div>
                 ))}
               </div>
@@ -322,9 +322,9 @@ function MeetingDetailsPage() {
 
           <div className="field-group full-width">
             <label>AI Meeting Intelligence</label>
-            <div style={{ border: '1px solid #dbe3ef', borderRadius: '12px', padding: '16px', background: '#f8fafc', display: 'grid', gap: '16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#475569', fontWeight: 700 }}>
+            <div className="meeting-intelligence-panel">
+              <div className="meeting-intelligence-header">
+                <span className="meeting-intelligence-label">
                   Stored transcript & summary
                 </span>
                 <button type="button" className="secondary-button" onClick={handleRegenerateSummary}>
@@ -333,62 +333,62 @@ function MeetingDetailsPage() {
               </div>
 
               <div>
-                <strong style={{ display: 'block', marginBottom: '8px' }}>Transcript</strong>
+                <strong className="meeting-ai-subtitle">Transcript</strong>
                 {meeting.transcriptText ? (
                   <>
-                    <div style={{ marginBottom: '8px', color: '#334155', fontSize: '13px' }}>
+                    <div className="meeting-transcript-meta">
                       {meeting.transcriptFileName || 'meeting-transcript.txt'}
                       {meeting.transcriptUploadedAt ? ` • ${new Date(meeting.transcriptUploadedAt).toLocaleString()}` : ''}
                     </div>
-                    <div style={{ whiteSpace: 'pre-wrap', color: '#172033', background: '#fff', borderRadius: '8px', padding: '12px', border: '1px solid #e2e8f0' }}>
+                    <div className="meeting-transcript-box">
                       {meeting.transcriptText}
                     </div>
                   </>
                 ) : (
-                  <div style={{ color: '#475569' }}>No transcript has been uploaded for this meeting yet.</div>
+                  <div className="meeting-empty-inline">No transcript has been uploaded for this meeting yet.</div>
                 )}
               </div>
 
               <div>
-                <strong style={{ display: 'block', marginBottom: '8px' }}>AI summary</strong>
+                <strong className="meeting-ai-subtitle">AI summary</strong>
                 {meeting.aiSummary ? (
-                  <div style={{ whiteSpace: 'pre-wrap', color: '#172033', background: '#fff', borderRadius: '8px', padding: '12px', border: '1px solid #e2e8f0' }}>
+                  <div className="meeting-ai-output">
                     {meeting.aiSummary}
                   </div>
                 ) : (
-                  <div style={{ color: '#475569' }}>Upload a transcript to generate a stored summary.</div>
+                  <div className="meeting-empty-inline">Upload a transcript to generate a stored summary.</div>
                 )}
               </div>
 
-              <div style={{ display: 'grid', gap: '12px' }}>
+              <div className="meeting-ai-groups">
                 <div>
-                  <strong style={{ display: 'block', marginBottom: '8px' }}>Action items</strong>
+                  <strong className="meeting-ai-subtitle">Action items</strong>
                   {meeting.aiActionItems && meeting.aiActionItems.length > 0 ? (
-                    <ul style={{ margin: 0, paddingLeft: '18px', color: '#172033', display: 'grid', gap: '6px' }}>
+                    <ul className="meeting-ai-list">
                       {meeting.aiActionItems.map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}
                     </ul>
                   ) : (
-                    <div style={{ color: '#475569' }}>No action items extracted yet.</div>
+                    <div className="meeting-empty-inline">No action items extracted yet.</div>
                   )}
                 </div>
 
                 <div>
-                  <strong style={{ display: 'block', marginBottom: '8px' }}>Decisions</strong>
+                  <strong className="meeting-ai-subtitle">Decisions</strong>
                   {meeting.aiDecisions && meeting.aiDecisions.length > 0 ? (
-                    <ul style={{ margin: 0, paddingLeft: '18px', color: '#172033', display: 'grid', gap: '6px' }}>
+                    <ul className="meeting-ai-list">
                       {meeting.aiDecisions.map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}
                     </ul>
                   ) : (
-                    <div style={{ color: '#475569' }}>No decisions captured yet.</div>
+                    <div className="meeting-empty-inline">No decisions captured yet.</div>
                   )}
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                <div style={{ color: '#64748b', fontSize: '13px' }}>
+              <div className="meeting-intelligence-footer">
+                <div className="meeting-intelligence-note">
                   Note: transcript summaries are stored locally and are not yet wired into the broader Nova/RAG system.
                 </div>
-                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <div className="meeting-intelligence-actions">
                   <label className="secondary-button" style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
                     {isUploadingTranscript ? 'Uploading...' : 'Upload transcript'}
                     <input ref={fileInputRef} type="file" accept=".txt,.md,.csv,.json" onChange={handleTranscriptUpload} style={{ display: 'none' }} />

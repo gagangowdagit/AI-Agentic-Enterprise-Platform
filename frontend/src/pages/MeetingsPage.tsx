@@ -33,14 +33,35 @@ function MeetingsPage() {
   const [statusFilter, setStatusFilter] = useState<'All Statuses' | MeetingStatus>('All Statuses');
   const [projectFilter, setProjectFilter] = useState('All Projects');
   const [dateFilter, setDateFilter] = useState('');
+  const [projectLookup, setProjectLookup] = useState<Map<string, number>>(new Map());
+  const [selectedOverviewStatus, setSelectedOverviewStatus] = useState<'total' | 'upcoming' | 'completed' | null>(null);
 
   useEffect(() => {
     const fetchMeetings = async () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await getMeetings();
+
+        const [data, projectData] = await Promise.all([
+          getMeetings(),
+          fetch('http://localhost:8080/api/v1/projects', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+          }).then(async (response) => {
+            if (!response.ok) {
+              throw new Error('Failed to fetch projects');
+            }
+            return response.json();
+          }),
+        ]);
+
         setMeetings(data);
+
+        const lookup = new Map<string, number>();
+        projectData.forEach((project: { id: number; name: string }) => {
+          lookup.set(project.name, Number(project.id));
+        });
+        setProjectLookup(lookup);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unable to load meetings.');
       } finally {
@@ -81,6 +102,39 @@ function MeetingsPage() {
 
     return { total, upcoming, today, completed };
   }, [meetings]);
+
+  const statusOverviewData = useMemo(() => {
+    const totalProjects = Array.from(new Map(meetings.map((meeting) => [meeting.projectName, meeting])).values());
+    const upcomingProjects = meetings.filter((meeting) => meeting.status === 'Scheduled' || meeting.status === 'In Progress');
+    const completedProjects = meetings.filter((meeting) => meeting.status === 'Completed');
+
+    return {
+      total: totalProjects,
+      upcoming: upcomingProjects,
+      completed: completedProjects,
+    };
+  }, [meetings]);
+
+  const selectedStatusProjects = useMemo(() => {
+    const statusEntries = selectedOverviewStatus ? statusOverviewData[selectedOverviewStatus] ?? [] : [];
+    const uniqueByProject = new Map<string, { projectName: string; meetingCount: number; projectId?: number }>();
+
+    statusEntries.forEach((meeting) => {
+      const existing = uniqueByProject.get(meeting.projectName);
+      if (existing) {
+        existing.meetingCount += 1;
+        return;
+      }
+
+      uniqueByProject.set(meeting.projectName, {
+        projectName: meeting.projectName,
+        meetingCount: 1,
+        projectId: projectLookup.get(meeting.projectName),
+      });
+    });
+
+    return Array.from(uniqueByProject.values());
+  }, [projectLookup, selectedOverviewStatus, statusOverviewData]);
 
   const upcomingMeetings = filteredMeetings.filter((meeting) => meeting.status !== 'Completed' && meeting.status !== 'Cancelled');
   const todayMeetings = filteredMeetings.filter((meeting) => isSameDay(meeting.meetingDate));
@@ -129,23 +183,80 @@ function MeetingsPage() {
       {!loading && !error && (
         <>
           <section className="overview-grid" aria-label="Meeting summary overview">
-            <article className="overview-card">
-              <span>Total Meetings</span>
-              <strong>{stats.total}</strong>
-            </article>
-            <article className="overview-card">
-              <span>Upcoming</span>
-              <strong>{stats.upcoming}</strong>
-            </article>
-            <article className="overview-card">
-              <span>Today</span>
-              <strong>{stats.today}</strong>
-            </article>
-            <article className="overview-card">
-              <span>Completed</span>
-              <strong>{stats.completed}</strong>
-            </article>
+            {[
+              { key: 'total', label: 'Total Meetings', value: stats.total },
+              { key: 'upcoming', label: 'Upcoming', value: stats.upcoming },
+              { key: 'today', label: 'Today', value: stats.today },
+              { key: 'completed', label: 'Completed', value: stats.completed },
+            ].map((card) => (
+              <article
+                key={card.key}
+                className={card.key === 'today' ? 'overview-card non-status-card' : 'overview-card'}
+                onClick={() => {
+                  if (card.key === 'today') {
+                    return;
+                  }
+
+                  setSelectedOverviewStatus((current) => current === card.key ? null : card.key as 'total' | 'upcoming' | 'completed');
+                }}
+                role={card.key === 'today' ? undefined : 'button'}
+                tabIndex={card.key === 'today' ? -1 : 0}
+                onKeyDown={(event) => {
+                  if (card.key === 'today') {
+                    return;
+                  }
+
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    setSelectedOverviewStatus((current) => current === card.key ? null : card.key as 'total' | 'upcoming' | 'completed');
+                  }
+                }}
+              >
+                <span>{card.label}</span>
+                <strong>{card.value}</strong>
+              </article>
+            ))}
           </section>
+
+          {selectedOverviewStatus && (
+            <section className="status-project-list" aria-live="polite">
+              <div className="status-project-list-header">
+                <h2>
+                  {selectedOverviewStatus === 'total' ? 'Projects in all meetings' : selectedOverviewStatus === 'upcoming' ? 'Projects with upcoming meetings' : 'Projects with completed meetings'}
+                </h2>
+                <button type="button" className="secondary-button" onClick={() => setSelectedOverviewStatus(null)}>Hide list</button>
+              </div>
+
+              {selectedStatusProjects.length === 0 ? (
+                <div className="empty-state">No projects found for this status.</div>
+              ) : (
+                <div className="status-project-items">
+                  {selectedStatusProjects.map((project) => (
+                    <div key={project.projectName} className="status-project-item">
+                      <div>
+                        <h3>{project.projectName}</h3>
+                        <p>{project.meetingCount} meeting{project.meetingCount > 1 ? 's' : ''}</p>
+                      </div>
+                      <button
+                        type="button"
+                        className="primary-button"
+                        onClick={() => {
+                          if (project.projectId) {
+                            navigate(`/projects/${project.projectId}`);
+                            return;
+                          }
+
+                          navigate('/projects');
+                        }}
+                      >
+                        View more
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
 
           <section className="filters-panel" aria-label="Meeting filters">
             <div className="field-group field-search">
