@@ -59,8 +59,11 @@ public class JavaSimilaritySearchService implements SimilaritySearchService {
             }
 
             List<Double> embedding = parseEmbedding(storedEmbedding.getEmbedding());
+            if (embedding.isEmpty()) {
+                continue;
+            }
             if (embedding.size() != queryEmbedding.size()) {
-                throw new IllegalArgumentException("Embedding dimension does not match the query dimension.");
+                continue;
             }
 
             double embeddingMagnitude = magnitude(embedding);
@@ -91,25 +94,26 @@ public class JavaSimilaritySearchService implements SimilaritySearchService {
     }
 
     private List<Double> parseEmbedding(String serializedEmbedding) {
+        if (serializedEmbedding == null || serializedEmbedding.isBlank()) {
+            return List.of();
+        }
+
         try {
             JsonNode values = objectMapper.readTree(serializedEmbedding);
             if (values == null || !values.isArray()) {
-                throw new IllegalArgumentException("Stored embedding must be a JSON array.");
+                return List.of();
             }
 
             List<Double> embedding = new ArrayList<>(values.size());
             for (JsonNode value : values) {
                 if (!value.isNumber()) {
-                    throw new IllegalArgumentException("Stored embedding contains a non-numeric value.");
+                    return List.of();
                 }
                 embedding.add(value.doubleValue());
             }
             return embedding;
         } catch (Exception exception) {
-            if (exception instanceof IllegalArgumentException illegalArgumentException) {
-                throw illegalArgumentException;
-            }
-            throw new IllegalArgumentException("Stored embedding is not valid JSON.", exception);
+            return List.of();
         }
     }
 

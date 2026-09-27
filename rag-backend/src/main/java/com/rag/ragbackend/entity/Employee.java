@@ -22,6 +22,8 @@ public class Employee {
 
     private String email;
 
+    private String password;
+
     private String role;
 
     @ManyToOne
@@ -71,6 +73,14 @@ public class Employee {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getRole() {

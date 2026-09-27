@@ -102,6 +102,6 @@ INSERT INTO document_chunks (id, document_id, content, chunk_index) VALUES
     (3, 5, 'Budget Control Automation scope: automate approval routing, capture variance thresholds, and produce monthly spend insight reports.', 1);
 
 INSERT INTO chunk_embeddings (id, chunk_id, embedding) VALUES
-    (1, 1, 'seeded-embedding-northstar-commerce'),
-    (2, 2, 'seeded-embedding-customer-insights'),
-    (3, 3, 'seeded-embedding-budget-control');
+    (1, 1, '[0.16, -0.32, 0.58, 0.74, -0.21, 0.45, -0.11, 0.63]'),
+    (2, 2, '[0.21, 0.11, -0.48, 0.67, 0.39, -0.18, 0.52, -0.07]'),
+    (3, 3, '[-0.17, 0.42, 0.19, -0.53, 0.67, 0.11, -0.24, 0.48]');

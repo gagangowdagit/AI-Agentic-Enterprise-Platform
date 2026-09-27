@@ -1,11 +1,16 @@
 package com.rag.ragbackend.processing;
 
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
+@Primary
 public class DeterministicEmbeddingService implements EmbeddingService {
 
     private static final int VECTOR_DIMENSION = 8;

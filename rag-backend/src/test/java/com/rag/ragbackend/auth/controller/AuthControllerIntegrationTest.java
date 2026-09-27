@@ -2,8 +2,8 @@ package com.rag.ragbackend.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rag.ragbackend.auth.dto.LoginRequest;
-import com.rag.ragbackend.entity.User;
-import com.rag.ragbackend.repository.UserRepository;
+import com.rag.ragbackend.entity.Employee;
+import com.rag.ragbackend.repository.EmployeeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ class AuthControllerIntegrationTest {
     private WebApplicationContext webApplicationContext;
 
     @Autowired
-    private UserRepository userRepository;
+    private EmployeeRepository employeeRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -35,22 +35,24 @@ class AuthControllerIntegrationTest {
 
     private static final String TEST_EMAIL = "test.user@example.com";
     private static final String TEST_PASSWORD = "password123";
-    private static final String TEST_NAME = "Test User";
+    private static final String TEST_ROLE = "MANAGER";
 
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         objectMapper = new ObjectMapper();
 
-        // Clear existing test user
-        userRepository.findByEmail(TEST_EMAIL).ifPresent(userRepository::delete);
+        employeeRepository.findAll().stream()
+                .filter(employee -> TEST_EMAIL.equalsIgnoreCase(employee.getEmail()))
+                .forEach(employeeRepository::delete);
 
-        // Create a test user with encoded password
-        User testUser = new User();
-        testUser.setName(TEST_NAME);
-        testUser.setEmail(TEST_EMAIL);
-        testUser.setPassword(passwordEncoder.encode(TEST_PASSWORD));
-        userRepository.save(testUser);
+        Employee employee = new Employee();
+        employee.setFirstName("Test");
+        employee.setLastName("Employee");
+        employee.setEmail(TEST_EMAIL);
+        employee.setPassword(passwordEncoder.encode(TEST_PASSWORD));
+        employee.setRole(TEST_ROLE);
+        employeeRepository.save(employee);
     }
 
     @Test
@@ -62,11 +64,26 @@ class AuthControllerIntegrationTest {
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").isNotEmpty())
-                .andExpect(jsonPath("$.name").value(TEST_NAME))
+                .andExpect(jsonPath("$.name").value("Test Employee"))
                 .andExpect(jsonPath("$.email").value(TEST_EMAIL))
+                .andExpect(jsonPath("$.role").value(TEST_ROLE))
                 .andExpect(jsonPath("$.message").value("Login successful"))
                 .andExpect(jsonPath("$.password").doesNotExist());
     }
+
+    @Test
+    void loginWithEmployeeCredentialsReturnsSuccess() throws Exception {
+        LoginRequest request = new LoginRequest(TEST_EMAIL, TEST_PASSWORD);
+
+        mockMvc.perform(post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value(TEST_EMAIL))
+                .andExpect(jsonPath("$.role").value(TEST_ROLE))
+                .andExpect(jsonPath("$.name").value("Test Employee"));
+    }
+
 
     @Test
     void loginWithWrongPasswordReturnsUnauthorized() throws Exception {

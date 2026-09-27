@@ -36,6 +36,25 @@ class JavaSimilaritySearchServiceTest {
     }
 
     @Test
+    void searchSkipsLegacyNonJsonEmbeddingsAndStillReturnsValidMatches() {
+        ChunkEmbeddingRepository embeddingRepository = mock(ChunkEmbeddingRepository.class);
+        DocumentChunkRepository chunkRepository = mock(DocumentChunkRepository.class);
+        JavaSimilaritySearchService searchService = new JavaSimilaritySearchService(
+            embeddingRepository, chunkRepository);
+
+        ChunkEmbedding legacy = new ChunkEmbedding(10L, "seeded-embedding-northstar-commerce");
+        ChunkEmbedding valid = new ChunkEmbedding(20L, "[1.0, 0.0]");
+        when(embeddingRepository.findAll()).thenReturn(List.of(legacy, valid));
+
+        DocumentChunk validChunk = chunk(20L, "Valid match");
+        when(chunkRepository.findAllById(List.of(20L))).thenReturn(List.of(validChunk));
+
+        List<DocumentChunk> results = searchService.search(List.of(1.0, 0.0), 2);
+
+        assertEquals(List.of(validChunk), results);
+    }
+
+    @Test
     void searchReturnsNoResultsForInvalidTopKOrZeroQuery() {
         JavaSimilaritySearchService searchService = new JavaSimilaritySearchService(
             mock(ChunkEmbeddingRepository.class), mock(DocumentChunkRepository.class));

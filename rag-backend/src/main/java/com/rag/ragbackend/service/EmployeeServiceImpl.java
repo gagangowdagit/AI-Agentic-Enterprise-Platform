@@ -7,6 +7,7 @@ import com.rag.ragbackend.entity.Employee;
 import com.rag.ragbackend.repository.DepartmentRepository;
 import com.rag.ragbackend.repository.EmployeeRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,10 +19,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository, DepartmentRepository departmentRepository) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository,
+                              DepartmentRepository departmentRepository,
+                              PasswordEncoder passwordEncoder) {
         this.employeeRepository = employeeRepository;
         this.departmentRepository = departmentRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -46,6 +51,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 request.role().trim(),
                 department,
                 null);
+        employee.setPassword(passwordEncoder.encode(request.password().trim()));
 
         return EmployeeTeamResponse.from(employeeRepository.save(employee));
     }

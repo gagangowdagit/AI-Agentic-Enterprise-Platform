@@ -146,7 +146,11 @@ public class ProcessingServiceImpl implements ProcessingService {
     }
 
     private String serializeEmbedding(List<Double> embedding) {
-        return embedding.stream().map(String::valueOf).collect(java.util.stream.Collectors.joining(",", "[", "]"));
+        try {
+            return new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(embedding);
+        } catch (Exception exception) {
+            throw new IllegalStateException("Embedding could not be serialized to JSON.", exception);
+        }
     }
 
     @Override
