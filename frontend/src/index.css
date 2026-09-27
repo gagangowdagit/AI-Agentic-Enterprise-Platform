@@ -1591,7 +1591,7 @@ body {
 
 .home-section-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
 }
 
@@ -1605,6 +1605,20 @@ body {
   color: #172033;
   text-decoration: none;
   transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+
+.home-section-card-wide {
+  grid-column: span 2;
+}
+
+@media (max-width: 820px) {
+  .home-section-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-section-card-wide {
+    grid-column: auto;
+  }
 }
 
 .home-section-card:hover,

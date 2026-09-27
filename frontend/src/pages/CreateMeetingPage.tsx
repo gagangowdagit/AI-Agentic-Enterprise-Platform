@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { createMeeting, getMeetingById, type AgendaItem, type CreateMeetingRequest, updateMeeting } from '../services/meetingApi';
 import { getProjects, type Project } from '../services/projectApi';
 import { getDepartments, getEmployees, type Department, type Employee } from '../services/departmentApi';
+import { canEdit } from '../utils/roles';
 
 interface MeetingFormState {
   title: string;
@@ -56,6 +57,7 @@ const formatTimeForComparison = (time: string) => {
 
 function CreateMeetingPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { meetingId } = useParams<{ meetingId: string }>();
   const isEditMode = Boolean(meetingId);
   const [formData, setFormData] = useState<MeetingFormState>(initialState);
@@ -68,6 +70,14 @@ function CreateMeetingPage() {
   const [creating, setCreating] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const currentUser = JSON.parse(localStorage.getItem('rag-auth-user') ?? 'null') as { role?: string } | null;
+  const canManageMeetings = canEdit(currentUser?.role);
+
+  useEffect(() => {
+    if (!canManageMeetings && (isEditMode || location.pathname.endsWith('/create') || location.pathname.includes('/edit'))) {
+      navigate('/meetings', { replace: true });
+    }
+  }, [canManageMeetings, isEditMode, navigate]);
 
   useEffect(() => {
     const fetchDependencies = async () => {

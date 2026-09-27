@@ -19,6 +19,7 @@ function LoginPage() {
       localStorage.setItem('rag-auth-user', JSON.stringify({
         name: result.name,
         email: result.email,
+        role: result.role ?? 'EMPLOYEE',
       }));
       setMessage(`Login successful! Welcome, ${result.name}`);
       setEmail('');

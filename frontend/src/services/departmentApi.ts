@@ -24,6 +24,7 @@ export interface CreateEmployeeRequest {
   firstName: string;
   lastName: string;
   email: string;
+  password: string;
   role: string;
   departmentId: number;
 }

@@ -4,6 +4,7 @@ import { getProjects, createProject } from '../services/projectApi';
 import type { Project, ProjectPriority } from '../services/projectApi';
 import { getDepartments } from '../services/departmentApi';
 import type { Department } from '../services/departmentApi';
+import { canEdit } from '../utils/roles';
 
 const healthFilterOptions = [
   { key: 'all', label: 'All projects' },
@@ -132,6 +133,8 @@ function ProjectsPage() {
 
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState<FormData>(initialFormData);
+  const currentUser = JSON.parse(localStorage.getItem('rag-auth-user') ?? 'null') as { role?: string } | null;
+  const canManageProjects = canEdit(currentUser?.role);
   const [submittedData, setSubmittedData] = useState<Project | null>(null);
   const [createLoading, setCreateLoading] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
@@ -355,7 +358,7 @@ function ProjectsPage() {
         </div>
       )}
 
-      {showForm && (
+      {canManageProjects && showForm && (
         <section className="project-form-card">
           <div className="project-form-header">
             <div>

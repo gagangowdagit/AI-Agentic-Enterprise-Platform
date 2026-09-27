@@ -13,6 +13,7 @@ import { getProjectInsights } from '../services/projectInsightsApi';
 import type { ProjectInsights } from '../services/projectInsightsApi';
 import { addProjectTeamMember, getAvailableProjectEmployees, getProjectTeam, removeProjectTeamMember } from '../services/teamApi';
 import type { TeamMember } from '../services/teamApi';
+import { canEdit } from '../utils/roles';
 
 const sections = ['Overview', 'Tasks', 'Timeline', 'Team', 'Documents', 'AI Knowledge', 'AI Insights'] as const;
 
@@ -42,6 +43,8 @@ function ProjectDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletingProject, setDeletingProject] = useState(false);
+  const currentUser = JSON.parse(localStorage.getItem('rag-auth-user') ?? 'null') as { role?: string } | null;
+  const canManageProject = canEdit(currentUser?.role);
 
   const handleDeleteProject = async () => {
     if (!projectId || !project) {
@@ -238,22 +241,26 @@ function ProjectDetailsPage() {
                 <p style={{ margin: '0 0 8px', color: '#666', fontSize: '14px' }}>Project {project.id}</p>
                 <h1 style={{ margin: 0, color: '#333' }}>{project.name}</h1>
               </div>
-              <button
-                type="button"
-                onClick={handleDeleteProject}
-                disabled={deletingProject}
-                style={{
-                  padding: '10px 16px',
-                  border: 0,
-                  borderRadius: '4px',
-                  backgroundColor: deletingProject ? '#bdbdbd' : '#d32f2f',
-                  color: 'white',
-                  cursor: deletingProject ? 'not-allowed' : 'pointer',
-                  fontWeight: '600',
-                }}
-              >
-                {deletingProject ? 'Deleting...' : 'Delete Project'}
-              </button>
+              {canManageProject ? (
+                <button
+                  type="button"
+                  onClick={handleDeleteProject}
+                  disabled={deletingProject}
+                  style={{
+                    padding: '10px 16px',
+                    border: 0,
+                    borderRadius: '4px',
+                    backgroundColor: deletingProject ? '#bdbdbd' : '#d32f2f',
+                    color: 'white',
+                    cursor: deletingProject ? 'not-allowed' : 'pointer',
+                    fontWeight: '600',
+                  }}
+                >
+                  {deletingProject ? 'Deleting...' : 'Delete Project'}
+                </button>
+              ) : (
+                <span style={{ color: '#64748b', fontWeight: 600 }}>Read-only access</span>
+              )}
             </header>
 
             {activeSection === 'Overview' ? (

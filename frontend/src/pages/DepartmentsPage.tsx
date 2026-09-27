@@ -27,6 +27,7 @@ function DepartmentsPage() {
   const [employeeFirstName, setEmployeeFirstName] = useState('');
   const [employeeLastName, setEmployeeLastName] = useState('');
   const [employeeEmail, setEmployeeEmail] = useState('');
+  const [employeePassword, setEmployeePassword] = useState('');
   const [employeeRole, setEmployeeRole] = useState('');
   const [employeeDepartmentId, setEmployeeDepartmentId] = useState('');
   const [employeeLoading, setEmployeeLoading] = useState(false);
@@ -139,6 +140,7 @@ function DepartmentsPage() {
         firstName: employeeFirstName.trim(),
         lastName: employeeLastName.trim(),
         email: employeeEmail.trim(),
+        password: employeePassword,
         role: employeeRole.trim(),
         departmentId: Number(employeeDepartmentId),
       });
@@ -146,6 +148,7 @@ function DepartmentsPage() {
       setEmployeeFirstName('');
       setEmployeeLastName('');
       setEmployeeEmail('');
+      setEmployeePassword('');
       setEmployeeRole('');
       setEmployeeDepartmentId('');
       setShowEmployeeForm(false);
@@ -199,6 +202,8 @@ function DepartmentsPage() {
           <input id="employee-last-name" value={employeeLastName} onChange={(event) => setEmployeeLastName(event.target.value)} required style={inputStyle} />
           <label style={labelStyle} htmlFor="employee-email">Email</label>
           <input id="employee-email" type="email" value={employeeEmail} onChange={(event) => setEmployeeEmail(event.target.value)} required style={inputStyle} />
+          <label style={labelStyle} htmlFor="employee-password">Password</label>
+          <input id="employee-password" type="password" value={employeePassword} onChange={(event) => setEmployeePassword(event.target.value)} minLength={6} required style={inputStyle} />
           <label style={labelStyle} htmlFor="employee-role">Role</label>
           <input id="employee-role" value={employeeRole} onChange={(event) => setEmployeeRole(event.target.value)} required style={inputStyle} />
           <label style={labelStyle} htmlFor="employee-department">Department</label>

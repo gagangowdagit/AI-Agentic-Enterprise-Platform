@@ -16,6 +16,7 @@ import AnalyticsPage from './pages/AnalyticsPage';
 interface AuthUser {
   name: string;
   email: string;
+  role?: string;
 }
 
 function App() {
@@ -95,6 +96,7 @@ function App() {
                   <>
                     <strong style={{ display: 'block', marginBottom: '4px', color: '#172033' }}>{user.name}</strong>
                     <span style={{ display: 'block', marginBottom: '14px', color: '#64748b', fontSize: '14px' }}>{user.email}</span>
+                    <span style={{ display: 'block', marginBottom: '12px', color: '#1d4ed8', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase' }}>{user.role ?? 'EMPLOYEE'}</span>
                     <button
                       type="button"
                       onClick={handleLogout}

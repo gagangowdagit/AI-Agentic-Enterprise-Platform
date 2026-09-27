@@ -9,6 +9,7 @@ import {
   type Meeting,
   uploadMeetingTranscript,
 } from '../services/meetingApi';
+import { canEdit } from '../utils/roles';
 
 const formatDate = (value?: string) => {
   if (!value) {
@@ -30,6 +31,8 @@ function MeetingDetailsPage() {
   const [copyMessage, setCopyMessage] = useState<string | null>(null);
   const [isUploadingTranscript, setIsUploadingTranscript] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const currentUser = JSON.parse(localStorage.getItem('rag-auth-user') ?? 'null') as { role?: string } | null;
+  const canManageMeetings = canEdit(currentUser?.role);
 
   useEffect(() => {
     if (!meetingId) {
@@ -197,15 +200,21 @@ function MeetingDetailsPage() {
           <p className="section-subtitle">Meeting details and scheduling information.</p>
         </div>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-          <button type="button" className="secondary-button" onClick={handleEditMeeting}>
-            Edit Meeting
-          </button>
-          <button type="button" className="secondary-button" onClick={handleCancelMeeting} disabled={meeting?.status === 'Cancelled'}>
-            Cancel Meeting
-          </button>
-          <button type="button" className="secondary-button" onClick={handleDeleteMeeting}>
-            Delete Meeting
-          </button>
+          {canManageMeetings ? (
+            <>
+              <button type="button" className="secondary-button" onClick={handleEditMeeting}>
+                Edit Meeting
+              </button>
+              <button type="button" className="secondary-button" onClick={handleCancelMeeting} disabled={meeting?.status === 'Cancelled'}>
+                Cancel Meeting
+              </button>
+              <button type="button" className="secondary-button" onClick={handleDeleteMeeting}>
+                Delete Meeting
+              </button>
+            </>
+          ) : (
+            <span style={{ color: '#64748b', fontWeight: 600 }}>Read-only view for employees</span>
+          )}
           <button type="button" className="secondary-button" onClick={() => navigate('/meetings')}>
             Back to Meetings
           </button>

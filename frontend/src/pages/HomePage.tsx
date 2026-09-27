@@ -20,11 +20,11 @@ function HomePage() {
         <p>One place to coordinate projects, people, documents, and intelligent decisions.</p>
       </header>
       <section className="home-section-grid" aria-label="Platform sections">
-        {sections.map((section) => (
+        {sections.map((section, index) => (
           <Link
             key={section.path}
             to={section.path}
-            className="home-section-card"
+            className={index >= sections.length - 2 ? 'home-section-card home-section-card-wide' : 'home-section-card'}
           >
             <h2>{section.name}</h2>
             <p>{section.description}</p>
