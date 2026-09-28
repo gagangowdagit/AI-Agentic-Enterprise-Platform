@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import HomePage from './pages/HomePage';
@@ -25,13 +25,23 @@ function App() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('rag-theme') === 'dark');
-  const isHomePage = location.pathname === '/home';
-  const isProjectDetailsPage = location.pathname.startsWith('/projects/');
-  const isMeetingDetailsPage = location.pathname.startsWith('/meetings/') && !location.pathname.endsWith('/create');
-  const isDetailPage = location.pathname === '/projects'
-    || isProjectDetailsPage
-    || isMeetingDetailsPage
-    || ['/departments', '/documents', '/meetings', '/nova-ai', '/analytics'].includes(location.pathname);
+  const isAuthRoute = ['/', '/login', '/signup', '/register'].includes(location.pathname);
+  const homeButtonStyle = darkMode
+    ? { backgroundColor: '#ffffff', color: '#111111', border: '1px solid rgba(17, 17, 17, 0.12)' }
+    : { backgroundColor: '#111111', color: '#ffffff', border: '1px solid rgba(17, 17, 17, 0.8)' };
+
+  const handleHomeNavigation = () => {
+    navigate('/home', { replace: true });
+  };
+
+  const handleBackNavigation = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate('/home', { replace: true });
+  };
 
   useEffect(() => {
     const storedUser = localStorage.getItem('rag-auth-user');
@@ -60,26 +70,53 @@ function App() {
 
   return (
     <div className={darkMode ? 'app-shell dark-mode' : 'app-shell'}>
-      {(isHomePage || isDetailPage) && !isProjectDetailsPage && (
-        <nav style={{ display: 'flex', justifyContent: isHomePage ? 'flex-end' : 'space-between', alignItems: 'center', marginBottom: '20px', padding: '10px 16px', borderBottom: '1px solid #ccc' }}>
-          {!isHomePage && (
-            <Link
-              to="/home"
+      {!isAuthRoute && (
+        <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', padding: '10px 16px', borderBottom: '1px solid #ccc', position: 'sticky', top: 0, zIndex: 20, backgroundColor: darkMode ? '#111827' : '#ffffff' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <button
+              type="button"
+              onClick={handleHomeNavigation}
+              aria-label="Go to home"
+              style={{
+                ...homeButtonStyle,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '52px',
+                height: '40px',
+                borderRadius: '12px',
+                fontSize: '1.1rem',
+                fontWeight: '900',
+                letterSpacing: '0.04em',
+                cursor: 'pointer',
+                boxShadow: '0 6px 18px rgba(15, 23, 42, 0.12)',
+              }}
+            >
+              b1
+            </button>
+            <button
+              type="button"
+              onClick={handleBackNavigation}
+              aria-label="Go back"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                padding: '10px 16px',
-                borderRadius: '6px',
-                backgroundColor: '#2563eb',
-                color: 'white',
-                fontWeight: '600',
-                textDecoration: 'none',
+                justifyContent: 'center',
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                border: darkMode ? '1px solid rgba(255,255,255,0.18)' : '1px solid #dbe3ef',
+                backgroundColor: darkMode ? '#1f2937' : '#ffffff',
+                color: darkMode ? '#f8fafc' : '#111827',
+                fontSize: '1.3rem',
+                fontWeight: '700',
                 cursor: 'pointer',
+                boxShadow: darkMode ? '0 4px 12px rgba(15, 23, 42, 0.25)' : '0 4px 12px rgba(148, 163, 184, 0.18)',
               }}
             >
-              Back to Home
-            </Link>
-          )}
+              ←
+            </button>
+          </div>
           <div style={{ position: 'relative' }}>
             <button
               type="button"
