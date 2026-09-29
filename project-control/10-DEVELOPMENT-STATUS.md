@@ -1,6 +1,6 @@
 # Development Status
 
-**As of:** 2026-09-20
+**As of:** 2026-09-29
 **Overall state:** Working product slice, not yet production-ready
 **Release status:** pre-release / internal demo-grade implementation
 
@@ -9,18 +9,22 @@
 - Java 21 + Spring Boot backend with Maven wrapper and layered service architecture
 - React 19 + TypeScript + Vite frontend with routed enterprise pages
 - PostgreSQL/JPA/Flyway persistence for projects, teams, departments, documents, meetings, and AI metadata
-- User registration and login flows with password hashing
+- User registration and login flows; password hashing is implemented, with a legacy plaintext-password fallback still present
+- Employee account roles returned by login and role-aware frontend navigation/actions
 - Project, department, team, document, analytics, and insights modules
 - Meeting scheduling, participants, agenda, Google Meet handling, and meeting management actions
 - Transcript upload and AI summary generation for meetings
 - Document extraction, chunking, embedding persistence, and retrieval-based AI queries
 - Ollama-backed `nomic-embed-text` embeddings and `llama3.2:3b` answer generation
 - Project-scoped grounded responses through Nova AI
-- Backend meeting service/controller tests and frontend build validation
+- Updated application navigation and analytics views
+- Frontend production build currently passes
 
 ## Current Gaps
 
-- Full Spring Security + JWT lifecycle enforcement
+- Backend authentication/authorization enforcement: role-aware controls currently run in the frontend only; no server-side API authorization policy is implemented
+- Role model separation: employee `role` is used for both organizational role/title and frontend access gating; signup currently allows a registrant to select management roles
+- Removal or migration of legacy plaintext-password support
 - Fine-grained RBAC and project boundary authorization
 - Durable conversation history and more advanced user-memory patterns
 - Production-grade upload queueing, retries, and lifecycle status management
@@ -42,24 +46,26 @@
 | RAG retrieval and grounded answer flow | DONE |
 | Agent workflows | DONE for selected project-scoped tasks |
 | Analytics and insights | DONE |
-| Authentication hardening | NEXT |
-| Authorization/RBAC | NEXT |
+| Registration and login with password hashing | PARTIAL; legacy plaintext fallback remains |
+| Role-aware frontend controls | PARTIAL; client-side gating only |
+| Authentication hardening and server-side authorization/RBAC | NEXT |
+| Separate employee position from application access role | NEXT |
 | Production observability | NEXT |
 | Deployment automation | NEXT |
 
 ## Immediate Priority Order
 
-1. Add secure auth and authorization enforcement.
-2. Harden upload, document lifecycle, and AI error handling.
-3. Improve evaluation and reliability for retrieval and grounding.
-4. Add production observability and deployment readiness.
+1. Separate organizational position from application access role; prevent public self-assignment of privileged access.
+2. Add server-side authentication and authorization enforcement, including project boundary checks; remove legacy plaintext-password fallback.
+3. Resolve the two currently failing backend tests and keep the suite green.
+4. Harden upload, document lifecycle, AI reliability, observability, and deployment readiness.
 
 ## Verification Snapshot
 
-The repository currently validates the implemented scope with:
+Latest local checks on 2026-09-29:
 
-- backend meeting tests passing under the project test target
-- frontend production build succeeding with Vite
-- no active project-control documentation claiming features that are not present in the codebase
+- `frontend`: `npm run build` passed (TypeScript and Vite production build)
+- `rag-backend`: `./mvnw test` ran 150 tests; 148 passed and 2 failed, with no test errors or skips
+- Failing tests: `AgentServiceTest.storesCompletedInteractionAsProjectMemory` (argument assertion) and `ProjectDocumentsControllerTest.returnsDocumentsForRequestedProjectWithMetadata` (`projectId` response was null)
 
-This status reflects the actual source tree rather than future roadmap claims.
+This status reflects the implemented source and observed validation results, not future roadmap claims.
