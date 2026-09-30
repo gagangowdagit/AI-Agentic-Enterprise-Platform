@@ -42,6 +42,10 @@ projects
 
 The current implementation uses a relational model for core project data and the embedding pipeline. This is sufficient for the application scope and keeps the architecture simple and auditable.
 
+Employee identity currently has a single `role` field. It is used as an organizational position and as an input to frontend access gating; there is no separate persisted application access role. Treat this as a known model gap, not an authorization control. A schema change must preserve existing employee data while introducing the distinct access-role concept described in `11-DECISIONS.md`.
+
+Task records, project memories, and agent execution records are also persisted. Task behavior is currently backend/agent-facing and does not yet provide a complete user-facing task workflow.
+
 ## Future Storage Decisions
 
 No additional database technology is currently required by the project. If scale or performance ever demands it, future changes should be introduced only after measuring the workload and documenting the tradeoff in `11-DECISIONS.md`.

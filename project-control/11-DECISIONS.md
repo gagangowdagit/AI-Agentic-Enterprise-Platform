@@ -51,6 +51,13 @@ This log records the decisions that shape the current implementation. It reflect
 - **Reason:** The codebase is already coherent and testable in this shape, and the current priority is product functionality rather than architecture complexity.
 - **Status:** ACCEPTED / IN FORCE
 
+## DECISION-008: Separate Organizational Position from Application Access Role
+
+- **Date:** 2026-09-30
+- **Decision:** Model an employee's organizational position independently from the role used for application authorization. Public registration must not allow users to grant themselves elevated access; it must assign the least-privileged access role.
+- **Reason:** The current employee `role` is used both as a job title and as a frontend access-gating value, while the backend does not enforce authorization. These are separate concepts and must not be conflated.
+- **Status:** ACCEPTED / NOT IMPLEMENTED
+
 ## Decision Change Policy
 
 When a decision changes, add a new entry with the reason, impact, and affected modules. Unimplemented proposals should not be described as current architecture or delivery status.

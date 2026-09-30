@@ -16,6 +16,8 @@ The implemented API surface includes:
 - `/api/v1/analytics` for project and company analytics
 - `/api/v1/rag` for project-scoped grounded question answering
 - `/api/v1/meetings` for meeting management and AI summary endpoints
+- `/api/v1/projects/{projectId}/task-summary` for project task aggregates
+- `/api/v1/notifications` for user notification retrieval and marking notifications read
 
 ## Core Meeting Contract
 
@@ -62,7 +64,7 @@ Validation and application failures return HTTP status codes along with an error
 
 ## Planned API Work
 
-The next API work is focused on production hardening rather than adding new feature types:
+The task summary is not a general task CRUD API, and notification routes currently lack an authenticated user boundary. The next API work is focused on production hardening:
 
 - strict authentication and authorization checks per route
 - richer request validation and rate-limit behavior

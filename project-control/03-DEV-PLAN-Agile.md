@@ -1,6 +1,6 @@
 # Agile Delivery Status
 
-This document reflects the current repository state as of 2026-09-20. It is intentionally limited to features that are implemented, in active work, or genuinely next-priority work. Outdated roadmap items that were not implemented have been removed.
+This document reflects the current repository state as of 2026-09-30. It is intentionally limited to features that are implemented, in active work, or genuinely next-priority work. The detailed verification snapshot is maintained in `10-DEVELOPMENT-STATUS.md`.
 
 ## Status Legend
 
@@ -27,6 +27,7 @@ This document reflects the current repository state as of 2026-09-20. It is inte
 - Meeting lifecycle management
 - Google Meet link handling
 - Meeting participants and agenda support
+- Backend task persistence, project task summaries, agent task tools, and task-triggered notifications; user-facing task management is not implemented
 
 ### Phase 3: Meeting Intelligence [DONE]
 
@@ -44,25 +45,26 @@ This document reflects the current repository state as of 2026-09-20. It is inte
 - Grounded LLM answer generation
 - AI project queries via Nova AI UI
 
-### Phase 5: Test and Build Validation [DONE]
+### Phase 5: Test and Build Validation [PARTIAL]
 
-- Backend meeting service/controller tests
-- Frontend production build validation
-- Verified repository state for the implemented scope
+- Frontend production build passes
+- Backend suite currently has two failing tests; see the verification snapshot in `10-DEVELOPMENT-STATUS.md`
 
 ## In Progress / Not Yet Production-Complete
 
 - Full security and authorization boundary using Spring Security/JWT
+- Separate organizational position from application access role; prevent public self-assignment of elevated access
 - Production-grade file lifecycle, ownership enforcement, and robust upload status tracking
+- Complete task ownership and user-facing task workflows
 - Larger AI evaluation and prompt safety checks
 - Observability and operational telemetry
 
 ## Current Priorities
 
-1. Complete security and authorization enforcement.
-2. Harden document upload and AI failure handling.
-3. Add stronger evaluation and safe prompt behavior checks.
-4. Improve production readiness for deployment, logs, and operational monitoring.
+1. Separate employee position from application access role and make registration least-privileged.
+2. Enforce server-side authentication and resource-level authorization; remove plaintext-password fallback.
+3. Resolve the two failing backend tests.
+4. Complete task ownership and user-facing task workflows; then harden document/AI operations and production observability.
 
 ## Definition of Done
 

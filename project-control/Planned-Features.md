@@ -8,12 +8,12 @@ These items are not part of the current shipped product and should be treated as
 
 ## Highest-Value Next Features
 
-1. Full JWT/session security and project-aware authorization.
-2. Complete task lifecycle management and ownership enforcement.
-3. Robust document upload, status tracking, deletion, and reprocessing.
-4. Retrieval evaluation, quality checks, and better AI failure handling.
-5. Durable user conversation memory and UI source attribution.
-6. Production-ready CI, observability, and deployment hardening.
+1. Separate employee organizational position from application access role; prevent public self-assignment of elevated access.
+2. Add server-side authentication, session/JWT policy, and project/resource-level authorization; remove the legacy plaintext-password fallback.
+3. Complete task ownership and user-facing task lifecycle workflows on top of the existing backend task/agent primitives.
+4. Improve document upload status, lifecycle, deletion, and reprocessing.
+5. Add retrieval evaluation, stronger AI failure handling, and durable conversation history/source attribution.
+6. Add CI, observability, and deployment hardening.
 
 ## Product Expansion
 

@@ -22,6 +22,7 @@ The working slice today includes:
 - Project-scoped and global retrieval using normalized embeddings and top-K similarity search.
 - Standard API responses, validation, exception handling, OpenAPI support, and a growing JUnit/Mockito test suite.
 - Meeting management flows with scheduling, participants, agenda items, Google Meet links, AI transcript handling, and AI-generated summaries.
+- Backend task persistence, project task summaries, agent task tools, and user notifications; a full task-management UI is not yet available.
 
 ## Product Vision
 
@@ -59,7 +60,7 @@ This is not yet a production SaaS platform. JWT enforcement, fine-grained author
 
 ## Read Me
 
-For implementation status, architecture, technical decisions, and the complete future roadmap, see [project-control/](../project-control/), especially [10-DEVELOPMENT-STATUS.md](10-DEVELOPMENT-STATUS.md) and [03-DEV-PLAN-Agile.md](03-DEV-PLAN-Agile.md).
+For implementation status, architecture, technical decisions, and the future roadmap, see [10-DEVELOPMENT-STATUS.md](10-DEVELOPMENT-STATUS.md), [03-DEV-PLAN-Agile.md](03-DEV-PLAN-Agile.md), and [Planned-Features.md](Planned-Features.md).
 
 ## Local Setup
 
@@ -130,7 +131,6 @@ Planned and future work includes:
 - [project-control/00-AI-INSTRUCTIONS.md](00-AI-INSTRUCTIONS.md)
 - [project-control/02-TECH-STACK.md](02-TECH-STACK.md)
 - [project-control/03-DEV-PLAN-Agile.md](03-DEV-PLAN-Agile.md)
-- [project-control/03-DEV-PLAN-Waterfall.md](03-DEV-PLAN-Waterfall.md)
 - [project-control/04-REQUIREMENTS.md](04-REQUIREMENTS.md)
 - [project-control/05-ARCHITECTURE.md](05-ARCHITECTURE.md)
 - [project-control/06-DATABASE-DESIGN.md](06-DATABASE-DESIGN.md)
