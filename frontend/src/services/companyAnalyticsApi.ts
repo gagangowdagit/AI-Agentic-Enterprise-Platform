@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+import { apiFetch, API_BASE_URL } from './apiClient';
 
 export interface CompanyAnalytics {
   totalProjects: number;
@@ -27,7 +27,7 @@ export interface EmployeeAnalytics {
 }
 
 export const getCompanyAnalytics = async (): Promise<CompanyAnalytics> => {
-  const response = await fetch(`${API_BASE_URL}/analytics/overview`);
+  const response = await apiFetch(`${API_BASE_URL}/analytics/overview`);
   if (!response.ok) {
     throw new Error('Failed to fetch company analytics');
   }
@@ -35,7 +35,7 @@ export const getCompanyAnalytics = async (): Promise<CompanyAnalytics> => {
 };
 
 export const getDepartmentBreakdown = async (): Promise<DepartmentAnalytics[]> => {
-  const response = await fetch(`${API_BASE_URL}/analytics/departments`);
+  const response = await apiFetch(`${API_BASE_URL}/analytics/departments`);
   if (!response.ok) {
     throw new Error('Failed to fetch department analytics');
   }
@@ -43,7 +43,7 @@ export const getDepartmentBreakdown = async (): Promise<DepartmentAnalytics[]> =
 };
 
 export const getEmployeeBreakdown = async (): Promise<EmployeeAnalytics[]> => {
-  const response = await fetch(`${API_BASE_URL}/analytics/employees`);
+  const response = await apiFetch(`${API_BASE_URL}/analytics/employees`);
   if (!response.ok) {
     throw new Error('Failed to fetch employee analytics');
   }

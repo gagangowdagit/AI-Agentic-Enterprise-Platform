@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+import { apiFetch, API_BASE_URL } from './apiClient';
 
 export interface Department {
   id: number;
@@ -30,7 +30,7 @@ export interface CreateEmployeeRequest {
 }
 
 export const getDepartments = async (): Promise<Department[]> => {
-  const response = await fetch(`${API_BASE_URL}/departments`, {
+  const response = await apiFetch(`${API_BASE_URL}/departments`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   });
@@ -43,7 +43,7 @@ export const getDepartments = async (): Promise<Department[]> => {
 };
 
 export const createDepartment = async (department: CreateDepartmentRequest): Promise<Department> => {
-  const response = await fetch(`${API_BASE_URL}/departments`, {
+  const response = await apiFetch(`${API_BASE_URL}/departments`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(department),
@@ -57,7 +57,7 @@ export const createDepartment = async (department: CreateDepartmentRequest): Pro
 };
 
 export const createEmployee = async (employee: CreateEmployeeRequest): Promise<Employee> => {
-  const response = await fetch(`${API_BASE_URL}/employees`, {
+  const response = await apiFetch(`${API_BASE_URL}/employees`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(employee),
@@ -71,7 +71,7 @@ export const createEmployee = async (employee: CreateEmployeeRequest): Promise<E
 };
 
 export const getEmployees = async (): Promise<Employee[]> => {
-  const response = await fetch(`${API_BASE_URL}/employees`, {
+  const response = await apiFetch(`${API_BASE_URL}/employees`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   });

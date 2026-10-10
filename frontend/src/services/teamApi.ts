@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+import { apiFetch, API_BASE_URL } from './apiClient';
 
 export interface TeamDepartment {
   id: number;
@@ -20,7 +20,7 @@ export interface TeamMember {
 }
 
 export const getProjectTeam = async (projectId: string): Promise<TeamMember[]> => {
-  const response = await fetch(`${API_BASE_URL}/projects/${encodeURIComponent(projectId)}/team`, {
+  const response = await apiFetch(`${API_BASE_URL}/projects/${encodeURIComponent(projectId)}/team`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ export const getProjectTeam = async (projectId: string): Promise<TeamMember[]> =
 };
 
 export const getAvailableProjectEmployees = async (projectId: string): Promise<TeamMember[]> => {
-  const response = await fetch(`${API_BASE_URL}/projects/${encodeURIComponent(projectId)}/team/available`, {
+  const response = await apiFetch(`${API_BASE_URL}/projects/${encodeURIComponent(projectId)}/team/available`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ export const getAvailableProjectEmployees = async (projectId: string): Promise<T
 };
 
 export const addProjectTeamMember = async (projectId: string, employeeId: number): Promise<TeamMember> => {
-  const response = await fetch(`${API_BASE_URL}/projects/${encodeURIComponent(projectId)}/team`, {
+  const response = await apiFetch(`${API_BASE_URL}/projects/${encodeURIComponent(projectId)}/team`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -66,7 +66,7 @@ export const addProjectTeamMember = async (projectId: string, employeeId: number
 };
 
 export const removeProjectTeamMember = async (projectId: string, employeeId: number): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/projects/${encodeURIComponent(projectId)}/team/${employeeId}`, {
+  const response = await apiFetch(`${API_BASE_URL}/projects/${encodeURIComponent(projectId)}/team/${employeeId}`, {
     method: 'DELETE',
   });
 

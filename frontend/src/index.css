@@ -2849,6 +2849,23 @@ body {
   color: #cbd5e1 !important;
 }
 
+.dark-mode .login-page .login-field input {
+  border: 0 !important;
+  background: transparent !important;
+  color: #222 !important;
+}
+
+.dark-mode .login-page .login-field input::placeholder {
+  color: #999 !important;
+  opacity: 1;
+}
+
+.dark-mode .login-page .login-field input:focus {
+  outline: none !important;
+  outline-offset: 0;
+  box-shadow: none !important;
+}
+
 .dark-mode .field-group input:focus,
 .dark-mode .field-group select:focus,
 .dark-mode .field-group textarea:focus,

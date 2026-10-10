@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import MeetingCard from '../components/MeetingCard';
 import MeetingRow from '../components/MeetingRow';
+import { apiFetch, API_BASE_URL } from '../services/apiClient';
 import type { Meeting, MeetingStatus } from '../services/meetingApi';
 import { getMeetings } from '../services/meetingApi';
 
@@ -44,7 +45,7 @@ function MeetingsPage() {
 
         const [data, projectData] = await Promise.all([
           getMeetings(),
-          fetch('http://localhost:8080/api/v1/projects', {
+          apiFetch(`${API_BASE_URL}/projects`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
           }).then(async (response) => {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { apiFetch, API_BASE_URL } from '../services/apiClient';
 import { getProjects, type Project } from '../services/projectApi';
 
 interface ChatMessage {
@@ -15,7 +16,6 @@ interface RagResponse {
   answer?: string;
 }
 
-const API_BASE_URL = 'http://localhost:8080/api/v1';
 const TOP_K = 3;
 const GLOBAL_PROJECT_ID = 'global';
 
@@ -69,7 +69,7 @@ function NovaAIPage() {
     setSending(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/rag/query`, {
+      const response = await apiFetch(`${API_BASE_URL}/rag/query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

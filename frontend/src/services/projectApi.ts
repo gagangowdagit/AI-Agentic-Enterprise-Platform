@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+import { apiFetch, API_BASE_URL } from './apiClient';
 
 export interface Project {
   id: number;
@@ -21,7 +21,7 @@ export type CreateProjectRequest = Omit<Project, 'id' | 'department'> & {
 };
 
 export const getProjects = async (): Promise<Project[]> => {
-  const response = await fetch(`${API_BASE_URL}/projects`, {
+  const response = await apiFetch(`${API_BASE_URL}/projects`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ export const getProjects = async (): Promise<Project[]> => {
 };
 
 export const createProject = async (project: CreateProjectRequest): Promise<Project> => {
-  const response = await fetch(`${API_BASE_URL}/projects`, {
+  const response = await apiFetch(`${API_BASE_URL}/projects`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ export const createProject = async (project: CreateProjectRequest): Promise<Proj
 };
 
 export const deleteProject = async (projectId: string): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/projects/${encodeURIComponent(projectId)}`, {
+  const response = await apiFetch(`${API_BASE_URL}/projects/${encodeURIComponent(projectId)}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',

@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+import { apiFetch, API_BASE_URL } from './apiClient';
 
 export interface DocumentResponse {
   id: number;
@@ -19,7 +19,7 @@ export const uploadDocument = async (
   formData.append('projectId', projectId);
   formData.append('file', file);
 
-  const response = await fetch(`${API_BASE_URL}/documents`, {
+  const response = await apiFetch(`${API_BASE_URL}/documents`, {
     method: 'POST',
     body: formData,
   });
@@ -34,7 +34,7 @@ export const uploadDocument = async (
 export const getDocumentsByProject = async (
   projectId: string
 ): Promise<DocumentResponse[]> => {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE_URL}/documents?projectId=${projectId}`,
     {
       method: 'GET',
@@ -52,7 +52,7 @@ export const getDocumentsByProject = async (
 };
 
 export const downloadDocument = async (documentId: number): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/documents/${documentId}/download`);
+  const response = await apiFetch(`${API_BASE_URL}/documents/${documentId}/download`);
 
   if (!response.ok) {
     throw new Error('Failed to download document');
@@ -74,7 +74,7 @@ export const downloadDocument = async (documentId: number): Promise<void> => {
 };
 
 export const deleteDocument = async (documentId: number): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/documents/${documentId}`, {
+  const response = await apiFetch(`${API_BASE_URL}/documents/${documentId}`, {
     method: 'DELETE',
   });
 

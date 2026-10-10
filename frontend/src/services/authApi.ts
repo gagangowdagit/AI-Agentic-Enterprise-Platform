@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+import { API_BASE_URL } from './apiClient';
 
 export interface LoginRequest {
   email: string;
@@ -11,6 +11,10 @@ export interface AuthResponse {
   email: string;
   role?: string;
   message: string;
+  accessToken: string;
+  tokenType: string;
+  expiresIn: number;
+  expiresAt: string;
 }
 
 export const login = async (

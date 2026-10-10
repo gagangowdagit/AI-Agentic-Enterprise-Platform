@@ -1,3 +1,5 @@
+import { apiFetch, API_BASE_URL } from './apiClient';
+
 export type MeetingStatus = 'Scheduled' | 'In Progress' | 'In_Progress' | 'Completed' | 'Cancelled';
 
 export interface MeetingParticipant {
@@ -247,7 +249,7 @@ export const mockMeetings: Meeting[] = [
 ];
 
 export const getMeetings = async (): Promise<Meeting[]> => {
-  const response = await fetch(`${API_BASE_URL}/meetings`, {
+  const response = await apiFetch(`${API_BASE_URL}/meetings`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   });
@@ -270,7 +272,7 @@ export const getMeetings = async (): Promise<Meeting[]> => {
 };
 
 export const getMeetingById = async (meetingId: string | number): Promise<Meeting> => {
-  const response = await fetch(`${API_BASE_URL}/meetings/${encodeURIComponent(String(meetingId))}`, {
+  const response = await apiFetch(`${API_BASE_URL}/meetings/${encodeURIComponent(String(meetingId))}`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   });
@@ -291,10 +293,8 @@ export const getMeetingById = async (meetingId: string | number): Promise<Meetin
   return normalizeMeeting(await response.json());
 };
 
-const API_BASE_URL = 'http://localhost:8080/api/v1';
-
 export const createMeeting = async (request: CreateMeetingRequest): Promise<Meeting> => {
-  const response = await fetch(`${API_BASE_URL}/meetings`, {
+  const response = await apiFetch(`${API_BASE_URL}/meetings`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -321,7 +321,7 @@ export const createMeeting = async (request: CreateMeetingRequest): Promise<Meet
 };
 
 export const updateMeeting = async (meetingId: string | number, request: CreateMeetingRequest): Promise<Meeting> => {
-  const response = await fetch(`${API_BASE_URL}/meetings/${encodeURIComponent(String(meetingId))}`, {
+  const response = await apiFetch(`${API_BASE_URL}/meetings/${encodeURIComponent(String(meetingId))}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -347,7 +347,7 @@ export const updateMeeting = async (meetingId: string | number, request: CreateM
 };
 
 export const cancelMeeting = async (meetingId: string | number): Promise<Meeting> => {
-  const response = await fetch(`${API_BASE_URL}/meetings/${encodeURIComponent(String(meetingId))}/cancel`, {
+  const response = await apiFetch(`${API_BASE_URL}/meetings/${encodeURIComponent(String(meetingId))}/cancel`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
   });
@@ -374,7 +374,7 @@ export const uploadMeetingTranscript = async (
   transcriptText: string,
   fileName?: string
 ): Promise<Meeting> => {
-  const response = await fetch(`${API_BASE_URL}/meetings/${encodeURIComponent(String(meetingId))}/transcript`, {
+  const response = await apiFetch(`${API_BASE_URL}/meetings/${encodeURIComponent(String(meetingId))}/transcript`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ transcriptText, fileName: fileName ?? 'meeting-transcript.txt' }),
@@ -398,7 +398,7 @@ export const uploadMeetingTranscript = async (
 };
 
 export const regenerateMeetingSummary = async (meetingId: string | number): Promise<Meeting> => {
-  const response = await fetch(`${API_BASE_URL}/meetings/${encodeURIComponent(String(meetingId))}/summary/regenerate`, {
+  const response = await apiFetch(`${API_BASE_URL}/meetings/${encodeURIComponent(String(meetingId))}/summary/regenerate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
   });
@@ -421,7 +421,7 @@ export const regenerateMeetingSummary = async (meetingId: string | number): Prom
 };
 
 export const deleteMeeting = async (meetingId: string | number): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/meetings/${encodeURIComponent(String(meetingId))}`, {
+  const response = await apiFetch(`${API_BASE_URL}/meetings/${encodeURIComponent(String(meetingId))}`, {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
   });

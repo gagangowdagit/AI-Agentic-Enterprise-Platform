@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { login } from '../services/authApi';
+import { AUTH_CHANGED_EVENT, saveAccessToken } from '../services/apiClient';
 import { useNavigate } from 'react-router-dom';
 
 function LoginPage() {
@@ -16,11 +17,17 @@ function LoginPage() {
 
     try {
       const result = await login({ email, password });
+      if (!result.accessToken?.trim()) {
+        throw new Error('Sign in failed because the server did not return an access token.');
+      }
+
+      saveAccessToken(result.accessToken);
       localStorage.setItem('rag-auth-user', JSON.stringify({
         name: result.name,
         email: result.email,
         role: result.role ?? 'EMPLOYEE',
       }));
+      window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
       setMessage(`Login successful! Welcome, ${result.name}`);
       setEmail('');
       setPassword('');

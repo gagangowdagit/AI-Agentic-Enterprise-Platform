@@ -12,6 +12,12 @@ import MeetingDetailsPage from './pages/MeetingDetailsPage';
 import CreateMeetingPage from './pages/CreateMeetingPage';
 import NovaAIPage from './pages/NovaAIPage';
 import AnalyticsPage from './pages/AnalyticsPage';
+import {
+  AUTH_CHANGED_EVENT,
+  AUTH_EXPIRED_EVENT,
+  clearAccessToken,
+  getAccessToken,
+} from './services/apiClient';
 
 interface AuthUser {
   name: string;
@@ -19,11 +25,27 @@ interface AuthUser {
   role?: string;
 }
 
+const getStoredAuthUser = (): AuthUser | null => {
+  const storedUser = localStorage.getItem('rag-auth-user');
+  if (!storedUser || !getAccessToken()) {
+    localStorage.removeItem('rag-auth-user');
+    return null;
+  }
+
+  try {
+    return JSON.parse(storedUser) as AuthUser;
+  } catch {
+    localStorage.removeItem('rag-auth-user');
+    clearAccessToken();
+    return null;
+  }
+};
+
 function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(getStoredAuthUser);
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('rag-theme') === 'dark');
   const isAuthRoute = ['/', '/login', '/signup', '/register'].includes(location.pathname);
   const homeButtonStyle = darkMode
@@ -44,17 +66,23 @@ function App() {
   };
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('rag-auth-user');
-    if (!storedUser) {
-      return;
-    }
-
-    try {
-      setUser(JSON.parse(storedUser) as AuthUser);
-    } catch {
+    const handleAuthenticationChanged = () => setUser(getStoredAuthUser());
+    const handleAuthenticationExpired = () => {
       localStorage.removeItem('rag-auth-user');
-    }
-  }, [location.pathname]);
+      setUser(null);
+      setProfileOpen(false);
+      if (!['/', '/login', '/signup', '/register'].includes(location.pathname)) {
+        navigate('/login', { replace: true });
+      }
+    };
+
+    window.addEventListener(AUTH_CHANGED_EVENT, handleAuthenticationChanged);
+    window.addEventListener(AUTH_EXPIRED_EVENT, handleAuthenticationExpired);
+    return () => {
+      window.removeEventListener(AUTH_CHANGED_EVENT, handleAuthenticationChanged);
+      window.removeEventListener(AUTH_EXPIRED_EVENT, handleAuthenticationExpired);
+    };
+  }, [location.pathname, navigate]);
 
   useEffect(() => {
     localStorage.setItem('rag-theme', darkMode ? 'dark' : 'light');
@@ -63,6 +91,7 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem('rag-auth-user');
+    clearAccessToken();
     setUser(null);
     setProfileOpen(false);
     navigate('/login');

@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+import { apiFetch, API_BASE_URL } from './apiClient';
 
 export interface ProjectInsights {
   metrics: {
@@ -24,7 +24,7 @@ interface ProjectInsightsResponse {
 }
 
 export const getProjectInsights = async (projectId: string): Promise<ProjectInsights> => {
-  const response = await fetch(`${API_BASE_URL}/analytics/projects/${encodeURIComponent(projectId)}`, {
+  const response = await apiFetch(`${API_BASE_URL}/analytics/projects/${encodeURIComponent(projectId)}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
