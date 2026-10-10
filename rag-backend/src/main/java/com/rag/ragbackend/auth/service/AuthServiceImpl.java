@@ -14,10 +14,13 @@ public class AuthServiceImpl implements AuthService {
 
     private final EmployeeRepository employeeRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public AuthServiceImpl(EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder) {
+    public AuthServiceImpl(EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder,
+                           JwtService jwtService) {
         this.employeeRepository = employeeRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -40,12 +43,18 @@ public class AuthServiceImpl implements AuthService {
                 employee.getFirstName() == null ? "" : employee.getFirstName().trim(),
                 employee.getLastName() == null ? "" : employee.getLastName().trim()).trim();
 
-        return new AuthResponse(
+        AuthResponse response = new AuthResponse(
                 employee.getId() != null ? Long.valueOf(employee.getId()) : null,
                 fullName.isEmpty() ? employee.getEmail() : fullName,
                 employee.getEmail(),
                 employee.getRole(),
                 "Login successful"
         );
+        JwtService.GeneratedToken generatedToken = jwtService.generateAccessToken(employee.getId());
+        response.setAccessToken(generatedToken.token());
+        response.setTokenType("Bearer");
+        response.setExpiresIn(generatedToken.expiresInSeconds());
+        response.setExpiresAt(generatedToken.expiresAt());
+        return response;
     }
 }

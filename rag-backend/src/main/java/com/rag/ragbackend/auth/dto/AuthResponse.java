@@ -1,5 +1,7 @@
 package com.rag.ragbackend.auth.dto;
 
+import java.time.Instant;
+
 public class AuthResponse {
 
     private Long id;
@@ -7,6 +9,10 @@ public class AuthResponse {
     private String email;
     private String role;
     private String message;
+    private String accessToken;
+    private String tokenType;
+    private Long expiresIn;
+    private Instant expiresAt;
 
     public AuthResponse() {
     }
@@ -57,5 +63,37 @@ public class AuthResponse {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public String getTokenType() {
+        return tokenType;
+    }
+
+    public void setTokenType(String tokenType) {
+        this.tokenType = tokenType;
+    }
+
+    public Long getExpiresIn() {
+        return expiresIn;
+    }
+
+    public void setExpiresIn(Long expiresIn) {
+        this.expiresIn = expiresIn;
+    }
+
+    public Instant getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(Instant expiresAt) {
+        this.expiresAt = expiresAt;
     }
 }
