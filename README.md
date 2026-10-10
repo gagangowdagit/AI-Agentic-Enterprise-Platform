@@ -33,6 +33,8 @@ MongoDB, Redis, Qdrant/pgvector, RabbitMQ, WebSockets, Docker, CI/CD, cloud, and
 
 For final implementation status, architecture, technical decisions, and project closeout, see [project-control/](project-control/), especially [10-DEVELOPMENT-STATUS.md](project-control/10-DEVELOPMENT-STATUS.md) and [03-DEV-PLAN-Agile.md](project-control/03-DEV-PLAN-Agile.md).
 
+For a self-contained technical guide covering the product, stack, architecture, JWT behavior, and complete REST endpoint inventory, see [overview.md](overview.md).
+
 ## Run the project locally
 
 This project needs three services running together:
