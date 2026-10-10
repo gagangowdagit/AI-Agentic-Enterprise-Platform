@@ -1,77 +1,63 @@
-# Development Status
+# Final Development Status
 
-**As of:** 2026-09-30
-**Overall state:** Working product slice, not yet production-ready
-**Release status:** pre-release / internal demo-grade implementation
+**Snapshot date:** 2026-10-10
+**Project state:** Closed for the delivered local-demo/portfolio scope
+**Release claim:** Final project snapshot; not a production SaaS release
 
-## What Works Today
+This is the final status record for the project as currently implemented. All planned work within the delivered project scope is complete. Broader production and scale features listed as boundaries below were not part of that scope and are not represented as completed implementation.
 
-- Java 21 + Spring Boot backend with Maven wrapper and layered service architecture
-- React 19 + TypeScript + Vite frontend with routed enterprise pages
-- PostgreSQL/JPA/Flyway persistence for projects, teams, departments, documents, meetings, and AI metadata
-- User registration and login flows; password hashing is implemented, with a legacy plaintext-password fallback still present
-- Employee account roles returned by login and role-aware frontend navigation/actions
-- Project, department, team, document, analytics, and insights modules
-- Meeting scheduling, participants, agenda, Google Meet handling, and meeting management actions
-- Transcript upload and AI summary generation for meetings
-- Document extraction, chunking, embedding persistence, and retrieval-based AI queries
-- Ollama-backed `nomic-embed-text` embeddings and `llama3.2:3b` answer generation
-- Project-scoped grounded responses through Nova AI
-- Backend task persistence, project task summaries, and agent task tools; there is no task-management frontend workflow yet
-- Notification API and persisted task-assignment/status notifications
-- Persisted project memories and agent execution records; these are distinct from durable chat conversation history
-- Updated application navigation and analytics views
-- Frontend production build currently passes
+## Delivered Scope
 
-## Current Gaps
+- React 19, TypeScript, Vite, and React Router frontend with authentication, project operations, documents, meetings, analytics, and Nova AI pages.
+- Java 21 / Spring Boot REST backend with layered controllers, services, repositories, request validation, API error handling, and OpenAPI documentation.
+- PostgreSQL persistence using Spring Data JPA and Flyway migrations.
+- User registration and login, BCrypt password hashing, short-lived stateless JWT access tokens, and a Spring Security bearer-token filter.
+- Project, team, department, document, timeline, analytics, and project insight workflows.
+- PDF, DOCX, and text document extraction, chunking, embedding persistence, and retrieval.
+- Local Ollama integration using `nomic-embed-text` for embeddings and `llama3.2:3b` for grounded answer generation.
+- Meeting scheduling and lifecycle management, participants, agenda items, Google Meet links, transcript storage, and AI summaries.
+- Backend task persistence, project task summaries, agent task tools, project memories, agent execution records, and notification endpoints.
+- Windows local startup flow with a persistent ignored JWT signing key in `rag-backend/.env`.
+- Focused backend tests and a frontend production build.
 
-- Backend authentication/authorization enforcement: role-aware controls currently run in the frontend only; no server-side API authorization policy is implemented
-- Role model separation: employee `role` is used for both organizational role/title and frontend access gating; signup currently allows a registrant to select management roles
-- No generic task-management UI or authenticated task-ownership workflow
-- Removal or migration of legacy plaintext-password support
-- Fine-grained RBAC and project boundary authorization
-- Durable conversation history and more advanced user-memory patterns
-- Production-grade upload queueing, retries, and lifecycle status management
-- Stronger AI evaluation, prompt safety, and retrieval quality checks
-- Observability, CI/CD, and deployment hardening for production
+## JWT Authentication Implementation
 
-## Status by Capability
+- Login at `POST /api/v1/auth/login` validates credentials and returns a signed HS256 access token with its type and expiry metadata.
+- The token subject contains the employee ID. Tokens are stateless and are not stored in the database.
+- `JwtAuthenticationFilter` validates bearer tokens and sets the authenticated principal for protected requests.
+- `SecurityConfig` requires authentication by default, with explicit public exceptions for preflight requests, login, health checks, department listing, and employee creation.
+- `JWT_SECRET` must be Base64-encoded and decode to at least 32 bytes. `run-backend.ps1` creates a random local key once and persists it in the ignored `.env` file when no environment key is supplied.
+- Access-token lifetime defaults to `PT15M` and can be configured with `JWT_ACCESS_TOKEN_LIFETIME`.
+- There is no refresh-token, token revocation, or server-side logout mechanism. Fine-grained role-based and project/resource ownership authorization is not implemented; authentication must not be described as full RBAC.
+- The login service still accepts legacy plaintext-stored passwords as a compatibility fallback. BCrypt is used for hashed passwords; removing the fallback requires a data migration and is outside this final snapshot.
 
-| Capability | Status |
+## Capability Status at Closeout
+
+| Capability | Final status |
 |---|---|
-| Repository and backend foundation | DONE |
-| Frontend shell and routed pages | DONE |
-| PostgreSQL persistence and Flyway schema | DONE |
-| Project, team, department, and document flows | DONE |
-| Meeting lifecycle and detail flows | DONE |
-| Transcript upload and meeting AI summary | DONE |
-| Document extraction and chunking | DONE |
-| Ollama embedding and generation | DONE |
-| RAG retrieval and grounded answer flow | DONE |
-| Agent workflows | DONE for selected project-scoped tasks |
-| Task persistence, summaries, and agent tools | PARTIAL; backend capability only, no task-management UI |
-| Notifications | PARTIAL; backend endpoints and task-triggered notifications, no authorization boundary |
-| Analytics and insights | DONE |
-| Registration and login with password hashing | PARTIAL; legacy plaintext fallback remains |
-| Role-aware frontend controls | PARTIAL; client-side gating only |
-| Authentication hardening and server-side authorization/RBAC | NEXT |
-| Separate employee position from application access role | NEXT |
-| Production observability | NEXT |
-| Deployment automation | NEXT |
+| Frontend and backend application foundation | COMPLETE |
+| Core project, organization, document, meeting, and analytics flows | COMPLETE |
+| Meeting transcript and AI summary flows | COMPLETE |
+| Document ingestion and Nova AI retrieval/generation flow | COMPLETE |
+| Agent/task backend primitives and notifications | COMPLETE within backend-only scope; no general task-management UI |
+| Login, JWT issuance, and bearer authentication | COMPLETE within the implemented authentication scope |
+| Fine-grained RBAC and project/resource ownership checks | OUT OF SCOPE; not implemented |
+| Durable chat history, streaming, external vector database, and async job infrastructure | OUT OF SCOPE; not implemented |
+| Production deployment, CI/CD, observability, and enterprise operations | OUT OF SCOPE; not implemented |
 
-## Immediate Priority Order
+## Final Verification Snapshot
 
-1. Separate organizational position from application access role; make public registration least-privileged and prevent self-assignment of elevated access.
-2. Add server-side authentication and authorization enforcement, including project/resource boundary checks; remove legacy plaintext-password fallback.
-3. Resolve the two currently failing backend tests and keep the suite green.
-4. Complete task ownership and user-facing task workflows; harden uploads, AI reliability, observability, and deployment readiness.
+Checks run on 2026-10-10:
 
-## Verification Snapshot
+- Frontend `npm run build`: **passed** (TypeScript project build and Vite production build).
+- Backend `.\mvnw.cmd test`: **163 tests; 161 passed, 2 failed, 0 errors, 0 skipped**.
+- Remaining backend test failures:
+  - `AgentServiceTest.storesCompletedInteractionAsProjectMemory` — Mockito argument assertion does not match the saved memory.
+  - `ProjectDocumentsControllerTest.returnsDocumentsForRequestedProjectWithMetadata` — expected `projectId` was `null`.
+- JWT service, filter, and authentication integration tests ran and passed in that backend test run.
 
-Latest local checks on 2026-09-30:
+The two failures are disclosed rather than reported as a fully green backend suite. They do not change the final scope status, but should be resolved before using the backend test suite as a release gate.
 
-- `frontend`: `npm run build` passed (TypeScript and Vite production build)
-- `rag-backend`: `./mvnw test` ran 150 tests; 148 passed and 2 failed, with no test errors or skips
-- Failing tests: `AgentServiceTest.storesCompletedInteractionAsProjectMemory` (argument assertion) and `ProjectDocumentsControllerTest.returnsDocumentsForRequestedProjectWithMetadata` (`projectId` response was null)
+## Project Closeout
 
-This status reflects the implemented source and observed validation results, not future roadmap claims.
+There is no active implementation plan or committed next phase for this repository snapshot. Ideas outside the delivered scope are deliberately deferred, not silently marked as implemented. This file records the final known state; any future code change would require a new, separately scoped project update.

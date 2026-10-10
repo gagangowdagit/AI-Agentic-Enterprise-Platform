@@ -1,71 +1,52 @@
-# Agile Delivery Status
+# Final Delivery Plan and Closeout
 
-This document reflects the current repository state as of 2026-09-30. It is intentionally limited to features that are implemented, in active work, or genuinely next-priority work. The detailed verification snapshot is maintained in `10-DEVELOPMENT-STATUS.md`.
+**Snapshot date:** 2026-10-10
+**Plan state:** Closed
 
-## Status Legend
+This document records delivery against the project scope. The phases below are complete as delivered; production-scale capabilities that were never included in the local-demo/portfolio scope are listed as exclusions, not unfinished project tasks. The final implementation and validation record is in `10-DEVELOPMENT-STATUS.md`.
 
-- DONE: implemented and present in the source tree
-- IN PROGRESS: partially built and being finished
-- NEXT: not yet complete but clearly prioritized
+## Delivered Phases
 
-## Completed Work
+### Phase 1: Application Foundation [COMPLETE]
 
-### Phase 1: Foundation [DONE]
+- Java 21 / Spring Boot backend and React / TypeScript / Vite frontend
+- REST APIs, validation, common error handling, and routed UI
+- PostgreSQL persistence through JPA and Flyway
 
-- Repository structure and working backend/frontend modules
-- Java 21 + Spring Boot backend with Maven wrapper
-- React + TypeScript + Vite frontend with routed pages
-- REST API conventions with validation and response handling
-- PostgreSQL/JPA/Flyway relational persistence
+### Phase 2: Enterprise Workflows [COMPLETE]
 
-### Phase 2: Core Enterprise Features [DONE]
+- Registration and login
+- Project, department, team, document, analytics, and insight flows
+- Meeting scheduling and lifecycle management, including participants, agendas, and Google Meet links
+- Backend task persistence, summaries, selected agent tools, and notifications
 
-- User registration and login flows
-- Project, department, and team management
-- Document management, upload, and project-scoped retrieval
-- Analytics pages and project insight endpoints
-- Meeting lifecycle management
-- Google Meet link handling
-- Meeting participants and agenda support
-- Backend task persistence, project task summaries, agent task tools, and task-triggered notifications; user-facing task management is not implemented
+### Phase 3: Meeting Intelligence [COMPLETE]
 
-### Phase 3: Meeting Intelligence [DONE]
+- Transcript upload and persistence
+- AI summary generation and regeneration
+- Meeting detail experience for transcript and summary review
 
-- Meeting create/update/cancel/delete flow
-- Transcript upload and storage
-- AI summary generation for stored transcripts
-- Summary regeneration and persistence
-- Meeting detail UI for transcript and summary review
+### Phase 4: Document Intelligence and Nova AI [COMPLETE]
 
-### Phase 4: RAG and AI [DONE]
+- PDF, DOCX, and text extraction, chunking, and embedding persistence
+- Ollama embedding and grounded answer generation
+- Project-scoped and global retrieval through the Nova AI page
 
-- Document ingestion and chunk processing
-- Ollama embedding pipeline
-- Similarity-based retrieval for project documents
-- Grounded LLM answer generation
-- AI project queries via Nova AI UI
+### Phase 5: Authentication Hardening for Project Scope [COMPLETE]
 
-### Phase 5: Test and Build Validation [PARTIAL]
+- BCrypt password hashing for new/hashed credentials
+- HS256 JWT access-token issuance on login
+- Stateless Spring Security filter chain and bearer-token validation
+- Persistent local signing-key setup through `run-backend.ps1`
 
-- Frontend production build passes
-- Backend suite currently has two failing tests; see the verification snapshot in `10-DEVELOPMENT-STATUS.md`
+JWT delivery does not imply fine-grained roles, resource ownership checks, refresh tokens, revocation, or production-ready identity management.
 
-## In Progress / Not Yet Production-Complete
+### Phase 6: Final Build and Test Snapshot [RECORDED]
 
-- Full security and authorization boundary using Spring Security/JWT
-- Separate organizational position from application access role; prevent public self-assignment of elevated access
-- Production-grade file lifecycle, ownership enforcement, and robust upload status tracking
-- Complete task ownership and user-facing task workflows
-- Larger AI evaluation and prompt safety checks
-- Observability and operational telemetry
+- Frontend TypeScript/Vite production build passes.
+- Backend tests were run: 163 total, 161 passed, and 2 failed. The exact failures are recorded in `10-DEVELOPMENT-STATUS.md`.
+- The backend suite is therefore not recorded as fully green.
 
-## Current Priorities
+## Definition of Done and Scope Closure
 
-1. Separate employee position from application access role and make registration least-privileged.
-2. Enforce server-side authentication and resource-level authorization; remove plaintext-password fallback.
-3. Resolve the two failing backend tests.
-4. Complete task ownership and user-facing task workflows; then harden document/AI operations and production observability.
-
-## Definition of Done
-
-A feature is considered complete only when the code, tests, API behavior, UI behavior, and project-control documentation are aligned.
+The planned local-demo/portfolio feature scope is delivered and this plan is closed. Validation results and known limitations are documented honestly. There is no active priority list or next planned phase. Production RBAC, a task-management UI, persistent chat, streaming, large-scale infrastructure, and deployment automation are outside this delivery; they are not represented as completed capabilities.

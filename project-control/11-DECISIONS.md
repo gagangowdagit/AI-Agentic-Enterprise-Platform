@@ -56,8 +56,23 @@ This log records the decisions that shape the current implementation. It reflect
 - **Date:** 2026-09-30
 - **Decision:** Model an employee's organizational position independently from the role used for application authorization. Public registration must not allow users to grant themselves elevated access; it must assign the least-privileged access role.
 - **Reason:** The current employee `role` is used both as a job title and as a frontend access-gating value, while the backend does not enforce authorization. These are separate concepts and must not be conflated.
-- **Status:** ACCEPTED / NOT IMPLEMENTED
+- **Status:** NOT IMPLEMENTED / OUT OF SCOPE FOR FINAL DELIVERY
+
+## DECISION-009: Stateless JWT Access Authentication
+
+- **Date:** 2026-10-10
+- **Decision:** Issue short-lived HS256 JWT access tokens at login and validate bearer tokens with a stateless Spring Security filter chain. Keep the local signing key in the ignored backend `.env` file, generated once by the Windows startup script when no key is configured.
+- **Reason:** Protect the delivered API flows with authentication while keeping the local development setup simple and avoiding server-side session storage.
+- **Status:** ACCEPTED / IMPLEMENTED
+- **Boundary:** No refresh tokens, revocation, logout endpoint, fine-grained role authorities, or resource ownership policy are included.
+
+## DECISION-010: Close the Local-Demo Delivery Scope
+
+- **Date:** 2026-10-10
+- **Decision:** Close the planned local-demo/portfolio project scope at the final documented snapshot. Do not treat production-scale backlog ideas as incomplete promises or completed features.
+- **Reason:** Preserve a clear and honest final record of delivered capabilities, known limitations, and verification results.
+- **Status:** ACCEPTED / CLOSED
 
 ## Decision Change Policy
 
-When a decision changes, add a new entry with the reason, impact, and affected modules. Unimplemented proposals should not be described as current architecture or delivery status.
+If a separately scoped future project changes a decision, add a new entry with the reason, impact, and affected modules. Unimplemented proposals must not be described as current architecture or delivery status.

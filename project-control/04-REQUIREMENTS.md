@@ -1,10 +1,11 @@
 # Requirements and Scope
 
-This document reflects the currently implemented product scope for the repository as of 2026-09-30. See `10-DEVELOPMENT-STATUS.md` for the latest verification results.
+This document records the final delivered scope as of 2026-10-10. See `10-DEVELOPMENT-STATUS.md` for the verification results and project closeout.
 
 ## Implemented Functional Requirements
 
 - Users can register and authenticate through the current application flows.
+- Login returns a short-lived JWT access token; protected API routes require a valid bearer token, subject to the public route exceptions in `SecurityConfig`.
 - The platform exposes versioned REST APIs for core enterprise data.
 - Projects, departments, teams, documents, timelines, analytics, and AI insights are represented in backend services and frontend pages.
 - Documents can be processed from PDF, DOCX, and text inputs, split into chunks, and embedded through Ollama.
@@ -19,12 +20,11 @@ This document reflects the currently implemented product scope for the repositor
 
 ### Identity and access
 
-- Password hashing exists for user storage and login flows.
+- BCrypt password hashing is used for newly stored/hashed passwords; a legacy plaintext-password comparison remains as a compatibility fallback.
 - Registration and login screens and API flows are implemented.
-- The employee `role` field currently serves both as organizational position and as a frontend access-gating value; public registration allows selecting management values.
-- Server-side authentication/authorization enforcement and project/resource boundary checks are not implemented. Frontend role checks are not a security boundary.
-- Login retains a plaintext-password fallback for legacy stored values; password-hash migration/removal remains required.
-- The target policy is to model organizational position separately from application access role and assign only least-privileged access through public registration; this is not implemented yet.
+- JWT access tokens use HS256 and carry the employee identifier as the subject. The backend uses stateless Spring Security bearer-token validation.
+- The employee `role` field is also used for frontend role-aware presentation. Authenticated API access is enforced, but fine-grained server-side role and project/resource ownership checks are not implemented. Frontend role checks are not a security boundary.
+- The implementation has no refresh-token, token revocation, or server-side logout flow.
 
 ### Core operations
 
@@ -56,12 +56,14 @@ This document reflects the currently implemented product scope for the repositor
 
 ## Out of Current Scope
 
-The following are not current implementation claims and should not be described as delivered features without separate implementation work:
+The following were not requirements for the final local-demo/portfolio delivery and are not claimed as implemented:
 
 - Full production authorization and RBAC
-- JWT-based session policy
+- Fine-grained project/resource ownership enforcement
+- Refresh-token, revocation, and server-side logout flows
 - Event streaming and chat persistence at scale
 - Queue-based async processing
 - Kubernetes or cloud deployment
 - External vector database infrastructure
 - Full autonomous multi-agent production orchestration
+- Complete task-management UI and ownership workflow

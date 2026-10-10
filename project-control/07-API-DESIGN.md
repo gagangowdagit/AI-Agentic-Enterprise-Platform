@@ -4,6 +4,18 @@
 
 The backend uses JSON REST APIs under `/api/v1`. Controllers validate request DTOs and return consistent success/error responses through the application response layer and the global exception handler.
 
+## Authentication Contract
+
+`POST /api/v1/auth/login` is public and accepts the registered email and password. A successful response includes `accessToken`, `tokenType` (`Bearer`), `expiresIn`, and `expiresAt`. Send the token on protected requests as:
+
+```http
+Authorization: Bearer <accessToken>
+```
+
+The backend validates the HS256 signature and token expiry and uses stateless sessions. Access-token lifetime defaults to 15 minutes. Login, health checks, `GET /api/v1/departments`, `POST /api/v1/employees`, and CORS preflight requests are public exceptions in the current security configuration. Other routes require a valid bearer token.
+
+Authentication does not provide fine-grained role or project/resource ownership authorization. There are no refresh-token, revocation, or logout endpoints.
+
 ## Current API Groups
 
 The implemented API surface includes:
@@ -62,14 +74,6 @@ The response contains the generated answer and the supporting retrieved context 
 
 Validation and application failures return HTTP status codes along with an error payload rather than leaking backend internals. Internal exceptions should not expose model or database details in the public API.
 
-## Planned API Work
+## Final API Boundaries
 
-The task summary is not a general task CRUD API, and notification routes currently lack an authenticated user boundary. The next API work is focused on production hardening:
-
-- strict authentication and authorization checks per route
-- richer request validation and rate-limit behavior
-- consistent pagination conventions for large collections
-- idempotency for mutating AI and document operations
-- correlation IDs and safe operational logging
-
-This is a hardening plan, not a list of unimplemented product features.
+The task summary is not a general task CRUD API. Notification routes and other authenticated endpoints do not yet enforce a per-user or per-project ownership policy. Refresh tokens, revocation, fine-grained RBAC, pagination standards, rate limiting, and mutation idempotency are outside this final delivery. These boundaries are not an active API backlog for this closed project scope.

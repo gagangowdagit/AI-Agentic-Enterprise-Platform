@@ -1,14 +1,14 @@
 # AI Agentic Enterprise Platform
 
-An in-progress full-stack enterprise workspace for project operations, document intelligence, and grounded AI assistance.
+Final portfolio/local-demo snapshot of a full-stack enterprise workspace for project operations, document intelligence, and grounded AI assistance.
 
 ## Purpose
 
-This repository contains an in-progress full-stack enterprise platform that combines project operations with document intelligence and AI-assisted workflows. It is both a usable product foundation and a portfolio project demonstrating API design, relational persistence, document processing, retrieval-augmented generation, and a path toward controlled agent automation.
+This repository contains a completed local-demo/portfolio project combining project operations with document intelligence and AI-assisted workflows. The agreed delivery scope is closed. It demonstrates API design, relational persistence, document processing, retrieval-augmented generation, and bounded agent workflows.
 
 ## Current Status
 
-The repository contains a working React/Vite frontend, a Java 21/Spring Boot backend, PostgreSQL/JPA/Flyway persistence, document extraction, and an Ollama-backed RAG flow through Nova AI. It is a pre-release development project: security hardening, durable conversations, async processing, observability, deployment, and production-scale infrastructure are still being built.
+The repository contains a working React/Vite frontend, a Java 21/Spring Boot backend, PostgreSQL/JPA/Flyway persistence, document extraction, an Ollama-backed RAG flow through Nova AI, and stateless JWT bearer authentication. The final state and tested limitations are recorded in `10-DEVELOPMENT-STATUS.md`. This project is not a production SaaS release.
 
 ## Current Product Slice
 
@@ -56,11 +56,11 @@ MongoDB, Redis, Qdrant/pgvector, RabbitMQ, WebSockets, Docker, CI/CD, cloud, and
 
 ## Current Boundary
 
-This is not yet a production SaaS platform. JWT enforcement, fine-grained authorization, conversation persistence, streaming, asynchronous jobs, external vector infrastructure, observability, deployment automation, and comprehensive end-to-end coverage remain future work. See `10-DEVELOPMENT-STATUS.md` and `03-DEV-PLAN-Agile.md` for the authoritative status and backlog.
+This is a completed local-demo/portfolio deliverable, not a production SaaS platform. JWT authentication is implemented; fine-grained authorization, conversation persistence, streaming, asynchronous jobs, external vector infrastructure, observability, and deployment automation are explicitly outside the delivered scope. The final status and verification record is in `10-DEVELOPMENT-STATUS.md`; the delivery plan is closed in `03-DEV-PLAN-Agile.md`.
 
 ## Read Me
 
-For implementation status, architecture, technical decisions, and the future roadmap, see [10-DEVELOPMENT-STATUS.md](10-DEVELOPMENT-STATUS.md), [03-DEV-PLAN-Agile.md](03-DEV-PLAN-Agile.md), and [Planned-Features.md](Planned-Features.md).
+For the final implementation status, architecture, and decisions, see [10-DEVELOPMENT-STATUS.md](10-DEVELOPMENT-STATUS.md), [03-DEV-PLAN-Agile.md](03-DEV-PLAN-Agile.md), and [11-DECISIONS.md](11-DECISIONS.md).
 
 ## Local Setup
 
@@ -68,8 +68,12 @@ For implementation status, architecture, technical decisions, and the future roa
 
 ```powershell
 cd rag-backend
-.\mvnw.cmd spring-boot:run
+.\run-backend.ps1
 ```
+
+On first start, this script creates and saves a random JWT signing key in the
+ignored `rag-backend/.env` file, then reuses it on future starts. Keep that file
+private and out of version control.
 
 The RAG backend requires Ollama at `http://localhost:11434`. On Windows, start it in a separate terminal:
 
@@ -114,17 +118,9 @@ npm run dev
 
 This project is structured as a practical enterprise demo with a monolithic Spring Boot backend and a React frontend. The backend is responsible for persistence, API delivery, document processing, and AI orchestration. The frontend is responsible for the user experience, content rendering, form flows, and API consumption. The repository is intentionally designed to be easy to understand and extend without requiring cloud infrastructure for local development.
 
-## Roadmap and Future Work
+## Project Closeout
 
-Planned and future work includes:
-
-- stronger authentication and authorization
-- persistent conversations and memory
-- asynchronous AI jobs and background processing
-- richer observability and telemetry
-- deployment automation and environment configuration
-- external vector database support for larger-scale knowledge retrieval
-- hardening for enterprise production readiness
+The planned local-demo/portfolio scope is complete and there is no active next phase. Production-scale features are excluded from this final snapshot rather than presented as delivered or as a pending roadmap. See the final status document for the verification results and explicit boundaries.
 
 ## Reference Documents
 
@@ -139,6 +135,5 @@ Planned and future work includes:
 - [project-control/09-GIT-STRATEGY.md](09-GIT-STRATEGY.md)
 - [project-control/10-DEVELOPMENT-STATUS.md](10-DEVELOPMENT-STATUS.md)
 - [project-control/11-DECISIONS.md](11-DECISIONS.md)
-- [project-control/Planned-Features.md](Planned-Features.md)
 
-The project-control folder is the authoritative source for planning, implementation progress, and architectural decisions for the repository.
+The project-control folder records the final implementation scope, architecture, and decisions for this repository snapshot.

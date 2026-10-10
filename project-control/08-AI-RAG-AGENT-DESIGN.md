@@ -31,22 +31,14 @@ Request -> classify -> validate -> use project tools/services -> respond
 
 This is real application orchestration, but it is still scoped to the current domain and not a fully autonomous multi-agent platform.
 
-## Current Limitations
+## Final Scope Boundaries
 
 - no long-lived durable conversation storage yet
 - no streaming response or live token output
 - no external vector database at production scale
 - no advanced retrieval evaluation harness yet
-- no production-grade tool authorization policy yet
+- agent tools run within the application's implemented service boundaries; project/resource-level authorization is not provided by the current JWT principal
 
-## Current Safety and Quality Direction
+## Safety and Quality Boundaries
 
-The project is moving toward the following hardening priorities:
-
-- stronger route-level authorization checks
-- prompt and retrieval safety reviews
-- better failure handling for missing models and malformed AI responses
-- more robust evaluation for grounding quality
-- auditable tool execution boundaries for future agent expansion
-
-This is the honest current state: the project contains a real AI/RAG architecture and agentic workflow patterns, but it is still a bounded, auditable local application rather than a fully autonomous enterprise AI system.
+The project contains a real AI/RAG implementation and bounded agent workflow patterns. Generated responses can still be inaccurate, model availability is required for live AI operations, and prompt/retrieval quality has not been validated as a production security control. This final deliverable is a local application, not a fully autonomous or production enterprise AI system.

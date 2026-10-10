@@ -37,15 +37,16 @@ projects
 - Persist document and meeting summary metadata in the relational model.
 - Keep model and embedding metadata explicit for debugging and traceability.
 - Do not store sensitive credentials in application data tables.
+- Passwords are stored as BCrypt hashes for newly registered accounts. Legacy plaintext credentials may still exist and are supported by a compatibility fallback; no JWT signing key or access token is stored in PostgreSQL.
 
 ## Current Implementation Notes
 
 The current implementation uses a relational model for core project data and the embedding pipeline. This is sufficient for the application scope and keeps the architecture simple and auditable.
 
-Employee identity currently has a single `role` field. It is used as an organizational position and as an input to frontend access gating; there is no separate persisted application access role. Treat this as a known model gap, not an authorization control. A schema change must preserve existing employee data while introducing the distinct access-role concept described in `11-DECISIONS.md`.
+Employee identity currently has a single `role` field. It is returned by login and used for frontend role-aware presentation; there is no distinct persisted application access role or role-to-authority mapping. It is not a server-side authorization control.
 
 Task records, project memories, and agent execution records are also persisted. Task behavior is currently backend/agent-facing and does not yet provide a complete user-facing task workflow.
 
-## Future Storage Decisions
+## Final Storage Scope
 
-No additional database technology is currently required by the project. If scale or performance ever demands it, future changes should be introduced only after measuring the workload and documenting the tradeoff in `11-DECISIONS.md`.
+JWT access tokens are stateless and short-lived; the database stores neither tokens nor signing keys. No separate vector database, cache, queue, or conversation-history store is part of this final delivery.

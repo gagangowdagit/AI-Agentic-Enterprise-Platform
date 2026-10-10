@@ -1,10 +1,10 @@
 # AI-Agentic-Enterprise-Platform
 
-An in-progress full-stack enterprise workspace for project operations, document intelligence, and grounded AI assistance.
+Final local-demo/portfolio snapshot of a full-stack enterprise workspace for project operations, document intelligence, and grounded AI assistance.
 
 ## Current Status
 
-The repository contains a working React/Vite frontend, a Java 21/Spring Boot backend, PostgreSQL/JPA/Flyway persistence, document extraction, and an Ollama-backed RAG flow through Nova AI. It is a pre-release development project: security hardening, durable conversations, async processing, observability, deployment, and production-scale infrastructure are still being built.
+The repository contains a React/Vite frontend, a Java 21/Spring Boot backend, PostgreSQL/JPA/Flyway persistence, document extraction, an Ollama-backed RAG flow through Nova AI, and stateless JWT bearer authentication. This is the final local-demo/portfolio scope, not a production SaaS release. See [project-control/10-DEVELOPMENT-STATUS.md](project-control/10-DEVELOPMENT-STATUS.md) for delivered scope, known boundaries, and final verification results.
 
 ## Structure
 
@@ -20,6 +20,7 @@ The repository contains a working React/Vite frontend, a Java 21/Spring Boot bac
 ## Active Stack
 
 - Java 21, Spring Boot 4.1.1, Spring MVC, Maven
+- Spring Security with stateless HS256 JWT bearer authentication
 - React 19, TypeScript 6, Vite 8, React Router
 - PostgreSQL, Spring Data JPA, Hibernate, Flyway
 - Apache PDFBox, Apache POI
@@ -30,7 +31,7 @@ MongoDB, Redis, Qdrant/pgvector, RabbitMQ, WebSockets, Docker, CI/CD, cloud, and
 
 ## Read Me
 
-For implementation status, architecture, technical decisions, and the complete future roadmap, see [project-control/](project-control/), especially [10-DEVELOPMENT-STATUS.md](project-control/10-DEVELOPMENT-STATUS.md) and [03-DEV-PLAN-Agile.md](project-control/03-DEV-PLAN-Agile.md).
+For final implementation status, architecture, technical decisions, and project closeout, see [project-control/](project-control/), especially [10-DEVELOPMENT-STATUS.md](project-control/10-DEVELOPMENT-STATUS.md) and [03-DEV-PLAN-Agile.md](project-control/03-DEV-PLAN-Agile.md).
 
 ## Run the project locally
 
@@ -110,13 +111,20 @@ From the repository root:
 
 ```powershell
 cd rag-backend
-.\mvnw.cmd spring-boot:run
+.\run-backend.ps1
 ```
+
+On the first run, the script creates a random JWT signing key in the ignored
+`rag-backend/.env` file. The same key is reused on later starts, so you do not
+need to set `JWT_SECRET` manually and existing tokens are not invalidated just
+because the backend restarted. Keep `.env` private and do not commit it. To use
+your own key, set `JWT_SECRET` in the environment before running the script.
 
 The backend uses the following app settings from [rag-backend/src/main/resources/application.properties](rag-backend/src/main/resources/application.properties):
 
 - `server.port=8080`
 - `spring.datasource.url=jdbc:postgresql://localhost:5432/rag_db`
+- `app.jwt.access-token-lifetime=PT15M` by default; the local JWT signing key is generated once and kept in the ignored backend `.env` file.
 - `ollama.api.url=http://localhost:11434`
 - `ollama.embedding.model=nomic-embed-text`
 - `ollama.llm.model=llama3.2:3b`
@@ -175,7 +183,7 @@ If you want a quick local development flow, use this sequence in separate termin
 
 # Terminal 2 - Backend
 cd rag-backend
-.\mvnw.cmd spring-boot:run
+.\run-backend.ps1
 
 # Terminal 3 - Frontend
 cd frontend

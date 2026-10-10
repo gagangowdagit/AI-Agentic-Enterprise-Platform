@@ -1,4 +1,6 @@
-# Git and Delivery Strategy
+# Git and Delivery Record
+
+This document preserves the repository's lightweight delivery conventions. The project plan itself was closed in the 2026-10-10 final snapshot; no follow-on release or implementation phase is scheduled.
 
 ## Branches
 
@@ -37,4 +39,4 @@ A meaningful feature should include its tests, setup/configuration changes, API/
 
 ## Release Readiness
 
-Use a tag only for a reproducible state with passing relevant checks, documented configuration, migration safety, and a known dependency matrix. The project is currently pre-release and has no production release promise.
+The final repository snapshot is a local-demo/portfolio delivery, not a production release. Its frontend build passes; the backend test run recorded two failures, documented in `10-DEVELOPMENT-STATUS.md`. Do not describe this snapshot as having a fully green backend suite or production release readiness.
