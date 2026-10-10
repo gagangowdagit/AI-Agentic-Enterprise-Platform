@@ -19,13 +19,15 @@ The repository contains a React/Vite frontend, a Java 21/Spring Boot backend, Po
 
 ## Active Stack
 
-- Java 21, Spring Boot 4.1.1, Spring MVC, Maven
-- Spring Security with stateless HS256 JWT bearer authentication
-- React 19, TypeScript 6, Vite 8, React Router
-- PostgreSQL, Spring Data JPA, Hibernate, Flyway
-- Apache PDFBox, Apache POI
-- Ollama with `nomic-embed-text` and `llama3.2:3b`
-- JUnit, Mockito, Spring Boot Test, ESLint
+| Area | Technologies |
+|---|---|
+| Backend | Java 21, Spring Boot 4.1.1, Spring MVC, Maven |
+| Authentication | Spring Security, stateless HS256 JWT bearer tokens |
+| Frontend | React 19, TypeScript 6, Vite 8, React Router |
+| Database and migrations | PostgreSQL, Spring Data JPA, Hibernate, Flyway |
+| Document processing | Apache PDFBox, Apache POI |
+| AI and models | Ollama, `nomic-embed-text`, `llama3.2:3b` |
+| Testing and quality | JUnit, Mockito, Spring Boot Test, ESLint |
 
 MongoDB, Redis, Qdrant/pgvector, RabbitMQ, WebSockets, Docker, CI/CD, cloud, and Kubernetes are documented as future options, not current implementation claims.
 
